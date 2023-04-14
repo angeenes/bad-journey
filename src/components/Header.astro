@@ -1,0 +1,49 @@
+---
+import { SITE_TITLE } from '../consts';
+---
+
+<!-- <header>
+	<h2>
+		{SITE_TITLE}
+	</h2>
+	<nav>
+		<HeaderLink href="/">Home</HeaderLink>
+		<HeaderLink href="/blog">Blog</HeaderLink>
+		<HeaderLink href="/about">About</HeaderLink>
+		<HeaderLink href="https://twitter.com/astrodotbuild" target="_blank">Twitter</HeaderLink>
+		<HeaderLink href="https://github.com/withastro/astro" target="_blank">GitHub</HeaderLink>
+	</nav>
+</header> -->
+
+
+<header class="header">
+  <h2 class="left">{SITE_TITLE}</h2>
+  <section class="center">search</section>
+  <section class="right">
+   <button id="open-dialog-btn">+ Add picture</button>
+    <span>account</span>
+  </section>
+</header>
+
+
+<style lang="scss">
+	.header {
+		position: fixed;
+		top: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		height: 80px;
+		background-color: var(--color-primary);
+		color: white;
+		section,h2 {
+			margin: 0 2rem;
+		}
+		.center {
+			border-right: 1px solid white;
+			padding-right: 1rem;
+			margin-left: auto;
+		}
+	}
+</style>
