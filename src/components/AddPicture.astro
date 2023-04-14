@@ -1,0 +1,141 @@
+---
+---
+
+
+<button id="open-dialog-btn">+ Add picture</button>
+
+	<dialog id="native-dialog">
+    
+    <h1>Image Metadata Viewer</h1>
+    <p>Select an image file to view its metadata:</p>
+              <input type="file" id="file-input" accept="image/png, image/jpeg">
+          <button id="delete-btn" disabled>Delete</button>
+    <button id="upload-btn">Upload</button>
+    <div class="image-upload">
+
+      <div id="image-container">
+          <div id="image-preview"></div>
+      </div>
+      <div id="metadata-container"></div>
+    </div>
+
+		<button id="close-dialog-btn">Close Dialog</button>
+	</dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js"></script>
+
+<script>
+class DialogModal {
+  constructor() {
+    this.openDialogButton = document.getElementById('open-dialog-btn');
+    this.closeDialogButton = document.getElementById('close-dialog-btn');
+    this.nativeDialog = document.getElementById('native-dialog');
+
+    this.input = document.getElementById('file-input');
+    this.uploadBtn = document.getElementById('upload-btn');
+    this.deleteBtn = document.getElementById('delete-btn');
+    this.previewDiv = document.getElementById('image-preview');
+    this.metadataDiv = document.getElementById('metadata-container');
+
+    this.init();
+  }
+
+  init() {
+    this.openDialogButton.addEventListener('click', () => {
+      this.nativeDialog.showModal();
+    });
+
+    this.closeDialogButton.addEventListener('click', () => {
+      this.nativeDialog.close();
+      this.deleteImagePreview();
+    });
+
+    this.input.addEventListener('change', () => this.handleFileSelection());
+
+    this.deleteBtn.addEventListener('click', () => {
+      this.deleteImagePreview();
+    });
+  }
+
+  async handleFileSelection() {
+    const file = this.input.files[0];
+
+    if (file && /^image\/(jpeg|png)$/i.test(file.type)) {
+      this.uploadBtn.disabled = true;
+      this.deleteBtn.disabled = false;
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.addEventListener('load', async () => {
+        const img = document.createElement('img');
+        img.src = reader.result;
+
+        const metadata = {
+          'File name': file.name,
+          'Type': file.type,
+          'Size': `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+        };
+
+        const exifData = await exifr.parse(img);
+        Object.assign(metadata, exifData);
+
+        this.previewDiv.innerHTML = '';
+        this.previewDiv.appendChild(img);
+        Object.entries(metadata).forEach(([tag, value]) => {
+          const div = document.createElement('div');
+          div.innerHTML = `${tag}: ${value}`;
+          this.metadataDiv.appendChild(div);
+        });
+      });
+
+      reader.addEventListener('error', () => {
+        console.error('Error reading file:', reader.error);
+        alert('Error reading file');
+        this.resetUpload();
+      });
+    } else {
+      alert('Please select a valid image file (JPEG or PNG)');
+      this.resetUpload();
+    }
+  }
+
+  resetUpload() {
+    this.uploadBtn.disabled = false;
+    this.deleteBtn.disabled = true;
+  }
+
+  deleteImagePreview() {
+    this.input.value = '';
+    this.previewDiv.innerHTML = '';
+    this.metadataDiv.innerHTML = '';
+    this.resetUpload();
+  }
+}
+
+const dialogModal = new DialogModal();
+
+</script>
+
+<style lang='scss'>
+
+#native-dialog {
+  border-radius: 5px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.3);
+}
+
+#image-preview {
+  max-width: 320px;
+  img {
+    width: 320px;
+    max-width: 320px;
+    min-width: 320px;
+  }
+}
+
+.image-upload {
+  display:flex;
+  width: 50vw;
+  gap: 1rem;
+}
+</style>
