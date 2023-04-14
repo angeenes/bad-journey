@@ -8,8 +8,8 @@
     
     <h1>Image Metadata Viewer</h1>
     <p>Select an image file to view its metadata:</p>
-              <input type="file" id="file-input" accept="image/png, image/jpeg">
-          <button id="delete-btn" disabled>Delete</button>
+    <input type="file" id="file-input" accept="image/png, image/jpeg">
+    <button id="delete-btn" disabled>Delete</button>
     <button id="upload-btn">Upload</button>
     <div class="image-upload">
 
@@ -126,7 +126,10 @@ const dialogModal = new DialogModal();
 
 #image-preview {
   max-width: 320px;
-  img {
+  width: 320px;
+  min-width: 320px;
+  overflow: hidden;
+  > img {
     width: 320px;
     max-width: 320px;
     min-width: 320px;
