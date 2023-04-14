@@ -10,3 +10,9 @@ body {
   font-family: 'Inter', sans-serif;
   --color-primary: #172328;
 }
+
+.container-full {
+  padding-top: 2.25rem;
+  width: 100%;
+  background: var(--color-primary);
+}
