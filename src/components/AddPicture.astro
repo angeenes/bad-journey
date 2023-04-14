@@ -66,31 +66,43 @@ class DialogModal {
   }
 
   async uploadImage() {
-    alert('clicked')
     const file = this.input.files[0];
+    const token = localStorage.getItem('jwt');
 
-    if (!file) {
+    if (!token) {
+      alert('you are not conencted');
+      return;
+    }
+
+        if (!file) {
       alert('No image selected');
       return;
     }
 
-    const formData = new FormData();
-    formData.append('Image_width', this.metadatas.ImageWidth);
-    formData.append('Image_height', this.metadatas.ImageHeight);
-    formData.append('file_name', 'fake titre');
-    formData.append('parameters', this.metadatas.parameters);
+    // const formData = new FormData();
+    // console.log('this.metadatas', this.metadatas)
+    // formData.append('image_width', this.metadatas.ImageWidth);
+    // formData.append('image_height', this.metadatas.ImageHeight);
+    // formData.append('file_name', 'fake titre');
+    // formData.append('parameters', this.metadatas.parameters);
+
+    const formData = {
+      data: {
+        image_width : this.metadatas.ImageWidth,
+        image_height : this.metadatas.ImageHeight,
+        file_name: this.metadatas["File name"],
+        image: this.input.files[0]
+      }
+    }
 
     try {
       const response = await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api' + '/images', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer 4fb7c32206dda5da38a373ecd922aa9a21a0c2916728ef207f7c424f50eeeeee47beedd0354809612fbd27fcce2693b0d4344d319fe0fd0044b14c1001e5ad105be5d47c844c44b8ede116366d6e48c49fbd6333a74ef6136787ca2e21db61c3b35359bcb60d58d14cbbc1457e58e089b581ca3df505c5f9f102906892679d2f`,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-          body: {
-            data: {
-              formData
-            }
-    }
+           body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
