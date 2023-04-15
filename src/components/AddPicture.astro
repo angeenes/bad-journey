@@ -47,7 +47,7 @@ import Dialog from '../components/Dialog.astro'
         if (!['submit', 'file'].includes(type)) {
           data[name] = value;
         } else if (type === 'file') {
-          files.forEach((file) => {
+          Array.from(files).forEach((file) => {
             formData.append(`files.${name}`, file, file.name);
           });
         }
@@ -59,8 +59,8 @@ import Dialog from '../components/Dialog.astro'
       method: 'post',
       mode: 'no-cors',
       headers: {
-        Authorization: `Bearer ${token}`
-        // 'Content-Type': 'multippart/form-data'
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multippart/form-data'
       },
       body: formData
     });
