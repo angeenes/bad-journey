@@ -1,0 +1,32 @@
+---
+export interface Props {
+	title: string;
+	id: string;
+}
+
+const { title, id } = Astro.props;
+---
+
+<dialog id={id} >
+  <button type="button" id="closeModalButton" class="absolute top-2 right-2" onClick="closeDialog(event)">X</button>
+  <h3 class="mb-2">{title}</h3>
+    <slot /> 
+</dialog>
+
+<script>
+
+  function closeDialog(event) {
+    const dialog = event.target.closest('dialog');
+    if (dialog) {
+      dialog.close();
+    }
+  }
+
+</script>
+
+<style>
+  dialog {
+    border-radius: 5px;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.3);
+  }
+</style>
