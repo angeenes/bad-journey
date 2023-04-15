@@ -1,0 +1,85 @@
+---
+---
+ <form id="loginForm">
+    <input type="email" id="email" name="email" placeholder="Email"><br><br>
+    <input type="password" id="password" name="password" placeholder="Password"><br><br>
+    <button type="submit">Log in</button>
+  </form>
+  <p id="error" style="color: red; display: none;">Invalid email or password</p>
+  <p id="username" style="display: none;"></p>
+  
+  <script>
+    class Authenticator {
+      constructor(url) {
+        this.url = url;
+      }
+
+      authenticate(email, password) {
+        return fetch(this.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                identifier: email,
+                password: password
+            })
+        })
+        .then(function(response) {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Network response was not ok');
+            }
+        })
+        .then(function(data) {
+            const jwt = data.jwt;
+            const user = data.user;
+
+            console.log('User profile', user);
+            console.log('User token', jwt);
+
+            const errorElement = document.getElementById('error');
+            errorElement.style.display = 'none';
+
+            const usernameElement = document.getElementById('username');
+            usernameElement.textContent = 'Welcome, ' + user.username;
+            usernameElement.style.display = 'block';
+
+            localStorage.setItem('jwt', jwt);
+        })
+        .catch(function(error) {
+            console.log('An error occurred:', error);
+
+            const errorElement = document.getElementById('error');
+            errorElement.style.display = 'block';
+        });
+      }
+    }
+
+    class LoginForm {
+      constructor(formId, authenticator) {
+        this.form = document.getElementById(formId);
+        this.emailInput = document.getElementById('email');
+        this.passwordInput = document.getElementById('password');
+        this.authenticator = authenticator;
+      }
+
+      submitLoginForm(event) {
+        event.preventDefault();
+
+        const email = this.emailInput.value;
+        const password = this.passwordInput.value;
+
+        this.authenticator.authenticate(email, password);
+      }
+
+      setupEventListeners() {
+        this.form.addEventListener('submit', this.submitLoginForm.bind(this));
+      }
+    }
+
+    const authenticator = new Authenticator('http://localhost:1337/auth/local');
+    const loginForm = new LoginForm('loginForm', authenticator);
+    loginForm.setupEventListeners();
+  </script>
