@@ -66,62 +66,83 @@ class DialogModal {
   }
 
   async uploadImage() {
-    const file = this.input.files[0];
-    const token = localStorage.getItem('jwt');
+  const file = this.input.files[0];
+  const token = localStorage.getItem('jwt');
 
-    if (!token) {
-      alert('you are not conencted');
-      return;
-    }
+  console.log('file', file)
 
-        if (!file) {
-      alert('No image selected');
-      return;
-    }
-
-    // const formData = new FormData();
-    // console.log('this.metadatas', this.metadatas)
-    // formData.append('image_width', this.metadatas.ImageWidth);
-    // formData.append('image_height', this.metadatas.ImageHeight);
-    // formData.append('file_name', 'fake titre');
-    // formData.append('parameters', this.metadatas.parameters);
-
-    const formData = {
-      data: {
-        image_width : this.metadatas.ImageWidth.toString(),
-        image_height : this.metadatas.ImageHeight.toString(),
-        file_name: this.metadatas["File name"],
-        image: this.input.files[0]
-      }
-    }
-
-    console.log('formData', formData);
-
-    try {
-      const response = await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api/images', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-           body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-
-      const jsonResponse = await response.json();
-      console.log(jsonResponse);
-      alert('Image uploaded successfully');
-    } catch (error) {
-      console.log('this.apiEndpoint', this.apiEndpoint)
-      console.error('Error uploading image:', error);
-      alert('Error uploading image');
-    }
-
-    this.deleteImagePreview();
+  if (!token) {
+    alert('you are not conencted');
+    return;
   }
+
+  if (!file) {
+    alert('No image selected');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('files', file);
+
+  //  const formData = {
+  //   files: {
+  //     file
+  //   }
+  // }
+
+  console.log('formData', formData)
+
+  try {
+    const uploadResponse = await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api/upload', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      'Content-Type': 'multippart/form-data'
+      },
+      body: formData
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`HTTP error ${uploadResponse.status}`);
+    }
+
+    const uploadJsonResponse = await uploadResponse.json();
+    const imageUrl = uploadJsonResponse[0].url;
+
+    const imageMetadata = {
+      data: {
+        image_width: this.metadatas.ImageWidth.toString(),
+        image_height: this.metadatas.ImageHeight.toString(),
+        file_name: this.metadatas['File name'],
+        image: imageUrl
+      }
+    };
+
+    const response = await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api/images', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(imageMetadata)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    const jsonResponse = await response.json();
+    console.log(jsonResponse);
+    alert('Image uploaded successfully');
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    alert('Error uploading image');
+  }
+
+  this.deleteImagePreview();
+}
+
 
   async handleFileSelection() {
     const file = this.input.files[0];
