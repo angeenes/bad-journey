@@ -1,12 +1,18 @@
 ---
 ---
- <form id="loginForm">
-    <input type="email" id="email" name="email" placeholder="Email"><br><br>
-    <input type="password" id="password" name="password" placeholder="Password"><br><br>
-    <button type="submit">Log in</button>
-  </form>
-  <p id="error" style="color: red; display: none;">Invalid email or password</p>
-  <p id="username" style="display: none;"></p>
+ <button id="openModalButton">Account</button>
+  
+  <dialog id="loginDialog">
+  <button type="button" id="closeModalButton" class="absolute top-2 right-2">X</button>
+    <form id="loginForm">
+      <input type="email" id="email" name="email" placeholder="Email"><br><br>
+      <input type="password" id="password" name="password" placeholder="Password"><br><br>
+      <button type="submit">Log in</button>
+    </form>
+    <p id="error" style="color: red; display: none;">Invalid email or password</p>
+    <p id="username" style="display: none;"></p>
+
+  </dialog>
   
   <script>
     class Authenticator {
@@ -58,8 +64,9 @@
     }
 
     class LoginForm {
-      constructor(formId, authenticator) {
-        this.form = document.getElementById(formId);
+      constructor(dialogId, authenticator) {
+        this.dialog = document.getElementById(dialogId);
+        this.form = document.getElementById('loginForm');
         this.emailInput = document.getElementById('email');
         this.passwordInput = document.getElementById('password');
         this.authenticator = authenticator;
@@ -76,10 +83,25 @@
 
       setupEventListeners() {
         this.form.addEventListener('submit', this.submitLoginForm.bind(this));
+        const closeModalButton = document.getElementById('closeModalButton');
+        closeModalButton.addEventListener('click', () => {
+          this.dialog.close();
+        });
       }
     }
 
-    const authenticator = new Authenticator('http://localhost:1337/auth/local');
-    const loginForm = new LoginForm('loginForm', authenticator);
+    const authenticator = new Authenticator('https://hammerhead-app-377qb.ondigitalocean.app/api/auth/local');
+    const loginForm = new LoginForm('loginDialog', authenticator);
     loginForm.setupEventListeners();
+
+    const openModalButton = document.getElementById('openModalButton');
+    const loginDialog = document.getElementById('loginDialog');
+    if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement) {
+      openModalButton.addEventListener('click', () => {
+        loginDialog.showModal();
+      });
+      loginDialog.querySelector('button:not([type="submit"])').addEventListener('click', () => {
+        loginDialog.close();
+      });
+    }
   </script>
