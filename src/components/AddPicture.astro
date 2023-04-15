@@ -1,221 +1,90 @@
 ---
-
+import Dialog from '../components/Dialog.astro'
 ---
 
+<button id="open-dialog-btn" onClick="openDialog(event)">+ Add picture</button>
 
-<button id="open-dialog-btn">+ Add picture</button>
+  <Dialog id="ImageDialog" title="Image Metadata Viewer">
+  <form id="form-image">
+    <!-- Can be multiple files if you setup "collection" instead of "model" -->
+    <!-- <input type="file" name="files" />
+    <input type="text" name="ref" value="api::image.image" />
+    <input type="text" name="refId" value="5c126648c7415f0c0ef1bccd" />
+    <input type="text" name="field" value="image" />
+    <input type="submit" value="Submit" /> -->
 
-	<dialog id="native-dialog">
-    
-    <h1>Image Metadata Viewer</h1>
-    <p>Select an image file to view its metadata:</p>
-    <input type="file" id="file-input" accept="image/png, image/jpeg">
-    <button id="delete-btn" disabled>Delete</button>
-    <div class="image-upload">
+    <input type="text" name="file_name" placeholder="file_name"/>
+    <input type="file" name="image" />
+    <input type="submit" value="Submit" />
 
-      <div id="image-container">
-          <div id="image-preview"></div>
-      </div>
-      <div id="metadata-container"></div>
-    </div>
-      <button id="upload-btn" class="p-3 bg-slate-400">Upload</button>
-		<button id="close-dialog-btn">Close Dialog</button>
-	</dialog>
+  </form>
 
-  <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js"></script>
+  </Dialog>
 
-<script>
-class DialogModal {
-  constructor() {
-    this.openDialogButton = document.getElementById('open-dialog-btn');
-    this.closeDialogButton = document.getElementById('close-dialog-btn');
-    this.nativeDialog = document.getElementById('native-dialog');
-
-    this.input = document.getElementById('file-input');
-    this.uploadBtn = document.getElementById('upload-btn');
-    this.deleteBtn = document.getElementById('delete-btn');
-    this.previewDiv = document.getElementById('image-preview');
-    this.metadataDiv = document.getElementById('metadata-container');
-
-    this.metadatas = '';
-
-    this.apiToken = '4fb7c32206dda5da38a373ecd922aa9a21a0c2916728ef207f7c424f50eeeeee47beedd0354809612fbd27fcce2693b0d4344d319fe0fd0044b14c1001e5ad105be5d47c844c44b8ede116366d6e48c49fbd6333a74ef6136787ca2e21db61c3b35359bcb60d58d14cbbc1457e58e089b581ca3df505c5f9f102906892679d2f';
-    this.apiEndPoint = 'https://hammerhead-app-377qb.ondigitalocean.app/api'
-
-    this.init();
-  }
-
-  init() {
-    this.openDialogButton.addEventListener('click', () => {
-      this.nativeDialog.showModal();
-    });
-
-    this.closeDialogButton.addEventListener('click', () => {
-      this.nativeDialog.close();
-      this.deleteImagePreview();
-    });
-
-    this.input.addEventListener('change', () => this.handleFileSelection());
-
-    this.deleteBtn.addEventListener('click', () => {
-      this.deleteImagePreview();
-    });
-
-     this.uploadBtn.addEventListener('click', () => {
-       this.uploadImage()
-     });
-  }
-
-  async uploadImage() {
-  const file = this.input.files[0];
+<script type="text/javascript">
   const token = localStorage.getItem('jwt');
+  const form = document.getElementById('form-image');
 
-  console.log('file', file)
+  function openDialog(event) {
 
-  if (!token) {
-    alert('you are not conencted');
-    return;
+    const dialog = document.getElementById('ImageDialog');
+    console.log(dialog)
+    if (dialog) {
+      dialog.showModal();
+    }
   }
 
-  if (!file) {
-    alert('No image selected');
-    return;
-  }
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-  const formData = new FormData();
-  formData.append('files', file);
+    const data = {};
+    const formData = new FormData();
 
-  //  const formData = {
-  //   files: {
-  //     file
-  //   }
-  // }
+    console.log(' form.elements',  form.elements)
 
-  console.log('formData', formData)
+    Array.from(form.elements)
+      .forEach(({ name, type, value, files, ...element }) => {
+        if (!['submit', 'file'].includes(type)) {
+          data[name] = value;
+        } else if (type === 'file') {
+          files.forEach((file) => {
+            formData.append(`files.${name}`, file, file.name);
+          });
+        }
+      });
 
-  try {
-    const uploadResponse = await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api/upload', {
-      method: 'POST',
+    formData.append('data', JSON.stringify(data));
+
+    await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api/images', {
+      method: 'post',
       mode: 'no-cors',
       headers: {
-        Authorization: `Bearer ${token}`,
-      'Content-Type': 'multippart/form-data'
+        Authorization: `Bearer ${token}`
+        // 'Content-Type': 'multippart/form-data'
       },
       body: formData
     });
-
-    if (!uploadResponse.ok) {
-      throw new Error(`HTTP error ${uploadResponse.status}`);
-    }
-
-    const uploadJsonResponse = await uploadResponse.json();
-    const imageUrl = uploadJsonResponse[0].url;
-
-    const imageMetadata = {
-      data: {
-        image_width: this.metadatas.ImageWidth.toString(),
-        image_height: this.metadatas.ImageHeight.toString(),
-        file_name: this.metadatas['File name'],
-        image: imageUrl
-      }
-    };
-
-    const response = await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api/images', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(imageMetadata)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
-    }
-
-    const jsonResponse = await response.json();
-    console.log(jsonResponse);
-    alert('Image uploaded successfully');
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    alert('Error uploading image');
-  }
-
-  this.deleteImagePreview();
-}
+  });
 
 
-  async handleFileSelection() {
-    const file = this.input.files[0];
-
-    if (file && /^image\/(jpeg|png)$/i.test(file.type)) {
-      this.uploadBtn.disabled = false;
-      this.deleteBtn.disabled = false;
-
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-
-      reader.addEventListener('load', async () => {
-        const img = document.createElement('img');
-        img.src = reader.result;
-
-        const metadata = {
-          'File name': file.name,
-          'Type': file.type,
-          'Size': `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
-        };
-
-        const exifData = await exifr.parse(img);
-        Object.assign(metadata, exifData);
-
-        this.metadatas = metadata;
-
-        console.log('this.metadatas', this.metadatas)
-
-        this.previewDiv.innerHTML = '';
-        this.previewDiv.appendChild(img);
-        Object.entries(metadata).forEach(([tag, value]) => {
-          const div = document.createElement('div');
-          div.innerHTML = `${tag}: ${value}`;
-          this.metadataDiv.appendChild(div);
-        });
-      });
-
-      reader.addEventListener('error', () => {
-        console.error('Error reading file:', reader.error);
-        alert('Error reading file');
-        this.resetUpload();
-      });
-    } else {
-      alert('Please select a valid image file (JPEG or PNG)');
-      this.resetUpload();
-    }
-  }
-
-  resetUpload() {
-    this.uploadBtn.disabled = true;
-    this.deleteBtn.disabled = true;
-    this.metadatas = '';
-  }
-
-  deleteImagePreview() {
-    this.input.value = '';
-    this.previewDiv.innerHTML = '';
-    this.metadataDiv.innerHTML = '';
-    this.resetUpload();
-  }
-}
-
-const dialogModal = new DialogModal();
+  //   await fetch('https://hammerhead-app-377qb.ondigitalocean.app/api/upload', {
+  //     method: 'post',
+  //     mode: 'no-cors',
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       'Content-Type': 'multippart/form-data'
+  //     },
+  //     body: new FormData(e.target)
+  //   });
+  // });
 
 </script>
 
-<style lang='scss'>
 
-#native-dialog {
-  border-radius: 5px;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.3);
-}
+<script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.min.js"></script>
+
+
+<style lang='scss'>
 
 #image-preview {
   max-width: 320px;
