@@ -14,6 +14,8 @@ import Dialog from '../components/Dialog.astro'
   </Dialog>
   
   <script>
+import { API_URL } from "../consts";
+
     class Authenticator {
       constructor(url) {
         this.url = url;
@@ -84,7 +86,7 @@ import Dialog from '../components/Dialog.astro'
       }
     }
 
-    const authenticator = new Authenticator('https://hammerhead-app-377qb.ondigitalocean.app/api/auth/local');
+    const authenticator = new Authenticator(`${API_URL}auth/local`);
     const loginForm = new LoginForm(authenticator);
     loginForm.setupEventListeners();
 
