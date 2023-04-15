@@ -5,7 +5,7 @@
   <input type="text" id="Image_width" name="Image_width" placeholder="Image width" required><br>
   <input type="text" id="Image_height" name="Image_height" placeholder="Image height" required><br>
   <textarea id="parameters" name="parameters" placeholder="Parameters" required></textarea><br>
-  <!-- <input type="file" id="image" name="image" accept="image/png, image/jpeg"><br> -->
+  <input type="file" id="image" name="image" accept="image/png, image/jpeg"><br>
 
   <button type="submit">Submit</button>
 </form>
@@ -16,53 +16,39 @@ const BEARER_TOKEN = 'eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd
 const API_URL = 'http://localhost:1337/api/images';
 const JWT_TOKEN = localStorage.getItem('jwt');
 
-const handleSubmit = (event) => {
-  event.preventDefault();
-
-  const formData = new FormData(event.target);
-  // const file = formData.get('image');
-  const allowedTypes = ['image/png', 'image/jpeg'];
-
-  // if (file instanceof File && !allowedTypes.includes(file.type)) {
-  //   alert('Invalid file type. Only PNG and JPEG images are allowed.');
-  //   return;
-  // }
-
-  let formDataObject = {};
-
-  for (let [key, value] of formData.entries()) {
-    console.log(`${key}: ${value}`);
-    formDataObject[key] = value;
-  }
-
-  fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${BEARER_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({data:formDataObject})
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('An error occurred while submitting the data.');
-      }
-      return response;
-    })
-    .then(() => {
-      alert('Data submitted successfully.');
-    })
-    .catch((error) => {
-      alert(error.message);
-    });
-};
 
 const form = document.getElementById('myForm');
-if (form) {
-  form.addEventListener('submit', handleSubmit);
-} else {
-  console.error('Form element with ID "myForm" not found.');
-}
 
+if (form instanceof HTMLFormElement) {
+  form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const data = {};
+  const formData = new FormData();
+
+  Array.from(form.elements)
+    .forEach(({ name, type, value, files, ...element }) => {
+      if (!['submit', 'file'].includes(type)) {
+        data[name] = value;
+      } else if (type === 'file') {
+        Array.from(files).forEach((file) => {
+          formData.append(`files.${name}`, file, file.name);
+        });
+      }
+    });
+
+  formData.append('data', JSON.stringify(data));
+
+  await fetch(API_URL, {
+    method: 'post',
+    headers: {
+      'Authorization': `Bearer ${BEARER_TOKEN}`
+    },
+    body: formData
+  });
+});
+} else {
+  console.error('Form element with id "myForm" not found in HTML document.');
+}
 
 </script>
