@@ -14,7 +14,7 @@ import Dialog from "./Dialog.astro";
   
       <button type="submit">Submit</button>
     </form>
-    <div class="border-dashed border-black border-8 rounded-xl flex justify-center items-center">
+    <div class="border-dashed border-black border-8 rounded-xl flex justify-center items-center p-3">
       <img id="imagePreview" alt="Image preview" style="max-width: 100%;">
     </div>
   </article>
@@ -50,14 +50,6 @@ if(imageInput instanceof HTMLInputElement){
 
 
 if (form instanceof HTMLFormElement) {
-
-    const reader = new FileReader();
-
-    reader.addEventListener('load', () => {
-    // Set the "src" attribute of the "previewDiv" element to the data URL of the selected image file
-      previewDiv.setAttribute('src', reader.result);
-    });
-      reader.readAsDataURL(file);
 
 
   form.addEventListener('submit', async (e) => {
