@@ -1,14 +1,25 @@
 ---
+import Dialog from "./Dialog.astro";
 ---
-<form id="myForm">
-  <input type="text" id="file_name" name="file_name" placeholder="File name" required><br>
-  <input type="text" id="Image_width" name="Image_width" placeholder="Image width" required><br>
-  <input type="text" id="Image_height" name="Image_height" placeholder="Image height" required><br>
-  <textarea id="parameters" name="parameters" placeholder="Parameters" required></textarea><br>
-  <input type="file" id="image" name="image" accept="image/png, image/jpeg"><br>
 
-  <button type="submit">Submit</button>
-</form>
+<Dialog id="uploadImage" buttonLabel="upload an image" title="upload an image">
+
+  <article class="grid grid-cols-2">
+    <form id="myForm">
+      <input type="text" id="file_name" name="file_name" placeholder="File name" required><br>
+      <input type="text" id="Image_width" name="Image_width" placeholder="Image width" required><br>
+      <input type="text" id="Image_height" name="Image_height" placeholder="Image height" required><br>
+      <textarea id="parameters" name="parameters" placeholder="Parameters" required></textarea><br>
+      <input type="file" id="image" name="image" accept="image/png, image/jpeg"><br>
+  
+      <button type="submit">Submit</button>
+    </form>
+    <div class="border-dashed border-black border-8 rounded-xl flex justify-center items-center">
+      <img id="imagePreview" alt="Image preview" style="max-width: 100%;">
+    </div>
+  </article>
+
+</Dialog>
 
 <script>
 
@@ -18,8 +29,37 @@ const JWT_TOKEN = localStorage.getItem('jwt');
 
 
 const form = document.getElementById('myForm');
+const imagePreview = document.getElementById('imagePreview');
+const imageInput = document.getElementById('image');
+
+if(imageInput instanceof HTMLInputElement){
+  imageInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imagePreview.src = '';
+      }
+    });
+}
+
+
 
 if (form instanceof HTMLFormElement) {
+
+    const reader = new FileReader();
+
+    reader.addEventListener('load', () => {
+    // Set the "src" attribute of the "previewDiv" element to the data URL of the selected image file
+      previewDiv.setAttribute('src', reader.result);
+    });
+      reader.readAsDataURL(file);
+
+
   form.addEventListener('submit', async (e) => {
   e.preventDefault();
 

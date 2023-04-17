@@ -1,24 +1,44 @@
 ---
 export interface Props {
-	title: string;
-	id: string;
+  title?: string;
+  id: string;
+  buttonLabel?: string;
 }
 
-const { title, id } = Astro.props;
+const { title, id, buttonLabel } = Astro.props;
 ---
 
-<dialog id={id} >
-  <button type="button" id="closeModalButton" class="absolute top-2 right-2" onClick="closeDialog(event)">X</button>
-  <h3 class="mb-2">{title}</h3>
-    <slot /> 
-</dialog>
 
-<script>
+  <button data-id={id} onclick="openDialog(event)">{buttonLabel}</button>
+
+  <dialog id={id} >
+    <button type="button" data-id={id}  onclick="closeDialog(event)" class="absolute top-2 right-2"
+      >X</button
+    >
+    <h3 class="mb-2">{title}</h3>
+    <slot />
+  </dialog>
+
+
+<script is:inline>
 
   function closeDialog(event) {
-    const dialog = event.target.closest('dialog');
-    if (dialog) {
+    const id = event.target.dataset.id;
+    const dialog = document.getElementById(id);
+    if (dialog && id) {
       dialog.close();
+    } else {
+      console.error("dialog component Error, no id or no dialog");
+    }
+  }
+
+  function openDialog(event) {
+    const id = event.target.dataset.id;
+    const dialog = document.getElementById(id);
+    if (dialog && id) {
+      dialog.showModal();
+    } else {
+      console.error("dialog component Error, no id or no dialog");
     }
   }
 
@@ -27,6 +47,6 @@ const { title, id } = Astro.props;
 <style>
   dialog {
     border-radius: 5px;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
   }
 </style>
