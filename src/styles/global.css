@@ -16,3 +16,11 @@ body {
   width: 100%;
   background: var(--color-primary);
 }
+
+.card-img {
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+.card-img.is-visible {
+  opacity: 1;
+}

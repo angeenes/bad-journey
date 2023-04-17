@@ -3,11 +3,12 @@ import Dialog from "./Dialog.astro";
 ---
 
 <section class="container-full">
-  <article id="gallery" class="gallery"></article>
+  <!-- grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 -->
+  <article id="gallery" class="columns-3xs gap-0"></article>
   <div id="load-more" class="text-center">Loading...</div>
 </section>
 
-<Dialog id="img-dialog" title="infos" buttonLabel="open info">
+<Dialog id="img-dialog" title="infos">
   <p id="image-dialog-text"></p>
 </Dialog>
 
@@ -41,7 +42,7 @@ import Dialog from "./Dialog.astro";
       return await response.json();
     }
 
-    createCardTemplate(item) {
+    createCardTemplate(item, index) {
       const {
         attributes: {
           image: {
@@ -57,6 +58,36 @@ import Dialog from "./Dialog.astro";
     <div class="card">
       <img width="320px" height="100%"
         src="${this.url + medium.url}"
+        alt="Image for post ${item.attributes.file_name}"
+        loading="lazy" class="w-full card-img"
+        style="transition-delay : ${index * 250}ms"
+        >
+    </div>
+  `;
+    }
+
+    createDialogImageTemplate(item) {
+      const {
+        attributes: {
+          image: {
+            data: {
+              attributes: {
+                formats: { medium },
+              },
+            },
+          },
+        },
+      } = item;
+      return `
+    <div class="flex">
+      <div>
+        <p>File name: ${item.attributes.file_name}</p>
+        <p>File size: ${item.attributes.file_size}</p>
+        <p>File type: ${item.attributes.file_type}</p>
+        <p>File url: ${item.attributes.url}</p>
+      </div>
+      <img width="320px" height="100%"
+        src="${this.url + medium.url}"
         data-src="${this.url + medium.url}"
         alt="Image for post ${item.attributes.file_name}"
         loading="lazy" class="min-h-[160px]"
@@ -65,23 +96,29 @@ import Dialog from "./Dialog.astro";
   `;
     }
 
-
     renderCards(data) {
       const cardContainer = document.getElementById("gallery");
       const imageDialogText = document.getElementById('image-dialog-text');
 
       if (cardContainer) {
-        data.data.forEach((item) => {
+        data.data.forEach((item, index) => {
           if (
             item.attributes.image.data.attributes.formats.medium?.width &&
             item.attributes.image.data.attributes.formats.medium?.height
           ) {
-            const cardTemplate = this.createCardTemplate(item);
+            const cardTemplate = this.createCardTemplate(item, index);
+            setInterval(() => {
+              cardContainer.querySelectorAll('img').forEach((img) => {
+                img.classList.add('is-visible');
+              })
+            }, 250);
             cardContainer.insertAdjacentHTML("beforeend", cardTemplate);
             cardContainer?.lastElementChild?.querySelector('img')?.addEventListener('click', () => {
-              console.log('click');
               if(imageDialogText){
-                imageDialogText.textContent = 'You clicked on the image for post: ' + item.attributes.file_name;
+                const dialogTemplate = this.createDialogImageTemplate(item);
+                imageDialogText.innerHTML = '';
+                imageDialogText.insertAdjacentHTML('beforeend', dialogTemplate);
+                // imageDialogText.textContent = 'You clicked on the image for post: ' + item.attributes.file_name;
               }
               openDialogId('img-dialog');
             })
@@ -111,7 +148,7 @@ import Dialog from "./Dialog.astro";
               const endOfResultsMessage = document.createElement("p");
               endOfResultsMessage.className = 'text-center text-white'
               endOfResultsMessage.textContent =
-                "You have reached the end of the results.";
+                "-- You have reached the end of the results --";
                 if (loadMoreElement.parentNode) {
                   loadMoreElement.parentNode.insertBefore(
                     endOfResultsMessage,
@@ -134,43 +171,19 @@ import Dialog from "./Dialog.astro";
       const initialData = await this.fetchData(this.currentPage);
       this.renderCards(initialData);
       this.setupInfiniteScroll();
-      // this.openDialogImg( )
     }
   }
 
   const gallery = new Gallery();
 </script>
 
-<style lang="scss">
-  .gallery {
-    display: flex;
-    justify-content: center;
-    // grid-template-columns: repeat(8, 1fr);
-    flex-wrap: wrap;
-    // gap: 1.5rem;
-    .card {
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      transition: 0.3s;
-      width: 300px;
-      border-radius: 5px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .card:hover {
-      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-    }
-    .card img {
-      width: 100%;
-      // height: auto;
-      min-height: 320px;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .card img[data-loaded="true"] {
-      opacity: 1;
-    }
-  }
+<style>
+.card-img {
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+.card-img.is-visible {
+  opacity: 1;
+}
+
 </style>

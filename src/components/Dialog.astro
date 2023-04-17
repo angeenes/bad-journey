@@ -9,7 +9,7 @@ const { title, id, buttonLabel } = Astro.props;
 ---
 
 
-  <button data-id={id} onclick="openDialog(event)">{buttonLabel}</button>
+  <button data-id={id} onclick="openDialog(event)" style={buttonLabel? ' ':'display:none'}>{buttonLabel}</button>
 
   <dialog id={id} >
     <button type="button" data-id={id}  onclick="closeDialog(event)" class="absolute top-2 right-2"
