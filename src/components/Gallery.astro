@@ -1,4 +1,5 @@
 ---
+import Dialog from "./Dialog.astro";
 ---
 
 <section class="container-full">
@@ -6,7 +7,12 @@
   <div id="load-more" class="text-center">Loading...</div>
 </section>
 
+<Dialog id="img-dialog" title="infos" buttonLabel="open info">
+  <p id="image-dialog-text"></p>
+</Dialog>
+
 <script>
+
   class Gallery {
     url: string;
     currentPage: number;
@@ -53,13 +59,17 @@
         src="${this.url + medium.url}"
         data-src="${this.url + medium.url}"
         alt="Image for post ${item.attributes.file_name}"
-        loading="lazy" class="min-h-[160px]">
+        loading="lazy" class="min-h-[160px]"
+        >
     </div>
   `;
     }
 
+
     renderCards(data) {
       const cardContainer = document.getElementById("gallery");
+      const imageDialogText = document.getElementById('image-dialog-text');
+
       if (cardContainer) {
         data.data.forEach((item) => {
           if (
@@ -68,10 +78,18 @@
           ) {
             const cardTemplate = this.createCardTemplate(item);
             cardContainer.insertAdjacentHTML("beforeend", cardTemplate);
+            cardContainer?.lastElementChild?.querySelector('img')?.addEventListener('click', () => {
+              console.log('click');
+              if(imageDialogText){
+                imageDialogText.textContent = 'You clicked on the image for post: ' + item.attributes.file_name;
+              }
+              openDialogId('img-dialog');
+            })
           }
         });
       }
     }
+
 
     setupInfiniteScroll() {
       const loadMoreElement = document.getElementById("load-more");
@@ -116,6 +134,7 @@
       const initialData = await this.fetchData(this.currentPage);
       this.renderCards(initialData);
       this.setupInfiniteScroll();
+      // this.openDialogImg( )
     }
   }
 

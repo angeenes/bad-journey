@@ -42,6 +42,15 @@ const { title, id, buttonLabel } = Astro.props;
     }
   }
 
+  function openDialogId(id) {
+    const dialog = document.getElementById(id);
+    if (dialog && id) {
+      dialog.showModal();
+    } else {
+      console.error("dialog component Error, no id or no dialog");
+    }
+  }
+
 </script>
 
 <style>
