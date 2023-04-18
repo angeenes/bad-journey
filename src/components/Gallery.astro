@@ -4,13 +4,16 @@ import Dialog from "./Dialog.astro";
 
 <section class="container-full">
   <!-- grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 -->
-  <article id="gallery" class="columns-[320px] gap-0"></article>
+  <article id="gallery" class="block w-full relative"></article>
   <div id="load-more" class="text-center">Loading...</div>
 </section>
 
 <Dialog id="img-dialog" title="infos">
   <p id="image-dialog-text"></p>
 </Dialog>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/minimasonry@latest/build/minimasonry.min.js"></script>
+
 
 <script is:inline>
 
@@ -24,11 +27,17 @@ import Dialog from "./Dialog.astro";
     constructor() {
       this.url = "http://localhost:1337";
       this.currentPage = 1;
-      this.itemsPerPage = 5;
+      this.itemsPerPage = 15;
       this.loading = false;
       this.apiToken =
         "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
       this.init();
+      this.masonry = new MiniMasonry({
+        container: '#gallery',
+        baseWidth: 320,
+        gutter: 10,
+        minify: true
+    });
     }
 
     async fetchData(page) {
@@ -133,45 +142,28 @@ import Dialog from "./Dialog.astro";
 
 
     setupInfiniteScroll() {
+
       const loadMoreElement = document.getElementById("load-more");
-      const loadMoreObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(async (entry) => {
-          if (entry.isIntersecting && !this.loading && loadMoreElement) {
-            this.loading = true;
-            observer.unobserve(loadMoreElement);
-            this.currentPage++;
-            const newData = await this.fetchData(this.currentPage);
-            this.renderCards(newData);
 
-            let totalLoaded = this.currentPage * this.itemsPerPage;
+      window.addEventListener('scroll', async () => {
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const documentHeight = document.documentElement.offsetHeight;
+        
+        if (scrollPosition >= documentHeight) {
 
-            if (totalLoaded < newData.meta.pagination.total) {
-              observer.observe(loadMoreElement);
-            } else {
-              const endOfResultsMessage = document.createElement("p");
-              endOfResultsMessage.className = 'text-center text-white'
-              endOfResultsMessage.textContent =
-                "-- You have reached the end of the results --";
-                if (loadMoreElement.parentNode) {
-                  loadMoreElement.parentNode.insertBefore(
-                    endOfResultsMessage,
-                    loadMoreElement
-                  );
-                }
-              loadMoreElement.style.display = "none";
-            }
-            this.loading = false;
-          }
-        });
+          this.currentPage++;
+          let totalLoaded = this.currentPage * this.itemsPerPage;
+          const newData = await this.fetchData(this.currentPage);
+          this.renderCards(newData);
+
+          this.masonry.layout();
+          console.log(`Fetching page ${currentPage}...`);
+        }
       });
-
-      if (loadMoreElement) {
-        loadMoreObserver.observe(loadMoreElement);
-      }
+      
     }
 
     async reset() {
-      console.log('RESET');
       this.currentPage = 1;
       const cardContainer = document.getElementById("gallery");
       if (cardContainer) {
@@ -179,6 +171,7 @@ import Dialog from "./Dialog.astro";
         const initialData = await this.fetchData(this.currentPage);
         this.renderCards(initialData);
         this.setupInfiniteScroll();
+        this.masonry.layout();
       }
     }
 
@@ -186,19 +179,9 @@ import Dialog from "./Dialog.astro";
       const initialData = await this.fetchData(this.currentPage);
       this.renderCards(initialData);
       this.setupInfiniteScroll();
+      this.masonry.layout();
     }
   }
 
   let gallery = new Gallery();
 </script>
-
-<style>
-.card-img {
-  opacity: 0;
-  transition: opacity 0.25s ease-in-out;
-}
-.card-img.is-visible {
-  opacity: 1;
-}
-
-</style>
