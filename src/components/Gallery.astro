@@ -109,7 +109,7 @@ import Dialog from "./Dialog.astro";
         <p>Parameters: ${item.attributes.parameters}</p>
       </div>
       <img width="320px" height="100%"
-        src="${this.url}${small.url?? medium.url}"
+        src="${this.url}${medium.url?? small.url}"
         alt="Image for post ${item.attributes.file_name}"
         loading="lazy" class="min-h-[160px]"
         >

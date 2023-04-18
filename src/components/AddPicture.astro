@@ -76,8 +76,6 @@ class ImageMetadataForm {
         });
         // Clean up the remaining commas
         parameters = parameters.replace(/,+/g, ',').replace(/^,|,$/g, '');
-        // Update the metadata.parameters field with the cleaned parameters string
-        metadata.parameters = parameters;
       }
     }
 
@@ -97,6 +95,7 @@ class ImageMetadataForm {
         metadataDisplay.appendChild(keyElement);
       }
     }
+    (document.getElementById('parameters') as HTMLTextAreaElement).value = parameters;
   } catch (error) {
     console.error('Failed to read metadata:', error);
   }
