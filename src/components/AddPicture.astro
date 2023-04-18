@@ -4,7 +4,7 @@ import Dialog from "./Dialog.astro";
 
 <Dialog id="uploadImage" buttonLabel="upload an image" title="upload an image">
 
-  <article class="grid grid-cols-2">
+  <article class="grid grid-cols-3">
     <form id="myForm">
       <input type="text" id="file_name" name="file_name" placeholder="File name" required><br>
       <input type="text" id="Image_width" name="Image_width" placeholder="Image width" required><br>
@@ -14,73 +14,221 @@ import Dialog from "./Dialog.astro";
   
       <button type="submit">Submit</button>
     </form>
+    <div id="metadataDisplay" class="metadata-display grid grid-cols-2 w-80"></div>
     <div class="border-dashed border-black border-8 rounded-xl flex justify-center items-center p-3">
       <img id="imagePreview" alt="Image preview" style="max-width: 100%;">
     </div>
+
   </article>
 
 </Dialog>
+<script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
 
 <script>
 
-const BEARER_TOKEN = 'eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf';
-const API_URL = 'http://localhost:1337/api/images';
-const JWT_TOKEN = localStorage.getItem('jwt');
+class ImageMetadataForm {
+  constructor(private formId: string, private imagePreviewId: string) {
+    this.init();
+  }
 
+  private async init() {
+    const form = document.getElementById(this.formId) as HTMLFormElement;
+    form.addEventListener('submit', this.handleSubmit.bind(this));
 
-const form = document.getElementById('myForm');
-const imagePreview = document.getElementById('imagePreview');
-const imageInput = document.getElementById('image');
+    const imageInput = form.querySelector('input[type="file"]') as HTMLInputElement;
+    imageInput.addEventListener('change', this.handleImageSelection.bind(this));
+  }
 
-if(imageInput instanceof HTMLInputElement){
-  imageInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          imagePreview.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        imagePreview.src = '';
+  private async updateFormFields(imageFile: File) {
+  try {
+    const metadata = await exifr.parse(imageFile);
+
+    const width = metadata.ImageWidth;
+    const height = metadata.ImageHeight;
+    let parameters = metadata.parameters;
+
+    (document.getElementById('file_name') as HTMLInputElement).value = imageFile.name || '';
+    (document.getElementById('Image_width') as HTMLInputElement).value = width?.toString() || '';
+    (document.getElementById('Image_height') as HTMLInputElement).value = height?.toString() || '';
+
+    const metadataDisplay = document.getElementById('metadataDisplay') as HTMLDivElement;
+    metadataDisplay.innerHTML = '';
+
+    if (parameters) {
+      const parameterKeyValuePairs = parameters.match(/[\w\s]+:\s*[^,\n]+/g);
+      if (parameterKeyValuePairs) {
+        parameterKeyValuePairs.forEach((pair) => {
+          const [key, value] = pair.split(':');
+          const keyElement = document.createElement('label');
+          const valueElement = document.createElement('input');
+          const id = key.trim().replace(/\s+/g, '_').toLowerCase();
+          keyElement.innerText = key.trim();
+          keyElement.htmlFor = id;
+          valueElement.type = 'text';
+          valueElement.id = id;
+          valueElement.name = id;
+          valueElement.placeholder = key.trim();
+          valueElement.value = value.trim();
+          keyElement.appendChild(valueElement);
+          metadataDisplay.appendChild(keyElement);
+          // Remove non-splitted key-value pairs from the parameters string
+          parameters = parameters.replace(pair, '').trim();
+        });
+        // Clean up the remaining commas
+        parameters = parameters.replace(/,+/g, ',').replace(/^,|,$/g, '');
+        // Update the metadata.parameters field with the cleaned parameters string
+        metadata.parameters = parameters;
       }
-    });
+    }
+
+    for (const key in metadata) {
+      if (metadata.hasOwnProperty(key)) {
+        const keyElement = document.createElement('label');
+        const valueElement = document.createElement('input');
+        const id = key.replace(/\s+/g, '_').toLowerCase();
+        keyElement.innerText = key;
+        keyElement.htmlFor = id;
+        valueElement.type = 'text';
+        valueElement.id = id;
+        valueElement.name = id;
+        valueElement.placeholder = key;
+        valueElement.value = metadata[key];
+        keyElement.appendChild(valueElement);
+        metadataDisplay.appendChild(keyElement);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to read metadata:', error);
+  }
 }
 
 
 
-if (form instanceof HTMLFormElement) {
+  private handleImageSelection(event: Event) {
+    const imageInput = event.target as HTMLInputElement;
+    if (imageInput.files && imageInput.files.length > 0) {
+      const imageFile = imageInput.files[0];
 
+      // Update the image preview
+      const imagePreview = document.getElementById(this.imagePreviewId) as HTMLImageElement;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreview.src = e.target.result as string;
+        // Update form fields after updating the image preview
+        this.updateFormFields(imageFile);
+      };
+      reader.readAsDataURL(imageFile);
+    }
+  }
 
-  form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+  private async handleSubmit(event: Event) {
+  event.preventDefault();
+
+  const form = event.target as HTMLFormElement;
+
+  const BEARER_TOKEN = 'eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf';
+  const API_URL = 'http://localhost:1337/api/images';
 
   const data = {};
   const formData = new FormData();
 
-  Array.from(form.elements)
-    .forEach(({ name, type, value, files, ...element }) => {
-      if (!['submit', 'file'].includes(type)) {
-        data[name] = value;
-      } else if (type === 'file') {
-        Array.from(files).forEach((file) => {
-          formData.append(`files.${name}`, file, file.name);
-        });
-      }
-    });
+  Array.from(form.elements).forEach(({ name, type, value, files }) => {
+    if (!['submit', 'file'].includes(type)) {
+      data[name] = value;
+    } else if (type === 'file') {
+      Array.from(files).forEach((file) => {
+        formData.append(`files.${name}`, file, file.name);
+      });
+    }
+  });
 
   formData.append('data', JSON.stringify(data));
 
-  await fetch(API_URL, {
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${BEARER_TOKEN}`
-    },
-    body: formData
-  });
-});
-} else {
-  console.error('Form element with id "myForm" not found in HTML document.');
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${BEARER_TOKEN}`
+      },
+      body: formData,
+    });
+
+    if (response.ok) {
+      console.log('Data submitted successfully');
+    } else {
+      console.error('Failed to submit data:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Failed to submit data:', error);
+  }
 }
+
+
+}
+
+// Instantiate the class.
+const imageMetadataForm = new ImageMetadataForm('myForm', 'imagePreview');
+
+
+
+// const BEARER_TOKEN = 'eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf';
+// const API_URL = 'http://localhost:1337/api/images';
+// const JWT_TOKEN = localStorage.getItem('jwt');
+
+
+// const form = document.getElementById('myForm');
+// const imagePreview = document.getElementById('imagePreview');
+// const imageInput = document.getElementById('image');
+
+// if(imageInput instanceof HTMLInputElement){
+//   imageInput.addEventListener('change', (event) => {
+//       const file = event.target.files[0];
+//       if (file) {
+//         const reader = new FileReader();
+//         reader.onload = (e) => {
+//           imagePreview.src = e.target.result;
+//         };
+//         reader.readAsDataURL(file);
+//       } else {
+//         imagePreview.src = '';
+//       }
+//     });
+// }
+
+
+
+// if (form instanceof HTMLFormElement) {
+
+
+//   form.addEventListener('submit', async (e) => {
+//   e.preventDefault();
+
+//   const data = {};
+//   const formData = new FormData();
+
+//   Array.from(form.elements)
+//     .forEach(({ name, type, value, files, ...element }) => {
+//       if (!['submit', 'file'].includes(type)) {
+//         data[name] = value;
+//       } else if (type === 'file') {
+//         Array.from(files).forEach((file) => {
+//           formData.append(`files.${name}`, file, file.name);
+//         });
+//       }
+//     });
+
+//   formData.append('data', JSON.stringify(data));
+
+//   await fetch(API_URL, {
+//     method: 'post',
+//     headers: {
+//       'Authorization': `Bearer ${BEARER_TOKEN}`
+//     },
+//     body: formData
+//   });
+// });
+// } else {
+//   console.error('Form element with id "myForm" not found in HTML document.');
+// }
 
 </script>

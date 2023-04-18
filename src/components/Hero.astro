@@ -14,9 +14,6 @@ let endpoint = `${url}/api/tags`;
 const response = await fetch(endpoint, { headers });
 const data = await response.json();
 const tags = data.data;
-console.log(tags);
-// const randomUser = data.results;
-
 ---
 <section class="hero">
   <nav class="categories container">

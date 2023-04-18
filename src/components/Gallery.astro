@@ -104,9 +104,9 @@ import Dialog from "./Dialog.astro";
     <div class="flex">
       <div>
         <p>File name: ${item.attributes.file_name}</p>
-        <p>File size: ${item.attributes.file_size}</p>
-        <p>File type: ${item.attributes.file_type}</p>
-        <p>File url: ${item.attributes.url}</p>
+        <p>Height: ${item.attributes.Image_height}</p>
+        <p>Width: ${item.attributes.Image_width}</p>
+        <p>Parameters: ${item.attributes.parameters}</p>
       </div>
       <img width="320px" height="100%"
         src="${this.url}${small.url?? medium.url}"
@@ -184,8 +184,8 @@ import Dialog from "./Dialog.astro";
             const newData = await this.fetchData(this.currentPage);
             this.renderCards(newData);
             this.masonry.layout();
-            console.log(this.loadedCount, images.length);
-            console.log('new data',await newData.meta.pagination.total);
+            // console.log(this.loadedCount, images.length);
+            // console.log('new data',await newData.meta.pagination.total);
           }
         }
       });

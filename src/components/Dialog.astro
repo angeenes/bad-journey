@@ -57,5 +57,9 @@ const { title, id, buttonLabel } = Astro.props;
   dialog {
     border-radius: 5px;
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+    padding: 3rem;
+  }
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.8);
   }
 </style>
