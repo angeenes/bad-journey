@@ -17,17 +17,22 @@ import Dialog from "./Dialog.astro";
 
 <script is:inline>
 
+
   class Gallery {
     // url: string;
     // currentPage: number;
     // itemsPerPage: number;
+    // total: number | null;
+    // loadedCount: number;
     // loading: boolean;
     // apiToken: string;
 
     constructor() {
       this.url = "http://localhost:1337";
       this.currentPage = 1;
-      this.itemsPerPage = 15;
+      this.itemsPerPage = 10;
+      this.total = null;
+      this.loadedCount = 0;
       this.loading = false;
       this.apiToken =
         "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
@@ -43,18 +48,19 @@ import Dialog from "./Dialog.astro";
     async fetchData(page) {
       
       const tags = localStorage.getItem("tags");
-      let endpoint = `${this.url}/api/images?populate=*&pagination[page]=${page}&pagination[pageSize]=${this.itemsPerPage}`;
+      let endpoint = `${this.url}/api/images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.itemsPerPage}`;
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.apiToken}`,
       };
 
-      console.log(tags);
       if (tags) {
         endpoint += `&filters[tag][name][$eq]=${tags}`;
       }
 
       const response = await fetch(endpoint, { headers });
+      this.loading = false;
+
       return await response.json();
     }
 
@@ -64,7 +70,7 @@ import Dialog from "./Dialog.astro";
           image: {
             data: {
               attributes: {
-                formats: { small },
+                formats: { small, medium },
               },
             },
           },
@@ -73,8 +79,8 @@ import Dialog from "./Dialog.astro";
       return `
     <div class="card">
       <img width="320px" height="100%"
-        src="${this.url}${small.url}"
-        alt="Image for post ${item.attributes.file_name}"
+        src="${this.url}${small.url?? medium.url}"
+        alt="Image for post ${item.attributes?.file_name}"
         loading="lazy" class="w-full card-img"
         style="transition-delay : ${index * 250}ms"
         >
@@ -88,7 +94,7 @@ import Dialog from "./Dialog.astro";
           image: {
             data: {
               attributes: {
-                formats: { medium },
+                formats: { small, medium },
               },
             },
           },
@@ -103,8 +109,7 @@ import Dialog from "./Dialog.astro";
         <p>File url: ${item.attributes.url}</p>
       </div>
       <img width="320px" height="100%"
-        src="${this.url + medium.url}"
-        data-src="${this.url + medium.url}"
+        src="${this.url}${small.url?? medium.url}"
         alt="Image for post ${item.attributes.file_name}"
         loading="lazy" class="min-h-[160px]"
         >
@@ -146,20 +151,45 @@ import Dialog from "./Dialog.astro";
       const loadMoreElement = document.getElementById("load-more");
 
       window.addEventListener('scroll', async () => {
-        const scrollPosition = window.innerHeight + window.scrollY;
+        const scrollPosition = window.innerHeight + window.scrollY + 300;
         const documentHeight = document.documentElement.offsetHeight;
         
-        if (scrollPosition >= documentHeight) {
-
+        if (scrollPosition >= documentHeight && !this.loading) {
+          this.loading = true;
           this.currentPage++;
-          let totalLoaded = this.currentPage * this.itemsPerPage;
-          const newData = await this.fetchData(this.currentPage);
-          this.renderCards(newData);
-
-          this.masonry.layout();
-          console.log(`Fetching page ${currentPage}...`);
+          const gallery = document.getElementById('gallery');
+          const images = gallery.querySelectorAll('img');
+          this.loadedCount = 0;
+          images.forEach(image => {
+            if(this.total === images.length){
+            loadMoreElement.textContent = "No more images to load";
+            return;}
+            if (image.complete) {
+              this.loadedCount++;
+            } else {
+              image.addEventListener('load', async () => {
+                // console.log('1');
+                this.loadedCount++;
+                if (this.loadedCount === images.length) {
+                  const newData = await this.fetchData(this.currentPage);
+                  this.renderCards(newData);
+                  this.masonry.layout();
+                  console.log(this.loadedCount, images.length);
+                }
+              });
+            }
+          });
+          if (this.loadedCount === images.length) {
+            // console.log('2');
+            const newData = await this.fetchData(this.currentPage);
+            this.renderCards(newData);
+            this.masonry.layout();
+            console.log(this.loadedCount, images.length);
+            console.log('new data',await newData.meta.pagination.total);
+          }
         }
       });
+
       
     }
 
@@ -171,6 +201,7 @@ import Dialog from "./Dialog.astro";
         const initialData = await this.fetchData(this.currentPage);
         this.renderCards(initialData);
         this.setupInfiniteScroll();
+        this.masonry.destroy();
         this.masonry.layout();
       }
     }
