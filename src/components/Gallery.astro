@@ -4,7 +4,7 @@ import Dialog from "./Dialog.astro";
 
 <section class="container-full">
   <!-- grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 -->
-  <article id="gallery" class="columns-3xs gap-0"></article>
+  <article id="gallery" class="columns-[320px] gap-0"></article>
   <div id="load-more" class="text-center">Loading...</div>
 </section>
 
@@ -12,14 +12,14 @@ import Dialog from "./Dialog.astro";
   <p id="image-dialog-text"></p>
 </Dialog>
 
-<script>
+<script is:inline>
 
   class Gallery {
-    url: string;
-    currentPage: number;
-    itemsPerPage: number;
-    loading: boolean;
-    apiToken: string;
+    // url: string;
+    // currentPage: number;
+    // itemsPerPage: number;
+    // loading: boolean;
+    // apiToken: string;
 
     constructor() {
       this.url = "http://localhost:1337";
@@ -32,11 +32,18 @@ import Dialog from "./Dialog.astro";
     }
 
     async fetchData(page) {
-      const endpoint = `${this.url}/api/images?populate=*&pagination[page]=${page}&pagination[pageSize]=${this.itemsPerPage}`;
+      
+      const tags = localStorage.getItem("tags");
+      let endpoint = `${this.url}/api/images?populate=*&pagination[page]=${page}&pagination[pageSize]=${this.itemsPerPage}`;
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.apiToken}`,
       };
+
+      console.log(tags);
+      if (tags) {
+        endpoint += `&filters[tag][name][$eq]=${tags}`;
+      }
 
       const response = await fetch(endpoint, { headers });
       return await response.json();
@@ -48,7 +55,7 @@ import Dialog from "./Dialog.astro";
           image: {
             data: {
               attributes: {
-                formats: { medium },
+                formats: { small },
               },
             },
           },
@@ -57,7 +64,7 @@ import Dialog from "./Dialog.astro";
       return `
     <div class="card">
       <img width="320px" height="100%"
-        src="${this.url + medium.url}"
+        src="${this.url}${small.url}"
         alt="Image for post ${item.attributes.file_name}"
         loading="lazy" class="w-full card-img"
         style="transition-delay : ${index * 250}ms"
@@ -97,15 +104,12 @@ import Dialog from "./Dialog.astro";
     }
 
     renderCards(data) {
+      
       const cardContainer = document.getElementById("gallery");
       const imageDialogText = document.getElementById('image-dialog-text');
 
       if (cardContainer) {
         data.data.forEach((item, index) => {
-          if (
-            item.attributes.image.data.attributes.formats.medium?.width &&
-            item.attributes.image.data.attributes.formats.medium?.height
-          ) {
             const cardTemplate = this.createCardTemplate(item, index);
             setInterval(() => {
               cardContainer.querySelectorAll('img').forEach((img) => {
@@ -122,7 +126,7 @@ import Dialog from "./Dialog.astro";
               }
               openDialogId('img-dialog');
             })
-          }
+          
         });
       }
     }
@@ -138,7 +142,6 @@ import Dialog from "./Dialog.astro";
             this.currentPage++;
             const newData = await this.fetchData(this.currentPage);
             this.renderCards(newData);
-            // this.observeImages();
 
             let totalLoaded = this.currentPage * this.itemsPerPage;
 
@@ -167,6 +170,18 @@ import Dialog from "./Dialog.astro";
       }
     }
 
+    async reset() {
+      console.log('RESET');
+      this.currentPage = 1;
+      const cardContainer = document.getElementById("gallery");
+      if (cardContainer) {
+        cardContainer.innerHTML = "";
+        const initialData = await this.fetchData(this.currentPage);
+        this.renderCards(initialData);
+        this.setupInfiniteScroll();
+      }
+    }
+
     async init() {
       const initialData = await this.fetchData(this.currentPage);
       this.renderCards(initialData);
@@ -174,7 +189,7 @@ import Dialog from "./Dialog.astro";
     }
   }
 
-  const gallery = new Gallery();
+  let gallery = new Gallery();
 </script>
 
 <style>
