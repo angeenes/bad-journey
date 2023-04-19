@@ -14,7 +14,7 @@ import Dialog from "./Dialog.astro";
   
       <button type="submit">Submit</button>
     </form>
-    <div id="metadataDisplay" class="metadata-display grid grid-cols-2 w-80"></div>
+    <div id="metadataDisplay" class="metadata-display grid grid-cols-3 gap-2 text-sm"></div>
     <div class="border-dashed border-black border-8 rounded-xl flex justify-center items-center p-3">
       <img id="imagePreview" alt="Image preview" style="max-width: 100%;">
     </div>
@@ -22,7 +22,8 @@ import Dialog from "./Dialog.astro";
   </article>
 
 </Dialog>
-<script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
+<!-- <script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script> -->
+<script is:inline src="/exifr.js"></script>
 
 <script>
 
@@ -41,68 +42,91 @@ class ImageMetadataForm {
 
   private async updateFormFields(imageFile: File) {
   try {
-    const metadata = await exifr.parse(imageFile, ['ImageWidth', 'ImageHeight', 'parameters','description']);
+    const metadata = await exifr.parse(imageFile, {tiff: false, xmp: true})
 
     console.log('metadata', metadata);
 
-    console.log('imageFile', imageFile);
+    // console.log('imageFile', imageFile);
 
     const width = metadata.ImageWidth;
     const height = metadata.ImageHeight;
     let parameters = metadata.parameters;
 
-    console.log('parameters', parameters);
+    // console.log('parameters', parameters);
 
     (document.getElementById('file_name') as HTMLInputElement).value = imageFile.name || '';
     (document.getElementById('Image_width') as HTMLInputElement).value = width?.toString() || '';
     (document.getElementById('Image_height') as HTMLInputElement).value = height?.toString() || '';
+    (document.getElementById('parameters') as HTMLTextAreaElement).value = parameters;
 
     const metadataDisplay = document.getElementById('metadataDisplay') as HTMLDivElement;
     metadataDisplay.innerHTML = '';
 
-    if (parameters) {
-      console.log('parameters', parameters);
+    let imagePrompts = {};
+
+        if (parameters) {
+      // console.log('parameters', parameters);
       const parameterKeyValuePairs = parameters.match(/[\w\s]+:\s*[^,\n]+/g);
       if (parameterKeyValuePairs) {
         parameterKeyValuePairs.forEach((pair) => {
+          console.log('pair', pair);
           const [key, value] = pair.split(':');
-          const keyElement = document.createElement('label');
-          const valueElement = document.createElement('input');
-          const id = key.trim().replace(/\s+/g, '_').toLowerCase();
-          keyElement.innerText = key.trim();
-          keyElement.htmlFor = id;
-          valueElement.type = 'text';
-          valueElement.id = id;
-          valueElement.name = id;
-          valueElement.placeholder = key.trim();
-          valueElement.value = value.trim();
-          keyElement.appendChild(valueElement);
-          metadataDisplay.appendChild(keyElement);
-          // Remove non-splitted key-value pairs from the parameters string
-          parameters = parameters.replace(pair, '').trim();
-        });
-        // Clean up the remaining commas
-        parameters = parameters.replace(/,+/g, ',').replace(/^,|,$/g, '');
+          // imagePrompts = {key : value };
+          console.log('key : ', key, 'valuue : ', value);
+          console.log('ImagePrompts', imagePrompts);
+          })
+        }
       }
-    }
+    // if (parameters) {
+    //   console.log('parameters', parameters);
+    //   const parameterKeyValuePairs = parameters.match(/[\w\s]+:\s*[^,\n]+/g);
+    //   if (parameterKeyValuePairs) {
+    //     parameterKeyValuePairs.forEach((pair) => {
 
-    for (const key in metadata) {
-      if (metadata.hasOwnProperty(key)) {
-        const keyElement = document.createElement('label');
-        const valueElement = document.createElement('input');
-        const id = key.replace(/\s+/g, '_').toLowerCase();
-        keyElement.innerText = key;
-        keyElement.htmlFor = id;
-        valueElement.type = 'text';
-        valueElement.id = id;
-        valueElement.name = id;
-        valueElement.placeholder = key;
-        valueElement.value = metadata[key];
-        keyElement.appendChild(valueElement);
-        metadataDisplay.appendChild(keyElement);
-      }
-    }
-    (document.getElementById('parameters') as HTMLTextAreaElement).value = parameters;
+    //       console.log('pair', pair)
+    //       const [key, value] = pair.split(':');
+    //       const keyElement = document.createElement('label');
+          
+    //       const valueElement = key === parameters? document.createElement('textarea') : document.createElement('input');
+    //       const id = key.trim().replace(/\s+/g, '_').toLowerCase();
+    //       keyElement.innerText = key.trim();
+    //       keyElement.htmlFor = id;
+    //       if(key !== parameters) {
+    //         valueElement.type = 'text';
+    //       }
+    //       valueElement.id = id;
+    //       valueElement.name = id;
+    //       valueElement.placeholder = key.trim();
+    //       valueElement.value = value.trim();
+    //       keyElement.appendChild(valueElement);
+    //       metadataDisplay.appendChild(keyElement);
+    //       // Remove non-splitted key-value pairs from the parameters string
+    //       parameters = parameters.replace(pair, '').trim();
+    //     });
+    //     // Clean up the remaining commas
+    //     parameters = parameters.replace(/,+/g, ',').replace(/^,|,$/g, '');
+    //   }
+    // }
+
+    // for (const key in metadata) {
+    //   if (metadata.hasOwnProperty(key)) {
+    //     console.log('key', key);
+    //     if(key === 'parameters' || key === 'description') {
+    //     const keyElement = document.createElement('label');
+    //     const valueElement = document.createElement('input');
+    //     const id = key.replace(/\s+/g, '_').toLowerCase();
+    //     keyElement.innerText = key;
+    //     keyElement.htmlFor = id;
+    //     valueElement.type = 'text';
+    //     valueElement.id = id;
+    //     valueElement.name = id;
+    //     valueElement.placeholder = key;
+    //     valueElement.value = metadata[key];
+    //     keyElement.appendChild(valueElement);
+    //     metadataDisplay.appendChild(keyElement);
+    //     }
+    //   }
+    // }
   } catch (error) {
     console.error('Failed to read metadata:', error);
   }
