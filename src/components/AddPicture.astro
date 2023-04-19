@@ -3,262 +3,374 @@ import Dialog from "./Dialog.astro";
 ---
 
 <Dialog id="uploadImage" buttonLabel="upload an image" title="upload an image">
-
   <article class="grid grid-cols-3">
     <form id="myForm">
-      <input type="text" id="file_name" name="file_name" placeholder="File name" required><br>
-      <input type="text" id="Image_width" name="Image_width" placeholder="Image width" required><br>
-      <input type="text" id="Image_height" name="Image_height" placeholder="Image height" required><br>
-      <textarea id="parameters" name="parameters" placeholder="Parameters" required></textarea><br>
-      <input type="file" id="image" name="image" accept="image/png, image/jpeg"><br>
-  
+      <input
+        type="text"
+        id="file_name"
+        name="file_name"
+        placeholder="File name"
+        required
+      /><br />
+      <input
+        type="text"
+        id="Image_width"
+        name="Image_width"
+        placeholder="Image width"
+        required
+      /><br />
+      <input
+        type="text"
+        id="Image_height"
+        name="Image_height"
+        placeholder="Image height"
+        required
+      /><br />
+      <textarea
+        id="parameters"
+        name="parameters"
+        placeholder="Parameters"
+        required></textarea><br />
+      <input
+        type="file"
+        id="image"
+        name="image"
+        accept="image/png, image/jpeg"
+      /><br />
+
       <button type="submit">Submit</button>
     </form>
-    <div id="metadataDisplay" class="metadata-display grid grid-cols-3 gap-2 text-sm"></div>
-    <div class="border-dashed border-black border-8 rounded-xl flex justify-center items-center p-3">
-      <img id="imagePreview" alt="Image preview" style="max-width: 100%;">
+    <div
+      id="metadataDisplay"
+      class="metadata-display grid grid-cols-3 gap-2 text-sm"
+    >
     </div>
-
+    <div
+      class="border-dashed border-black border-8 rounded-xl flex justify-center items-center p-3"
+    >
+      <img id="imagePreview" alt="Image preview" style="max-width: 100%;" />
+    </div>
   </article>
-
 </Dialog>
 <!-- <script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script> -->
 <script is:inline src="/exifr.js"></script>
 
 <script>
-
-class ImageMetadataForm {
-  constructor(private formId: string, private imagePreviewId: string) {
-    this.init();
+  interface Parameters {
+    [key: string]: any;
   }
 
-  private async init() {
-    const form = document.getElementById(this.formId) as HTMLFormElement;
-    form.addEventListener('submit', this.handleSubmit.bind(this));
-
-    const imageInput = form.querySelector('input[type="file"]') as HTMLInputElement;
-    imageInput.addEventListener('change', this.handleImageSelection.bind(this));
+  interface InputObject {
+    prompt: string;
+    negativePrompt: string;
+    parameters: Parameters;
   }
 
-  private async updateFormFields(imageFile: File) {
-  try {
-    const metadata = await exifr.parse(imageFile, {tiff: false, xmp: true})
+  class ImageMetadataForm {
+    constructor(private formId: string, private imagePreviewId: string) {
+      this.init();
+    }
 
-    console.log('metadata', metadata);
+    private async init() {
+      const form = document.getElementById(this.formId) as HTMLFormElement;
+      form.addEventListener("submit", this.handleSubmit.bind(this));
 
-    // console.log('imageFile', imageFile);
+      const imageInput = form.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
+      imageInput.addEventListener(
+        "change",
+        this.handleImageSelection.bind(this)
+      );
+    }
 
-    const width = metadata.ImageWidth;
-    const height = metadata.ImageHeight;
-    let parameters = metadata.parameters;
+    private async updateFormFields(imageFile: File) {
+      try {
+        const metadata = await exifr.parse(imageFile, {
+          tiff: false,
+          xmp: true,
+        });
 
-    // console.log('parameters', parameters);
+        console.log("metadata", metadata);
 
-    (document.getElementById('file_name') as HTMLInputElement).value = imageFile.name || '';
-    (document.getElementById('Image_width') as HTMLInputElement).value = width?.toString() || '';
-    (document.getElementById('Image_height') as HTMLInputElement).value = height?.toString() || '';
-    (document.getElementById('parameters') as HTMLTextAreaElement).value = parameters;
+        // console.log('imageFile', imageFile);
 
-    const metadataDisplay = document.getElementById('metadataDisplay') as HTMLDivElement;
-    metadataDisplay.innerHTML = '';
+        const width = metadata.ImageWidth;
+        const height = metadata.ImageHeight;
+        let parameters = metadata.parameters;
+        let description = metadata.description;
+        let sdMetadata = metadata["sd-metadata"];
+        // console.log('parameters', parameters);
 
-    let imagePrompts = {};
+        (document.getElementById("file_name") as HTMLInputElement).value =
+          imageFile.name || "";
+        (document.getElementById("Image_width") as HTMLInputElement).value =
+          width?.toString() || "";
+        (document.getElementById("Image_height") as HTMLInputElement).value =
+          height?.toString() || "";
+        (document.getElementById("parameters") as HTMLTextAreaElement).value =
+          parameters;
+
+        const metadataDisplay = document.getElementById(
+          "metadataDisplay"
+        ) as HTMLDivElement;
+        metadataDisplay.innerHTML = "";
+
+        if (sdMetadata) {
+          interface InputObject {
+            prompt: string;
+            negativePrompt: string;
+            parameters: { [key: string]: any };
+          }
+
+          function convertInvokeStringToObject(
+            inputString: string
+          ): InputObject {
+            const object: InputObject = {
+              prompt: "",
+              negativePrompt: "",
+              parameters: {},
+            };
+
+            const inputJson = JSON.parse(inputString);
+            object.prompt = inputJson.image.prompt;
+            object.negativePrompt = "";
+
+            if (inputJson.image.exclude_from_image) {
+              for (
+                let i = 0;
+                i < inputJson.image.exclude_from_image.length;
+                i++
+              ) {
+                if (i === 0) {
+                  object.negativePrompt +=
+                    inputJson.image.exclude_from_image[i];
+                } else {
+                  object.negativePrompt +=
+                    ", " + inputJson.image.exclude_from_image[i];
+                }
+              }
+            }
+
+            for (const [key, value] of Object.entries(inputJson)) {
+              console.log("inputJson", inputJson);
+              if (key === "image") {
+                console.log("image", value as typeof parameters);
+                Object.entries(value as typeof parameters).forEach(
+                  ([key, value]) => {
+                    object.parameters[key] = value;
+                    // if(key === "prompt"){
+                    //   object.prompt = value;
+                    // }else if(key === "exclude_from_image"){
+                    //   object.negativePrompt = value;
+                    // }else{
+                    //   object.parameters[key] = value;
+                    // }
+                  }
+                );
+              }
+            }
+            return object;
+          }
+
+          const inputString: string = sdMetadata;
+          const object: InputObject = convertInvokeStringToObject(inputString);
+          console.log(object);
+        }
+
+        if (description) {
+          console.log("MOCHI IS SPOTTED");
+          function convertMochiStringToObject(
+            inputString: string
+          ): InputObject {
+            const object: InputObject = {
+              prompt: "",
+              negativePrompt: "",
+              parameters: {},
+            };
+            const inputArray: string[] = inputString.split(";");
+            const includeArray: string[] = inputArray[0].split(":");
+            const excludeArray: string[] = inputArray[1].split(":");
+            object.prompt = includeArray[1].trim();
+            object.negativePrompt = excludeArray[1].trim();
+            const parametersString: string = inputArray.slice(2).join(",");
+            const parametersArray: string[] = parametersString.split(",");
+            for (let i: number = 0; i < parametersArray.length; i++) {
+              const param: string[] = parametersArray[i].split(":");
+              const key: string = param[0].trim().replace(" ", "_");
+              let value: any;
+              if (param[1]) {
+                value = param[1].trim();
+                if (key === "Size") {
+                  const sizeArray: string[] = value.split("x");
+                  value = {
+                    width: sizeArray[0],
+                    height: sizeArray[1],
+                  };
+                } else {
+                  const subValue: string = value
+                    .split(";")
+                    .map((str: string) => {
+                      return str.trim().replace("{", "").replace("}", "");
+                    })[0];
+                  value = { [key]: subValue };
+                }
+                object.parameters = { ...object.parameters, ...value };
+              }
+            }
+            return object;
+          }
+
+          const inputString: string = description.value;
+          const object: InputObject = convertMochiStringToObject(inputString);
+          console.log(object);
+        }
 
         if (parameters) {
-      // console.log('parameters', parameters);
-      const parameterKeyValuePairs = parameters.match(/[\w\s]+:\s*[^,\n]+/g);
-      if (parameterKeyValuePairs) {
-        parameterKeyValuePairs.forEach((pair) => {
-          console.log('pair', pair);
-          const [key, value] = pair.split(':');
-          // imagePrompts = {key : value };
-          console.log('key : ', key, 'valuue : ', value);
-          console.log('ImagePrompts', imagePrompts);
-          })
+          function convertStableDiffusionStringToObject(
+            inputString: string
+          ): InputObject {
+            const object: InputObject = {
+              prompt: "",
+              negativePrompt: "",
+              parameters: {},
+            };
+            if (inputString.includes("Negative prompt:")) {
+              const inputArray: string[] = inputString.split("\n");
+              object.prompt = inputArray[0];
+              object.negativePrompt = inputArray[1]
+                .replace("Negative prompt:", "")
+                .trim();
+              const parametersString: string = inputArray[2];
+              const parametersArray: string[] = parametersString.split(",");
+              for (let i: number = 0; i < parametersArray.length; i++) {
+                const param: string[] = parametersArray[i].split(":");
+                const key: string = param[0].trim().replace(" ", "_");
+                let value: any = param[1].trim();
+                if (key === "Size") {
+                  const sizeArray: string[] = value.split("x");
+                  value = {
+                    width: sizeArray[0],
+                    height: sizeArray[1],
+                  };
+                } else {
+                  const subValue: string = value
+                    .split(";")
+                    .map((str: string) => {
+                      return str.trim().replace("{", "").replace("}", "");
+                    })[0];
+                  value = { [key]: subValue };
+                }
+                object.parameters = { ...object.parameters, ...value };
+              }
+            } else {
+              const inputArray: string[] = inputString.split(";");
+              const includeArray: string[] = inputArray[0].split(":");
+              const excludeArray: string[] = inputArray[1].split(":");
+              object.prompt = includeArray[1].trim();
+              object.negativePrompt = excludeArray[1].trim();
+              const parametersString: string = inputArray.slice(2).join(",");
+              const parametersArray: string[] = parametersString.split(",");
+              for (let i: number = 0; i < parametersArray.length; i++) {
+                const param: string[] = parametersArray[i].split(":");
+                const key: string = param[0].trim().replace(" ", "_");
+                let value: any;
+                if (param[1]) {
+                  value = param[1].trim();
+                  if (key === "Size") {
+                    const sizeArray: string[] = value.split("x");
+                    value = {
+                      width: sizeArray[0],
+                      height: sizeArray[1],
+                    };
+                  } else {
+                    const subValue: string = value
+                      .split(";")
+                      .map((str: string) => {
+                        return str.trim().replace("{", "").replace("}", "");
+                      })[0];
+                    value = { [key]: subValue };
+                  }
+                  object.parameters = { ...object.parameters, ...value };
+                }
+              }
+            }
+            return object;
+          }
+
+          const inputString: string = parameters;
+          const object: InputObject =
+            convertStableDiffusionStringToObject(inputString);
+          console.log(object);
         }
+      } catch (error) {
+        console.error("Failed to read metadata:", error);
       }
-    // if (parameters) {
-    //   console.log('parameters', parameters);
-    //   const parameterKeyValuePairs = parameters.match(/[\w\s]+:\s*[^,\n]+/g);
-    //   if (parameterKeyValuePairs) {
-    //     parameterKeyValuePairs.forEach((pair) => {
-
-    //       console.log('pair', pair)
-    //       const [key, value] = pair.split(':');
-    //       const keyElement = document.createElement('label');
-          
-    //       const valueElement = key === parameters? document.createElement('textarea') : document.createElement('input');
-    //       const id = key.trim().replace(/\s+/g, '_').toLowerCase();
-    //       keyElement.innerText = key.trim();
-    //       keyElement.htmlFor = id;
-    //       if(key !== parameters) {
-    //         valueElement.type = 'text';
-    //       }
-    //       valueElement.id = id;
-    //       valueElement.name = id;
-    //       valueElement.placeholder = key.trim();
-    //       valueElement.value = value.trim();
-    //       keyElement.appendChild(valueElement);
-    //       metadataDisplay.appendChild(keyElement);
-    //       // Remove non-splitted key-value pairs from the parameters string
-    //       parameters = parameters.replace(pair, '').trim();
-    //     });
-    //     // Clean up the remaining commas
-    //     parameters = parameters.replace(/,+/g, ',').replace(/^,|,$/g, '');
-    //   }
-    // }
-
-    // for (const key in metadata) {
-    //   if (metadata.hasOwnProperty(key)) {
-    //     console.log('key', key);
-    //     if(key === 'parameters' || key === 'description') {
-    //     const keyElement = document.createElement('label');
-    //     const valueElement = document.createElement('input');
-    //     const id = key.replace(/\s+/g, '_').toLowerCase();
-    //     keyElement.innerText = key;
-    //     keyElement.htmlFor = id;
-    //     valueElement.type = 'text';
-    //     valueElement.id = id;
-    //     valueElement.name = id;
-    //     valueElement.placeholder = key;
-    //     valueElement.value = metadata[key];
-    //     keyElement.appendChild(valueElement);
-    //     metadataDisplay.appendChild(keyElement);
-    //     }
-    //   }
-    // }
-  } catch (error) {
-    console.error('Failed to read metadata:', error);
-  }
-}
-
-
-
-  private handleImageSelection(event: Event) {
-    const imageInput = event.target as HTMLInputElement;
-    if (imageInput.files && imageInput.files.length > 0) {
-      const imageFile = imageInput.files[0];
-
-      // Update the image preview
-      const imagePreview = document.getElementById(this.imagePreviewId) as HTMLImageElement;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        imagePreview.src = e.target.result as string;
-        // Update form fields after updating the image preview
-        this.updateFormFields(imageFile);
-      };
-      reader.readAsDataURL(imageFile);
     }
-  }
 
-  private async handleSubmit(event: Event) {
-  event.preventDefault();
+    private handleImageSelection(event: Event) {
+      const imageInput = event.target as HTMLInputElement;
+      if (imageInput.files && imageInput.files.length > 0) {
+        const imageFile = imageInput.files[0];
 
-  const form = event.target as HTMLFormElement;
+        // Update the image preview
+        const imagePreview = document.getElementById(
+          this.imagePreviewId
+        ) as HTMLImageElement;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreview.src = e.target.result as string;
+          // Update form fields after updating the image preview
+          this.updateFormFields(imageFile);
+        };
+        reader.readAsDataURL(imageFile);
+      }
+    }
 
-  const BEARER_TOKEN = 'eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf';
-  const API_URL = 'http://localhost:1337/api/images';
+    private async handleSubmit(event: Event) {
+      event.preventDefault();
 
-  const data = {};
-  const formData = new FormData();
+      const form = event.target as HTMLFormElement;
 
-  Array.from(form.elements).forEach(({ name, type, value, files }) => {
-    if (!['submit', 'file'].includes(type)) {
-      data[name] = value;
-    } else if (type === 'file') {
-      Array.from(files).forEach((file) => {
-        formData.append(`files.${name}`, file, file.name);
+      const BEARER_TOKEN =
+        "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
+      const API_URL = "http://localhost:1337/api/images";
+
+      const data = {};
+      const formData = new FormData();
+
+      Array.from(form.elements).forEach(({ name, type, value, files }) => {
+        if (!["submit", "file"].includes(type)) {
+          data[name] = value;
+        } else if (type === "file") {
+          Array.from(files).forEach((file) => {
+            formData.append(`files.${name}`, file, file.name);
+          });
+        }
       });
+
+      formData.append("data", JSON.stringify(data));
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${BEARER_TOKEN}`,
+          },
+          body: formData,
+        });
+
+        if (response.ok) {
+          console.log("Data submitted successfully");
+        } else {
+          console.error("Failed to submit data:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Failed to submit data:", error);
+      }
     }
-  });
-
-  formData.append('data', JSON.stringify(data));
-
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${BEARER_TOKEN}`
-      },
-      body: formData,
-    });
-
-    if (response.ok) {
-      console.log('Data submitted successfully');
-    } else {
-      console.error('Failed to submit data:', response.statusText);
-    }
-  } catch (error) {
-    console.error('Failed to submit data:', error);
   }
-}
 
-
-}
-
-// Instantiate the class.
-const imageMetadataForm = new ImageMetadataForm('myForm', 'imagePreview');
-
-
-
-// const BEARER_TOKEN = 'eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf';
-// const API_URL = 'http://localhost:1337/api/images';
-// const JWT_TOKEN = localStorage.getItem('jwt');
-
-
-// const form = document.getElementById('myForm');
-// const imagePreview = document.getElementById('imagePreview');
-// const imageInput = document.getElementById('image');
-
-// if(imageInput instanceof HTMLInputElement){
-//   imageInput.addEventListener('change', (event) => {
-//       const file = event.target.files[0];
-//       if (file) {
-//         const reader = new FileReader();
-//         reader.onload = (e) => {
-//           imagePreview.src = e.target.result;
-//         };
-//         reader.readAsDataURL(file);
-//       } else {
-//         imagePreview.src = '';
-//       }
-//     });
-// }
-
-
-
-// if (form instanceof HTMLFormElement) {
-
-
-//   form.addEventListener('submit', async (e) => {
-//   e.preventDefault();
-
-//   const data = {};
-//   const formData = new FormData();
-
-//   Array.from(form.elements)
-//     .forEach(({ name, type, value, files, ...element }) => {
-//       if (!['submit', 'file'].includes(type)) {
-//         data[name] = value;
-//       } else if (type === 'file') {
-//         Array.from(files).forEach((file) => {
-//           formData.append(`files.${name}`, file, file.name);
-//         });
-//       }
-//     });
-
-//   formData.append('data', JSON.stringify(data));
-
-//   await fetch(API_URL, {
-//     method: 'post',
-//     headers: {
-//       'Authorization': `Bearer ${BEARER_TOKEN}`
-//     },
-//     body: formData
-//   });
-// });
-// } else {
-//   console.error('Form element with id "myForm" not found in HTML document.');
-// }
-
+  // Instantiate the class.
+  const imageMetadataForm = new ImageMetadataForm("myForm", "imagePreview");
 </script>
