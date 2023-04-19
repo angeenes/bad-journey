@@ -7,13 +7,6 @@ import Dialog from "./Dialog.astro";
     <form id="myForm">
       <input
         type="text"
-        id="file_name"
-        name="file_name"
-        placeholder="File name"
-        required
-      /><br />
-      <input
-        type="text"
         id="Image_width"
         name="Image_width"
         placeholder="Image width"
@@ -26,18 +19,59 @@ import Dialog from "./Dialog.astro";
         placeholder="Image height"
         required
       /><br />
-      <textarea
-        id="parameters"
-        name="parameters"
-        placeholder="Parameters"
-        required></textarea><br />
       <input
-        type="file"
-        id="image"
-        name="image"
-        accept="image/png, image/jpeg"
-      /><br />
+      type="text"
+      id="seed"
+      name="seed"
+      placeholder="seed"
+      required
+    /><br />
+      <input
+      type="text"
+      id="cfg_scale"
+      name="cfg_scale"
+      placeholder="cfg scale"
+      required
+    /><br />
+      <input
+      type="text"
+      id="steps"
+      name="steps"
+      placeholder="steps"
+      required
+    /><br />
+      <input
+      type="text"
+      id="model"
+      name="model"
+      placeholder="model"
+      required
+    /><br />
+      <input
+      type="text"
+      id="generator"
+      name="generator"
+      placeholder="generator"
+      required
+    /><br />
 
+    <textarea
+      id="prompt"
+      name="prompt"
+      placeholder="prompt"
+      onchange='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+      oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+      class="w-full"
+      required></textarea>
+      <br />
+
+      <input
+      type="file"
+      id="image"
+      name="image"
+      accept="image/png, image/jpeg"
+      /><br />
+    
       <button type="submit">Submit</button>
     </form>
     <div
@@ -102,28 +136,28 @@ import Dialog from "./Dialog.astro";
         let sdMetadata = metadata["sd-metadata"];
         // console.log('parameters', parameters);
 
-        (document.getElementById("file_name") as HTMLInputElement).value =
-          imageFile.name || "";
+        // (document.getElementById("file_name") as HTMLInputElement).value =
+        //   imageFile.name || "";
         (document.getElementById("Image_width") as HTMLInputElement).value =
           width?.toString() || "";
         (document.getElementById("Image_height") as HTMLInputElement).value =
           height?.toString() || "";
-        (document.getElementById("parameters") as HTMLTextAreaElement).value =
-          parameters;
+        // (document.getElementById("parameters") as HTMLTextAreaElement).value =
+        //   parameters;
 
         const metadataDisplay = document.getElementById(
           "metadataDisplay"
         ) as HTMLDivElement;
         metadataDisplay.innerHTML = "";
 
-        if (sdMetadata) {
+        if (sdMetadata) { // INVOKE
           interface InputObject {
             prompt: string;
             negativePrompt: string;
             parameters: { [key: string]: any };
           }
 
-          function convertInvokeStringToObject(
+          function convertInvokeStringToObject( //INVOKE
             inputString: string
           ): InputObject {
             const object: InputObject = {
@@ -153,23 +187,35 @@ import Dialog from "./Dialog.astro";
             }
 
             for (const [key, value] of Object.entries(inputJson)) {
-              console.log("inputJson", inputJson);
+              // console.log("inputJson", inputJson);
               if (key === "image") {
-                console.log("image", value as typeof parameters);
+                // console.log("image", value as typeof parameters);
                 Object.entries(value as typeof parameters).forEach(
                   ([key, value]) => {
-                    object.parameters[key] = value;
-                    // if(key === "prompt"){
-                    //   object.prompt = value;
-                    // }else if(key === "exclude_from_image"){
-                    //   object.negativePrompt = value;
-                    // }else{
-                    //   object.parameters[key] = value;
-                    // }
+                    object.parameters[key.toLowerCase()] = value;
+                    if(key.toLowerCase() === 'cfg_scale' || key.toLowerCase() === 'seed' || key.toLowerCase() === 'steps' || key.toLowerCase() === 'generator'){
+                      (document.getElementById(key) as HTMLInputElement).value =
+                      value?.toString() || "";
+                    }
                   }
-                );
-              }
+                  );
+                }
+                object.parameters[key.toLowerCase()] = value;
+                if(key.toLowerCase() === 'model' ){
+                  (document.getElementById(key) as HTMLInputElement).value =
+                  value?.toString() || "";
+                }
+                if(key.toLowerCase() === 'app_id' ){
+                      (document.getElementById('generator') as HTMLInputElement).value =
+                      value?.toString() || "";
+                    }
+                
             }
+
+            if(object.prompt ){
+                      (document.getElementById('prompt') as HTMLTextAreaElement).value =
+                      object.prompt?.toString() || "";
+                    }
             return object;
           }
 
@@ -178,8 +224,7 @@ import Dialog from "./Dialog.astro";
           console.log(object);
         }
 
-        if (description) {
-          console.log("MOCHI IS SPOTTED");
+        if (description) { //MOCHI
           function convertMochiStringToObject(
             inputString: string
           ): InputObject {
@@ -213,7 +258,7 @@ import Dialog from "./Dialog.astro";
                     .map((str: string) => {
                       return str.trim().replace("{", "").replace("}", "");
                     })[0];
-                  value = { [key]: subValue };
+                  value = { [key.toLowerCase()]: subValue };
                 }
                 object.parameters = { ...object.parameters, ...value };
               }
@@ -226,77 +271,78 @@ import Dialog from "./Dialog.astro";
           console.log(object);
         }
 
-        if (parameters) {
-          function convertStableDiffusionStringToObject(
-            inputString: string
-          ): InputObject {
-            const object: InputObject = {
-              prompt: "",
-              negativePrompt: "",
-              parameters: {},
-            };
-            if (inputString.includes("Negative prompt:")) {
-              const inputArray: string[] = inputString.split("\n");
-              object.prompt = inputArray[0];
-              object.negativePrompt = inputArray[1]
-                .replace("Negative prompt:", "")
-                .trim();
-              const parametersString: string = inputArray[2];
-              const parametersArray: string[] = parametersString.split(",");
-              for (let i: number = 0; i < parametersArray.length; i++) {
-                const param: string[] = parametersArray[i].split(":");
-                const key: string = param[0].trim().replace(" ", "_");
-                let value: any = param[1].trim();
-                if (key === "Size") {
-                  const sizeArray: string[] = value.split("x");
-                  value = {
-                    width: sizeArray[0],
-                    height: sizeArray[1],
-                  };
-                } else {
-                  const subValue: string = value
-                    .split(";")
-                    .map((str: string) => {
-                      return str.trim().replace("{", "").replace("}", "");
-                    })[0];
-                  value = { [key]: subValue };
-                }
-                object.parameters = { ...object.parameters, ...value };
-              }
-            } else {
-              const inputArray: string[] = inputString.split(";");
-              const includeArray: string[] = inputArray[0].split(":");
-              const excludeArray: string[] = inputArray[1].split(":");
-              object.prompt = includeArray[1].trim();
-              object.negativePrompt = excludeArray[1].trim();
-              const parametersString: string = inputArray.slice(2).join(",");
-              const parametersArray: string[] = parametersString.split(",");
-              for (let i: number = 0; i < parametersArray.length; i++) {
-                const param: string[] = parametersArray[i].split(":");
-                const key: string = param[0].trim().replace(" ", "_");
-                let value: any;
-                if (param[1]) {
-                  value = param[1].trim();
-                  if (key === "Size") {
-                    const sizeArray: string[] = value.split("x");
-                    value = {
-                      width: sizeArray[0],
-                      height: sizeArray[1],
-                    };
-                  } else {
-                    const subValue: string = value
-                      .split(";")
-                      .map((str: string) => {
-                        return str.trim().replace("{", "").replace("}", "");
-                      })[0];
-                    value = { [key]: subValue };
-                  }
-                  object.parameters = { ...object.parameters, ...value };
-                }
-              }
-            }
-            return object;
-          }
+        if (parameters) { // AUTOMATIC111
+          function convertStableDiffusionStringToObject(inputString: string): InputObject {
+  const object: InputObject = {
+    prompt: "",
+    negativePrompt: "",
+    parameters: {},
+  };
+  
+  if (inputString.includes("Negative prompt:")) { // Si le format est le premier
+    const inputArray: string[] = inputString.split("\n");
+    object.prompt = inputArray[0];
+    object.negativePrompt = inputArray[1]
+      .replace("Negative prompt:", "")
+      .trim();
+    const parametersString: string = inputArray[2];
+    const parametersArray: string[] = parametersString.split(",");
+    for (let i: number = 0; i < parametersArray.length; i++) {
+      const param: string[] = parametersArray[i].split(":");
+      const key: string = param[0].trim().replace(" ", "_").toLowerCase(); // Convertir le nom de clé en minuscule avec _
+      let value: any = param[1].trim();
+      if (key === "size") {
+        const sizeArray: string[] = value.split("x");
+        value = {
+          width: sizeArray[0],
+          height: sizeArray[1],
+        };
+      } else {
+        const subValue: string = value
+          .split(";")
+          .map((str: string) => {
+            return str.trim().replace("{", "").replace("}", "");
+          })[0];
+        value = { [key]: subValue };
+      }
+      object.parameters = { ...object.parameters, ...value };
+    }
+  } else { // Si le format est le deuxième
+    const inputArray: string[] = inputString.split(";");
+    const includeArray: string[] = inputArray[0].split(":");
+    const excludeArray: string[] = inputArray[1].split(":");
+    object.prompt = includeArray[1].trim();
+    object.negativePrompt = excludeArray[1].trim();
+    const parametersString: string = inputArray.slice(2).join(",");
+    const parametersArray: string[] = parametersString.split(",");
+    for (let i: number = 0; i < parametersArray.length; i++) {
+      const param: string[] = parametersArray[i].split(":");
+      const key: string = param[0].trim().replace(" ", "_").toLowerCase(); // Convertir le nom de clé en minuscule avec _
+      let value: any;
+      if (param[1]) {
+        value = param[1].trim();
+        if (key === "size") {
+          const sizeArray: string[] = value.split("x");
+          value = {
+            width: sizeArray[0],
+            height: sizeArray[1],
+          };
+        } else {
+          const subValue: string = value
+            .split(";")
+            .map((str: string) => {
+              return str.trim().replace("{", "").replace("}", "");
+            })[0];
+          value = { [key]: subValue };
+        }
+        object.parameters = { ...object.parameters, ...value };
+      }
+    }
+  }
+  
+  return object;
+}
+
 
           const inputString: string = parameters;
           const object: InputObject =

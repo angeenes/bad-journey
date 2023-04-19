@@ -107,7 +107,11 @@ import Dialog from "./Dialog.astro";
         <p>File name: ${item.attributes.file_name}</p>
         <p>Height: ${item.attributes.Image_height}</p>
         <p>Width: ${item.attributes.Image_width}</p>
-        <p>Parameters: ${item.attributes.parameters}</p>
+        <p>cfg_scale: ${item.attributes.cfg_scale}</p>
+        <p>seed: ${item.attributes.seed}</p>
+        <p>steps: ${item.attributes.steps}</p>
+        <p>generator: ${item.attributes.generator}</p>
+        <p>model: ${item.attributes.model}</p>
       </div>
       <img width="320px" height="100%"
         src="${this.url}${medium.url?? small.url}"
