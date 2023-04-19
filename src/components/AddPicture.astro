@@ -41,11 +41,17 @@ class ImageMetadataForm {
 
   private async updateFormFields(imageFile: File) {
   try {
-    const metadata = await exifr.parse(imageFile);
+    const metadata = await exifr.parse(imageFile, ['ImageWidth', 'ImageHeight', 'parameters','description']);
+
+    console.log('metadata', metadata);
+
+    console.log('imageFile', imageFile);
 
     const width = metadata.ImageWidth;
     const height = metadata.ImageHeight;
     let parameters = metadata.parameters;
+
+    console.log('parameters', parameters);
 
     (document.getElementById('file_name') as HTMLInputElement).value = imageFile.name || '';
     (document.getElementById('Image_width') as HTMLInputElement).value = width?.toString() || '';
@@ -55,6 +61,7 @@ class ImageMetadataForm {
     metadataDisplay.innerHTML = '';
 
     if (parameters) {
+      console.log('parameters', parameters);
       const parameterKeyValuePairs = parameters.match(/[\w\s]+:\s*[^,\n]+/g);
       if (parameterKeyValuePairs) {
         parameterKeyValuePairs.forEach((pair) => {
