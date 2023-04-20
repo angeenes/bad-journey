@@ -157,7 +157,6 @@ import Dialog from "./Dialog.astro";
 
     private fillForm(data: ImageObject) {
       const form = document.querySelector("#image-form") as HTMLFormElement;
-      form.reset();
 
       for (const key in data) {
         const element = form.querySelector(`[name="${key}"]`) as
@@ -169,6 +168,11 @@ import Dialog from "./Dialog.astro";
           element.value = data[key];
         }
       }
+    }
+
+    private resetForm() {
+      const form = document.querySelector("#image-form") as HTMLFormElement;
+      form.reset();
     }
 
     private async handleSubmit(event: Event) {
@@ -187,7 +191,9 @@ import Dialog from "./Dialog.astro";
         if (!["submit", "file"].includes(type)) {
           data[name] = value;
         } else if (type === "file") {
+          console.log('LA files', files);
           Array.from(files).forEach((file) => {
+            console.log("file", file);
             formData.append(`files.${name}`, file, file.name);
           });
         }
@@ -206,6 +212,8 @@ import Dialog from "./Dialog.astro";
 
         if (response.ok) {
           console.log("Data submitted successfully");
+          this.resetForm();
+          // ??NOTE : Ajouter un gallery MiniMasonry.layout() et un reloqd des datas et un close de la modal + u message de succes dans la modale
         } else {
           console.error("Failed to submit data:", response.statusText);
         }
