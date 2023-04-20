@@ -43,3 +43,14 @@ body {
   border: 2px solid black;
 }
 
+textarea, input, select {
+  border: 1px solid #D2D4D6;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

@@ -2,106 +2,90 @@
 import Dialog from "./Dialog.astro";
 ---
 
-<Dialog id="uploadImage" buttonLabel="upload an image" title="upload an image">
-  <article class="grid grid-cols-3">
-    <form id="myForm">
-      <input
-        type="text"
-        id="Image_width"
-        name="Image_width"
-        placeholder="Image width"
-        required
-      /><br />
-      <input
-        type="text"
-        id="Image_height"
-        name="Image_height"
-        placeholder="Image height"
-        required
-      /><br />
-      <input
-      type="text"
-      id="seed"
-      name="seed"
-      placeholder="seed"
-      required
-    /><br />
-      <input
-      type="text"
-      id="cfg_scale"
-      name="cfg_scale"
-      placeholder="cfg scale"
-      required
-    /><br />
-      <input
-      type="text"
-      id="steps"
-      name="steps"
-      placeholder="steps"
-      required
-    /><br />
-      <input
-      type="text"
-      id="model"
-      name="model"
-      placeholder="model"
-      required
-    /><br />
-      <input
-      type="text"
-      id="generator"
-      name="generator"
-      placeholder="generator"
-      required
-    /><br />
-
-    <textarea
-      id="prompt"
-      name="prompt"
-      placeholder="prompt"
-      onchange='this.style.height = "";this.style.height = this.scrollHeight + "px"'
-      oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
-      class="w-full"
-      required></textarea>
-      <br />
-
-      <input
-      type="file"
-      id="image"
-      name="image"
-      accept="image/png, image/jpeg"
-      /><br />
-    
-      <button type="submit">Submit</button>
-    </form>
-    <div
-      id="metadataDisplay"
-      class="metadata-display grid grid-cols-3 gap-2 text-sm"
-    >
-    </div>
-    <div
-      class="border-dashed border-black border-8 rounded-xl flex justify-center items-center p-3"
-    >
-      <img id="imagePreview" alt="Image preview" style="max-width: 100%;" />
-    </div>
-  </article>
-</Dialog>
 <!-- <script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script> -->
 <script is:inline src="/exifr.js"></script>
 
-<script>
-  interface Parameters {
-    [key: string]: any;
-  }
+<Dialog id="uploadImage" buttonLabel="UPLOAD" title="upload an image">
+  <form id="image-form" class="grid grid-cols-2 gap-16">
+    <label
+      for="image"
+      class="w-full h-full border border-slate-500 border-dashed rounded-2xl p-2 pt-14 text-center cursor-s-resize md:min-h-[664px] md:w-[669px]"
+    >
+      <img
+        id="imagePreview"
+        src="/img/drop.svg"
+        alt="drop an image file"
+        class="mx-auto"
+      />
+      <p class="mt-4">Drag and drop an image, or Browse</p>
+      <p class="text-slate-400 text-xs mt-2">Minimum 512px width, max 10MB</p>
+      <div class="flex items-center gap-4 mx-auto"><input type="text" name="width" id="width"> x <input type="text" name="height" id="height"></div>
+      <input
+        type="file"
+        id="image"
+        name="image"
+        accept="image/png, image/jpeg"
+        class="hidden"
+      />
+    </label>
+    <div class="flex flex-col gap-3">
+      <label for="prompt"
+        >Prompt
+        <textarea name="prompt" id="prompt" cols="30" rows="5"></textarea>
+      </label>
+      <label for="negative_prompt"
+        >Negative prompt
+        <textarea name="negative_prompt" id="negative_prompt" cols="30" rows="5"
+        ></textarea>
+      </label>
+      <label for="generator"
+        >What generator did you use to generate this image?
+        <select name="generator" id="generator">
+          <option value="midjourney">midjourney</option>
+          <option value="Automatic111">Automatic111</option>
+          <option value="invoke-ai/InvokeAI">Invoke</option>
+          <option value="DiffusionBee">DiffusionBee</option>
+          <option value="Mochi">Mochi</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+      <label for="model">
+        What model did you use to generate this image?
+        <input type="text" name="model" id="model" />
+      </label>
+      <label for="seed">
+        Seed (optional)
+        <input type="number" name="seed" id="seed" />
+      </label>
+      <label for="cfg_scale">
+        Cfg scale (optional)
+        <input type="number" name="cfg_scale" id="cfg_scale" />
+      </label>
+      <label for="steps">
+        Steps (optional)
+        <input type="number" name="steps" id="steps" />
+      </label>
+      <button
+        type="submit"
+        class="mt-4 text-white text-center p-3 rounded-3xl text-sm"
+        style="background-color: var(--color-primary);">PUBLISH NOW</button
+      >
+    </div>
+  </form>
+</Dialog>
 
-  interface InputObject {
-    prompt: string;
-    negativePrompt: string;
-    parameters: Parameters;
-  }
+<script>
+  import convertAutomatic111Metadata from "../assets/js/convertAutomatic111Metadata.js";
+  import convertInvokeMetadata from "../assets/js/convertInvokeMetadata.js";
+  import convertMochiMetadata from "../assets/js/convertMochiMetadata.js";
+  import { ImageObject } from "../assets/types/ImageObject.js";
 
   class ImageMetadataForm {
-    constructor(private formId: string, private imagePreviewId: string) {
+    constructor(
+      private formId: string,
+      private imagePreviewId: string,
+      private imageInputId: string
+    ) {
       this.init();
     }
 
@@ -112,264 +96,78 @@ import Dialog from "./Dialog.astro";
       const imageInput = form.querySelector(
         'input[type="file"]'
       ) as HTMLInputElement;
-      imageInput.addEventListener(
-        "change",
-        this.handleImageSelection.bind(this)
-      );
+      imageInput.addEventListener("change", this.previewImage.bind(this));
+    }
+
+    private previewImage() {
+      const imagePreview = document.getElementById(
+        this.imagePreviewId
+      ) as HTMLImageElement;
+      const imageInput = document.getElementById(
+        this.imageInputId
+      ) as HTMLInputElement;
+
+      if (!imageInput.files || imageInput.files.length === 0) return;
+
+      const imageFile = imageInput.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (!e.target) return;
+
+        imagePreview.src = e.target.result as string;
+        this.updateFormFields(imageFile);
+      };
+      reader.readAsDataURL(imageFile);
     }
 
     private async updateFormFields(imageFile: File) {
+      let objectImageDatas: ImageObject = {} as ImageObject;
       try {
         const metadata = await exifr.parse(imageFile, {
           tiff: false,
           xmp: true,
         });
 
-        console.log("metadata", metadata);
-
-        // console.log('imageFile', imageFile);
-
-        const width = metadata.ImageWidth;
-        const height = metadata.ImageHeight;
-        let parameters = metadata.parameters;
-        let description = metadata.description;
-        let sdMetadata = metadata["sd-metadata"];
-        // console.log('parameters', parameters);
-
-        // (document.getElementById("file_name") as HTMLInputElement).value =
-        //   imageFile.name || "";
-        (document.getElementById("Image_width") as HTMLInputElement).value =
-          width?.toString() || "";
-        (document.getElementById("Image_height") as HTMLInputElement).value =
-          height?.toString() || "";
-        // (document.getElementById("parameters") as HTMLTextAreaElement).value =
-        //   parameters;
-
-        const metadataDisplay = document.getElementById(
-          "metadataDisplay"
-        ) as HTMLDivElement;
-        metadataDisplay.innerHTML = "";
-
-        if (sdMetadata) { // INVOKE
-          interface InputObject {
-            prompt: string;
-            negativePrompt: string;
-            parameters: { [key: string]: any };
+        if (metadata) {
+          console.log("metadata", metadata);
+          if (metadata["sd-metadata"]) {
+            console.log("INVOKE");
+            const jsObject = JSON.parse(metadata["sd-metadata"]);
+            objectImageDatas = convertInvokeMetadata(jsObject);
+            console.log("objectImageDatas RETOURNE", objectImageDatas);
+            this.fillForm(objectImageDatas);
           }
-
-          function convertInvokeStringToObject( //INVOKE
-            inputString: string
-          ): InputObject {
-            const object: InputObject = {
-              prompt: "",
-              negativePrompt: "",
-              parameters: {},
-            };
-
-            const inputJson = JSON.parse(inputString);
-            object.prompt = inputJson.image.prompt;
-            object.negativePrompt = "";
-
-            if (inputJson.image.exclude_from_image) {
-              for (
-                let i = 0;
-                i < inputJson.image.exclude_from_image.length;
-                i++
-              ) {
-                if (i === 0) {
-                  object.negativePrompt +=
-                    inputJson.image.exclude_from_image[i];
-                } else {
-                  object.negativePrompt +=
-                    ", " + inputJson.image.exclude_from_image[i];
-                }
-              }
-            }
-
-            for (const [key, value] of Object.entries(inputJson)) {
-              // console.log("inputJson", inputJson);
-              if (key === "image") {
-                // console.log("image", value as typeof parameters);
-                Object.entries(value as typeof parameters).forEach(
-                  ([key, value]) => {
-                    object.parameters[key.toLowerCase()] = value;
-                    if(key.toLowerCase() === 'cfg_scale' || key.toLowerCase() === 'seed' || key.toLowerCase() === 'steps' || key.toLowerCase() === 'generator'){
-                      (document.getElementById(key) as HTMLInputElement).value =
-                      value?.toString() || "";
-                    }
-                  }
-                  );
-                }
-                object.parameters[key.toLowerCase()] = value;
-                if(key.toLowerCase() === 'model' ){
-                  (document.getElementById(key) as HTMLInputElement).value =
-                  value?.toString() || "";
-                }
-                if(key.toLowerCase() === 'app_id' ){
-                      (document.getElementById('generator') as HTMLInputElement).value =
-                      value?.toString() || "";
-                    }
-                
-            }
-
-            if(object.prompt ){
-                      (document.getElementById('prompt') as HTMLTextAreaElement).value =
-                      object.prompt?.toString() || "";
-                    }
-            return object;
+          if (metadata["description"]) {
+            console.log("MOCHI");
+            objectImageDatas = convertMochiMetadata(metadata["description"]);
+            console.log("objectImageDatas", objectImageDatas);
           }
-
-          const inputString: string = sdMetadata;
-          const object: InputObject = convertInvokeStringToObject(inputString);
-          console.log(object);
-        }
-
-        if (description) { //MOCHI
-          function convertMochiStringToObject(
-            inputString: string
-          ): InputObject {
-            const object: InputObject = {
-              prompt: "",
-              negativePrompt: "",
-              parameters: {},
-            };
-            const inputArray: string[] = inputString.split(";");
-            const includeArray: string[] = inputArray[0].split(":");
-            const excludeArray: string[] = inputArray[1].split(":");
-            object.prompt = includeArray[1].trim();
-            object.negativePrompt = excludeArray[1].trim();
-            const parametersString: string = inputArray.slice(2).join(",");
-            const parametersArray: string[] = parametersString.split(",");
-            for (let i: number = 0; i < parametersArray.length; i++) {
-              const param: string[] = parametersArray[i].split(":");
-              const key: string = param[0].trim().replace(" ", "_");
-              let value: any;
-              if (param[1]) {
-                value = param[1].trim();
-                if (key === "Size") {
-                  const sizeArray: string[] = value.split("x");
-                  value = {
-                    width: sizeArray[0],
-                    height: sizeArray[1],
-                  };
-                } else {
-                  const subValue: string = value
-                    .split(";")
-                    .map((str: string) => {
-                      return str.trim().replace("{", "").replace("}", "");
-                    })[0];
-                  value = { [key.toLowerCase()]: subValue };
-                }
-                object.parameters = { ...object.parameters, ...value };
-              }
-            }
-            return object;
+          if (metadata["parameters"]) {
+            console.log("AUTOMATIC111");
+            objectImageDatas = convertAutomatic111Metadata(
+              metadata["parameters"]
+            );
+            console.log("objectImageDatas", objectImageDatas);
           }
-
-          const inputString: string = description.value;
-          const object: InputObject = convertMochiStringToObject(inputString);
-          console.log(object);
-        }
-
-        if (parameters) { // AUTOMATIC111
-          function convertStableDiffusionStringToObject(inputString: string): InputObject {
-  const object: InputObject = {
-    prompt: "",
-    negativePrompt: "",
-    parameters: {},
-  };
-  
-  if (inputString.includes("Negative prompt:")) { // Si le format est le premier
-    const inputArray: string[] = inputString.split("\n");
-    object.prompt = inputArray[0];
-    object.negativePrompt = inputArray[1]
-      .replace("Negative prompt:", "")
-      .trim();
-    const parametersString: string = inputArray[2];
-    const parametersArray: string[] = parametersString.split(",");
-    for (let i: number = 0; i < parametersArray.length; i++) {
-      const param: string[] = parametersArray[i].split(":");
-      const key: string = param[0].trim().replace(" ", "_").toLowerCase(); // Convertir le nom de clé en minuscule avec _
-      let value: any = param[1].trim();
-      if (key === "size") {
-        const sizeArray: string[] = value.split("x");
-        value = {
-          width: sizeArray[0],
-          height: sizeArray[1],
-        };
-      } else {
-        const subValue: string = value
-          .split(";")
-          .map((str: string) => {
-            return str.trim().replace("{", "").replace("}", "");
-          })[0];
-        value = { [key]: subValue };
-      }
-      object.parameters = { ...object.parameters, ...value };
-    }
-  } else { // Si le format est le deuxième
-    const inputArray: string[] = inputString.split(";");
-    const includeArray: string[] = inputArray[0].split(":");
-    const excludeArray: string[] = inputArray[1].split(":");
-    object.prompt = includeArray[1].trim();
-    object.negativePrompt = excludeArray[1].trim();
-    const parametersString: string = inputArray.slice(2).join(",");
-    const parametersArray: string[] = parametersString.split(",");
-    for (let i: number = 0; i < parametersArray.length; i++) {
-      const param: string[] = parametersArray[i].split(":");
-      const key: string = param[0].trim().replace(" ", "_").toLowerCase(); // Convertir le nom de clé en minuscule avec _
-      let value: any;
-      if (param[1]) {
-        value = param[1].trim();
-        if (key === "size") {
-          const sizeArray: string[] = value.split("x");
-          value = {
-            width: sizeArray[0],
-            height: sizeArray[1],
-          };
-        } else {
-          const subValue: string = value
-            .split(";")
-            .map((str: string) => {
-              return str.trim().replace("{", "").replace("}", "");
-            })[0];
-          value = { [key]: subValue };
-        }
-        object.parameters = { ...object.parameters, ...value };
-      }
-    }
-  }
-  
-  return object;
-}
-
-
-          const inputString: string = parameters;
-          const object: InputObject =
-            convertStableDiffusionStringToObject(inputString);
-          console.log(object);
         }
       } catch (error) {
         console.error("Failed to read metadata:", error);
       }
     }
 
-    private handleImageSelection(event: Event) {
-      const imageInput = event.target as HTMLInputElement;
-      if (imageInput.files && imageInput.files.length > 0) {
-        const imageFile = imageInput.files[0];
+    private fillForm(data: ImageObject) {
+      const form = document.querySelector("#image-form") as HTMLFormElement;
+      form.reset();
 
-        // Update the image preview
-        const imagePreview = document.getElementById(
-          this.imagePreviewId
-        ) as HTMLImageElement;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          imagePreview.src = e.target.result as string;
-          // Update form fields after updating the image preview
-          this.updateFormFields(imageFile);
-        };
-        reader.readAsDataURL(imageFile);
+      for (const key in data) {
+        const element = form.querySelector(`[name="${key}"]`) as
+          | HTMLInputElement
+          | HTMLTextAreaElement
+          | HTMLSelectElement
+          | null;
+        if (element) {
+          element.value = data[key];
+        }
       }
     }
 
@@ -417,6 +215,9 @@ import Dialog from "./Dialog.astro";
     }
   }
 
-  // Instantiate the class.
-  const imageMetadataForm = new ImageMetadataForm("myForm", "imagePreview");
+  const imageMetadataForm = new ImageMetadataForm(
+    "image-form",
+    "imagePreview",
+    "image"
+  );
 </script>
