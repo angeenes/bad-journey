@@ -26,10 +26,11 @@ interface InputObject {
 
 export default function convertInvokeMetadata(input: InputObject): ImageObject {
 
-    console.log('convertInvokeMetadata REÇOIS', input);
+    // console.log('convertInvokeMetadata REÇOIS', input);
 
     const regex = /\[(.*?)\]/g;
-    const matches = input.image.prompt.match(regex) || [];
+    // const matches = input.image.prompt.match(regex) || [];
+    const matches = typeof input.image.prompt === "string" ? input.image.prompt.match(regex) || [] : [];
     const negativePrompt = matches.join(" ").replace(/\[|\]/g, "");
     const promptWithoutnegativePrompt = input.image.prompt.replace(regex, "");
 

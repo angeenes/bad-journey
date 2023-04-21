@@ -101,7 +101,6 @@ const openModalButton = document.getElementById('openModalButton');
         if (jwt && user) {
           console.log('JWT FOUND');
           console.log('USER FOUND');
-          console.log('openModalButton', openModalButton);
           if(openModalButton && profilePicutre){
             const userJSON = JSON.parse(user);
             console.log('user.username', userJSON)

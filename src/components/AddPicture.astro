@@ -164,18 +164,27 @@ const tags = data.data;
             console.log("objectImageDatas RETOURNE", objectImageDatas);
             this.fillForm(objectImageDatas);
           }
+
+
           if (metadata["description"]) {
             console.log("MOCHI");
             objectImageDatas = convertMochiMetadata(metadata["description"]);
-            console.log("objectImageDatas", objectImageDatas);
+            console.log("objectImageDatas RETOURNE", objectImageDatas);
+            this.fillForm(objectImageDatas);
           }
+
+
+
           if (metadata["parameters"]) {
             console.log("AUTOMATIC111");
-            objectImageDatas = convertAutomatic111Metadata(
-              metadata["parameters"]
-            );
-            console.log("objectImageDatas", objectImageDatas);
+            const object = metadata["parameters"]
+            objectImageDatas = convertAutomatic111Metadata(object);
+            console.log("objectImageDatas RETOURNE", objectImageDatas);
+            this.fillForm(objectImageDatas);
           }
+
+
+
         }
       } catch (error) {
         console.error("Failed to read metadata:", error);
