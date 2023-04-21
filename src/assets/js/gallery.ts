@@ -140,6 +140,7 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
             <p>${item.attributes.tag.data?? 'N/A'}</p>
          </div>
          <label id="button-copy-prompt" class="absolute left-7 bottom-4 flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-copy.svg' alt='copy'> <span> Copy prompt</span> </label>
+         <label id="button-twitter-share" class="absolute right-7 bottom-4 flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-twitter.svg' alt='twitter'> <span> Share on Twitter</span> </label>
       </div>
     </div>
   `;
