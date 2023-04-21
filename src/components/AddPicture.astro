@@ -1,11 +1,31 @@
 ---
 import Dialog from "./Dialog.astro";
+
+
+const url = "http://localhost:1337";
+const apiToken =
+  "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
+
+let endpoint = `${url}/api/tags`;
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${apiToken}`,
+};
+
+const response = await fetch(endpoint, { headers });
+const data = await response.json();
+const tags = data.data;
+
 ---
 
 <!-- <script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script> -->
 <script is:inline src="/exifr.js"></script>
 
-<Dialog id="uploadImage" buttonLabel="UPLOAD" title="upload an image">
+<Dialog id="successUploadImage">
+  You did it!
+</Dialog>
+
+<Dialog id="uploadImage" buttonLabel="UPLOAD" title="upload an image" className="bg-pink-500 px-6 py-2 rounded-full uppercase font-bold text-sm">
   <form id="image-form" class="grid grid-cols-2 gap-16">
     <label
       for="image"
@@ -19,7 +39,9 @@ import Dialog from "./Dialog.astro";
       />
       <p class="mt-4">Drag and drop an image, or Browse</p>
       <p class="text-slate-400 text-xs mt-2">Minimum 512px width, max 10MB</p>
-      <div class="flex items-center gap-4 mx-auto"><input type="text" name="width" id="width"> x <input type="text" name="height" id="height"></div>
+      <div class="flex items-center gap-4 mx-auto">
+        <input type="number" name="width" id="width"> x <input type="number" name="height" id="height">
+      </div>
       <input
         type="file"
         id="image"
@@ -59,11 +81,19 @@ import Dialog from "./Dialog.astro";
       </label>
       <label for="cfg_scale">
         Cfg scale (optional)
-        <input type="number" name="cfg_scale" id="cfg_scale" />
+        <input type="number" name="cfg_scale" id="cfg_scale" step="0.1" min="0" />
       </label>
       <label for="steps">
         Steps (optional)
         <input type="number" name="steps" id="steps" />
+      </label>
+      <label for="tags">
+        category tags
+        <select name="tags" id="tags" multiple>
+          {tags.map((tag) => (
+            <option value={tag.attributes.name}>{tag.attributes.name}</option>
+          ))}
+        </select>
       </label>
       <button
         type="submit"
@@ -189,11 +219,14 @@ import Dialog from "./Dialog.astro";
 
       Array.from(form.elements).forEach(({ name, type, value, files }) => {
         if (!["submit", "file"].includes(type)) {
-          data[name] = value;
+          if(name === 'tags') {
+            console.log('tags', type, name, value);
+            data[name] = value;
+          } else {
+            data[name] = value;
+          }
         } else if (type === "file") {
-          console.log('LA files', files);
           Array.from(files).forEach((file) => {
-            console.log("file", file);
             formData.append(`files.${name}`, file, file.name);
           });
         }
@@ -213,7 +246,9 @@ import Dialog from "./Dialog.astro";
         if (response.ok) {
           console.log("Data submitted successfully");
           this.resetForm();
-          // ??NOTE : Ajouter un gallery MiniMasonry.layout() et un reloqd des datas et un close de la modal + u message de succes dans la modale
+          // ??NOTE : reloqd des datas et un close de la modal + u message de succes dans la modale
+          closeDialogId("uploadImage");
+          openDialogId("successUploadImage");
         } else {
           console.error("Failed to submit data:", response.statusText);
         }

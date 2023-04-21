@@ -124,13 +124,14 @@ import Dialog from "./Dialog.astro";
       return `
     <div class="flex">
       <div>
-        <p>Height: ${item.attributes.Image_height}</p>
-        <p>Width: ${item.attributes.Image_width}</p>
+        <p>Height: ${item.attributes.height}</p>
+        <p>Width: ${item.attributes.width}</p>
         <p>cfg_scale: ${item.attributes.cfg_scale}</p>
         <p>seed: ${item.attributes.seed}</p>
         <p>steps: ${item.attributes.steps}</p>
         <p>generator: ${item.attributes.generator}</p>
         <p>model: ${item.attributes.model}</p>
+        <p>tag: ${item.attributes.tag.data}</p>
       </div>
       <img width="320px" height="100%"
         src="${this.url}${medium?.url ?? small?.url}"
@@ -197,7 +198,6 @@ import Dialog from "./Dialog.astro";
                 if (this.loadedCount === images.length) {
                   const newData = await this.fetchData(this.currentPage);
                   this.renderCards(newData);
-                  // this.masonry.layout();
                   // console.log(this.loadedCount, images.length);
                 }
               });
@@ -207,7 +207,6 @@ import Dialog from "./Dialog.astro";
             // console.log('2');
             const newData = await this.fetchData(this.currentPage);
             this.renderCards(newData);
-            this.masonry.layout();
             // console.log(this.loadedCount, images.length);
             // console.log('new data',await newData.meta.pagination.total);
           }

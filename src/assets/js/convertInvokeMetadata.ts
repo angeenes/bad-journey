@@ -40,7 +40,7 @@ export default function convertInvokeMetadata(input: InputObject): ImageObject {
         seed: input.image.seed.toString(),
         width: input.image.width.toString(),
         height: input.image.height.toString(),
-        cfg_scale: input.image.cfg_scale.toString(),
+        cfg_scale: input.image.cfg_scale.toString().replace(/,/g, '.'),
         steps: input.image.steps.toString(),
         generator: input.app_id.toString(),
     };
