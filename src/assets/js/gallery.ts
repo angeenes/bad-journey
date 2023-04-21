@@ -200,7 +200,7 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
           const images = gallery.querySelectorAll("img");
           this.loadedCount = 0;
           images.forEach((image) => {
-            if (this.total === images.length) {
+            if (this.total === images.length && loadMoreElement) {
               loadMoreElement.textContent = "No more images to load";
               return;
             }
