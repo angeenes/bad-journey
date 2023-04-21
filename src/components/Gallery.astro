@@ -123,6 +123,8 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../consts";
       return `
     <div class="flex">
       <div>
+        <p>Prompt : ${item.attributes.prompt}</p>
+        <p>Negative prompt : ${item.attributes.negative_promt}</p>
         <p>Height: ${item.attributes.height}</p>
         <p>Width: ${item.attributes.width}</p>
         <p>cfg_scale: ${item.attributes.cfg_scale}</p>
