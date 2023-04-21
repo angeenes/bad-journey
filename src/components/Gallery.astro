@@ -15,10 +15,7 @@ import Dialog from "./Dialog.astro";
 <!-- <script is:inline src="https://cdn.jsdelivr.net/npm/minimasonry@latest/build/minimasonry.min.js"></script> -->
 <script is:inline src="/mini-masonry.js"></script>
 
-
 <script is:inline>
-
-
   class Gallery {
     // url: string;
     // currentPage: number;
@@ -39,15 +36,14 @@ import Dialog from "./Dialog.astro";
         "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
       this.init();
       this.masonry = new MiniMasonry({
-        container: '#gallery',
+        container: "#gallery",
         baseWidth: 320,
         gutter: 10,
-        minify: true
-    });
+        minify: true,
+      });
     }
 
     async fetchData(page) {
-      
       const tags = localStorage.getItem("tags");
       let endpoint = `${this.url}/api/images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.itemsPerPage}`;
       const headers = {
@@ -66,6 +62,17 @@ import Dialog from "./Dialog.astro";
     }
 
     createCardTemplate(item, index) {
+      if (
+        !item ||
+        !item.attributes ||
+        !item.attributes.image ||
+        !item.attributes.image.data ||
+        !item.attributes.image.data.attributes ||
+        !item.attributes.image.data.attributes.formats
+      ) {
+        return ""; // retourne une chaîne vide si item ou l'une de ses propriétés est null ou undefined
+      }
+
       const {
         attributes: {
           image: {
@@ -77,19 +84,31 @@ import Dialog from "./Dialog.astro";
           },
         },
       } = item;
+
       return `
     <div class="card">
       <img width="320px" height="100%"
-        src="${this.url}${small.url?? medium.url}"
-        alt="Image for post ${item.attributes?.file_name}"
+        src="${this.url}${small?.url ?? medium?.url}"
+        alt="Image for post ${item?.attributes?.file_name}"
         loading="lazy" class="w-full card-img"
         style="transition-delay : ${index * 250}ms"
-        >
+      >
     </div>
   `;
     }
 
     createDialogImageTemplate(item) {
+      if (
+        !item ||
+        !item.attributes ||
+        !item.attributes.image ||
+        !item.attributes.image.data ||
+        !item.attributes.image.data.attributes ||
+        !item.attributes.image.data.attributes.formats
+      ) {
+        return ""; // retourne une chaîne vide si item ou l'une de ses propriétés est null ou undefined
+      }
+
       const {
         attributes: {
           image: {
@@ -101,10 +120,10 @@ import Dialog from "./Dialog.astro";
           },
         },
       } = item;
+
       return `
     <div class="flex">
       <div>
-        <p>File name: ${item.attributes.file_name}</p>
         <p>Height: ${item.attributes.Image_height}</p>
         <p>Width: ${item.attributes.Image_width}</p>
         <p>cfg_scale: ${item.attributes.cfg_scale}</p>
@@ -114,72 +133,72 @@ import Dialog from "./Dialog.astro";
         <p>model: ${item.attributes.model}</p>
       </div>
       <img width="320px" height="100%"
-        src="${this.url}${medium.url?? small.url}"
+        src="${this.url}${medium?.url ?? small?.url}"
         alt="Image for post ${item.attributes.file_name}"
         loading="lazy" class="min-h-[160px]"
-        >
+      >
     </div>
   `;
     }
 
     renderCards(data) {
-      
       const cardContainer = document.getElementById("gallery");
-      const imageDialogText = document.getElementById('image-dialog-text');
+      const imageDialogText = document.getElementById("image-dialog-text");
 
       if (cardContainer) {
         data.data.forEach((item, index) => {
-            const cardTemplate = this.createCardTemplate(item, index);
-            setInterval(() => {
-              cardContainer.querySelectorAll('img').forEach((img) => {
-                img.classList.add('is-visible');
-              })
-            }, 250);
-            cardContainer.insertAdjacentHTML("beforeend", cardTemplate);
-            cardContainer?.lastElementChild?.querySelector('img')?.addEventListener('click', () => {
-              if(imageDialogText){
+          const cardTemplate = this.createCardTemplate(item, index);
+          setInterval(() => {
+            cardContainer.querySelectorAll("img").forEach((img) => {
+              img.classList.add("is-visible");
+              this.masonry.layout();
+            });
+          }, 250);
+          cardContainer.insertAdjacentHTML("beforeend", cardTemplate);
+          cardContainer?.lastElementChild
+            ?.querySelector("img")
+            ?.addEventListener("click", () => {
+              if (imageDialogText) {
                 const dialogTemplate = this.createDialogImageTemplate(item);
-                imageDialogText.innerHTML = '';
-                imageDialogText.insertAdjacentHTML('beforeend', dialogTemplate);
+                imageDialogText.innerHTML = "";
+                imageDialogText.insertAdjacentHTML("beforeend", dialogTemplate);
                 // imageDialogText.textContent = 'You clicked on the image for post: ' + item.attributes.file_name;
               }
-              openDialogId('img-dialog');
-            })
-          
+              openDialogId("img-dialog");
+            });
         });
       }
     }
 
-
     setupInfiniteScroll() {
-
       const loadMoreElement = document.getElementById("load-more");
 
-      window.addEventListener('scroll', async () => {
+      window.addEventListener("scroll", async () => {
         const scrollPosition = window.innerHeight + window.scrollY + 300;
         const documentHeight = document.documentElement.offsetHeight;
-        
+
         if (scrollPosition >= documentHeight && !this.loading) {
           this.loading = true;
           this.currentPage++;
-          const gallery = document.getElementById('gallery');
-          const images = gallery.querySelectorAll('img');
+          const gallery = document.getElementById("gallery");
+          const images = gallery.querySelectorAll("img");
           this.loadedCount = 0;
-          images.forEach(image => {
-            if(this.total === images.length){
-            loadMoreElement.textContent = "No more images to load";
-            return;}
+          images.forEach((image) => {
+            if (this.total === images.length) {
+              loadMoreElement.textContent = "No more images to load";
+              return;
+            }
             if (image.complete) {
               this.loadedCount++;
             } else {
-              image.addEventListener('load', async () => {
+              image.addEventListener("load", async () => {
                 // console.log('1');
                 this.loadedCount++;
                 if (this.loadedCount === images.length) {
                   const newData = await this.fetchData(this.currentPage);
                   this.renderCards(newData);
-                  this.masonry.layout();
-                  console.log(this.loadedCount, images.length);
+                  // this.masonry.layout();
+                  // console.log(this.loadedCount, images.length);
                 }
               });
             }
@@ -194,8 +213,6 @@ import Dialog from "./Dialog.astro";
           }
         }
       });
-
-      
     }
 
     async reset() {
