@@ -1,4 +1,4 @@
-import { ImageObject } from "../types/ImageObject";
+import { ImageObject } from "../../types/ImageObject";
 
 export default function convertMochiMetadata(input): ImageObject {
     

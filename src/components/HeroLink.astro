@@ -28,6 +28,11 @@ const isActive = href === pathname || href === pathname.replace(/\/$/, '');
 
 <script>
 
+import { Gallery } from "../assets/js/gallery.js";
+
+
+const gallery = new Gallery();
+
 class HeroLink {
     url: string;
     currentPage: number;
@@ -47,7 +52,7 @@ class HeroLink {
 				e.preventDefault();
 				this.toggleActiveNavItem(HrefElement, e);
 				localStorage.tags = tag !== '/' ? tag : '';
-				gallery.reset();
+				gallery.reset() 
 			 })
 		})
 

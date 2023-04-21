@@ -17,11 +17,20 @@ const tags = data.data;
 <!-- <script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script> -->
 <script is:inline src="/exifr.js"></script>
 
-<Dialog id="successUploadImage">
-  You did it!
+<Dialog id="success-upload-image">
+  <article class="text-center">
+    You did it!
+    <br>
+    <br>
+    <button onclick="location.reload(true)">Click here to reload the page and see your uploaded image</button>
+  </article>
 </Dialog>
 
 <Dialog id="uploadImage" buttonLabel="UPLOAD" title="upload an image" className="bg-pink-500 px-6 py-2 rounded-full uppercase font-bold text-sm">
+  <div id="publishing-loading" class="loading">
+    <div class="loader"></div>
+    <div class="font-black text-pink-500">PUBLISHING IMAGE...</div>
+  </div>
   <form id="image-form" class="grid grid-cols-2 gap-16">
     <label
       for="image"
@@ -92,6 +101,7 @@ const tags = data.data;
         </select>
       </label>
       <button
+        id="publish-button"
         type="submit"
         class="mt-4 text-white text-center p-3 rounded-3xl text-sm"
         style="background-color: var(--color-primary);">PUBLISH NOW</button
@@ -102,46 +112,38 @@ const tags = data.data;
 
 <script>
   import { API_URL, BEARER_TOKEN } from "../consts";
-  import convertAutomatic111Metadata from "../assets/js/convertAutomatic111Metadata.js";
-  import convertInvokeMetadata from "../assets/js/convertInvokeMetadata.js";
-  import convertMochiMetadata from "../assets/js/convertMochiMetadata.js";
+  import convertAutomatic111Metadata from "../assets/js/converters/convertAutomatic111Metadata.js";
+  import convertInvokeMetadata from "../assets/js/converters/convertInvokeMetadata.js";
+  import convertMochiMetadata from "../assets/js/converters/convertMochiMetadata.js";
   import { ImageObject } from "../assets/types/ImageObject.js";
 
   class ImageMetadataForm {
     constructor(
-      private formId: string,
-      private imagePreviewId: string,
-      private imageInputId: string
+      private imagePreview: HTMLImageElement = document.getElementById("imagePreview") as HTMLImageElement,
+      private imageInput = document.getElementById("image") as HTMLInputElement,
+      public formEl: HTMLFormElement = document.getElementById("image-form") as HTMLFormElement,
+      private loadingEl: HTMLDivElement = document.getElementById("publishing-loading") as HTMLDivElement,
+      private successDialog: HTMLDialogElement = document.getElementById("success-upload-image") as HTMLDialogElement,
+      private publishButtonSubmitEl: HTMLButtonElement = document.getElementById("publish-button") as HTMLButtonElement,
     ) {
       this.init();
     }
 
-    private async init() {
-      const form = document.getElementById(this.formId) as HTMLFormElement;
-      form.addEventListener("submit", this.handleSubmit.bind(this));
-
-      const imageInput = form.querySelector(
-        'input[type="file"]'
-      ) as HTMLInputElement;
-      imageInput.addEventListener("change", this.previewImage.bind(this));
+    private async init(): Promise<void> {
+      this.formEl.addEventListener("submit", this.handleSubmit.bind(this));
+      this.imageInput.addEventListener("change", this.previewImage.bind(this));
     }
 
     private previewImage() {
-      const imagePreview = document.getElementById(
-        this.imagePreviewId
-      ) as HTMLImageElement;
-      const imageInput = document.getElementById(
-        this.imageInputId
-      ) as HTMLInputElement;
 
-      if (!imageInput.files || imageInput.files.length === 0) return;
+      if (!this.imageInput.files || this.imageInput.files.length === 0) return;
 
-      const imageFile = imageInput.files[0];
+      const imageFile = this.imageInput.files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
         if (!e.target) return;
 
-        imagePreview.src = e.target.result as string;
+        this.imagePreview.src = e.target.result as string;
         this.updateFormFields(imageFile);
       };
       reader.readAsDataURL(imageFile);
@@ -174,7 +176,6 @@ const tags = data.data;
           }
 
 
-
           if (metadata["parameters"]) {
             console.log("AUTOMATIC111");
             const object = metadata["parameters"]
@@ -184,7 +185,6 @@ const tags = data.data;
           }
 
 
-
         }
       } catch (error) {
         console.error("Failed to read metadata:", error);
@@ -192,10 +192,9 @@ const tags = data.data;
     }
 
     private fillForm(data: ImageObject) {
-      const form = document.querySelector("#image-form") as HTMLFormElement;
 
       for (const key in data) {
-        const element = form.querySelector(`[name="${key}"]`) as
+        const element = this.formEl.querySelector(`[name="${key}"]`) as
           | HTMLInputElement
           | HTMLTextAreaElement
           | HTMLSelectElement
@@ -206,13 +205,21 @@ const tags = data.data;
       }
     }
 
+    private toggleLoadingPublishImage(): void {
+      
+      this.publishButtonSubmitEl.classList.toggle("opacity-70");
+      this.publishButtonSubmitEl.disabled = !this.publishButtonSubmitEl.disabled;
+      this.loadingEl.classList.toggle("active");
+      // publishButtonSubmitEl.innerHTML="PUBLISHING..."
+    }
+
     private resetForm() {
-      const form = document.querySelector("#image-form") as HTMLFormElement;
-      form.reset();
+      this.formEl.reset();
     }
 
     private async handleSubmit(event: Event) {
       event.preventDefault();
+      this.toggleLoadingPublishImage();
 
       const form = event.target as HTMLFormElement;
       const data = {};
@@ -249,7 +256,9 @@ const tags = data.data;
           this.resetForm();
           // ??NOTE : reloqd des datas et un close de la modal + u message de succes dans la modale
           closeDialogId("uploadImage");
-          openDialogId("successUploadImage");
+          this.resetForm();
+          this.toggleLoadingPublishImage()
+          openDialogId("success-upload-image");
         } else {
           console.error("Failed to submit data:", response.statusText);
         }
@@ -259,9 +268,5 @@ const tags = data.data;
     }
   }
 
-  const imageMetadataForm = new ImageMetadataForm(
-    "image-form",
-    "imagePreview",
-    "image"
-  );
+  const imageMetadataForm = new ImageMetadataForm();
 </script>

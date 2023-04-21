@@ -1,4 +1,4 @@
-import { ImageObject } from "../types/ImageObject";
+import { ImageObject } from "../../types/ImageObject";
 
   export default function convertAutomatic111Metadata(input: string): ImageObject {
 
