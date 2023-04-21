@@ -3,5 +3,7 @@
 
 export const SITE_TITLE = 'Bad Journey';
 export const SITE_DESCRIPTION = 'Welcome to the Bad Journey!';
-export const BEARER_TOKEN = 'eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf';
-export const API_URL = 'http://localhost:1337/api/';
+export const BEARER_TOKEN = '1d469a6347bc6acca51bef642fbe1377aea753ccac7b1d4a57036c85207c52146b8e216b4d84306e31dfb1fe8e4f3051fb16a5694757da3e7c63de14866a17d455c047aa0839608f7443145fc72714fc3421f3b8f32a574fc90bc3682972db9569bbf0101bed50a3ec2b34d6baca93af0f8b8d0e37f151e35ef2460a2f2622c5';
+export const API_URL = 'https://hammerhead-app-377qb.ondigitalocean.app/api/';
+export const IMAGES_URL = 'https://hammerhead-app-377qb.ondigitalocean.app';
+// export const API_URL = 'http://localhost:1337/api/';

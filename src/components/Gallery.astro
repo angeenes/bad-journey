@@ -16,10 +16,9 @@ import Dialog from "./Dialog.astro";
 
 <script>
 
-import { API_URL, BEARER_TOKEN } from "../consts";
+import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../consts";
 
   class Gallery {
-    url: string;
     currentPage: number;
     itemsPerPage: number;
     total: number | null;
@@ -27,7 +26,6 @@ import { API_URL, BEARER_TOKEN } from "../consts";
     loading: boolean;
 
     constructor() {
-      this.url = "http://localhost:1337";
       this.currentPage = 1;
       this.itemsPerPage = 10;
       this.total = null;
@@ -89,7 +87,7 @@ import { API_URL, BEARER_TOKEN } from "../consts";
       return `
     <div class="card">
       <img width="320px" height="100%"
-        src="${this.url}${small?.url ?? medium?.url}"
+        src="${IMAGES_URL}${small?.url ?? medium?.url}"
         alt="Image for post ${item?.attributes?.file_name}"
         loading="lazy" class="w-full card-img"
         style="transition-delay : ${index * 250}ms"
@@ -135,7 +133,7 @@ import { API_URL, BEARER_TOKEN } from "../consts";
         <p>tag: ${item.attributes.tag.data}</p>
       </div>
       <img width="320px" height="100%"
-        src="${this.url}${medium?.url ?? small?.url}"
+        src="${IMAGES_URL}${medium?.url ?? small?.url}"
         alt="Image for post ${item.attributes.file_name}"
         loading="lazy" class="min-h-[160px]"
       >
