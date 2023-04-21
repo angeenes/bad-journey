@@ -2,19 +2,19 @@
 import Dialog from "./Dialog.astro";
 
 
-const url = "http://localhost:1337";
-const apiToken =
-  "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
+// const url = "http://localhost:1337";
+// const apiToken =
+//   "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
 
-let endpoint = `${url}/api/tags`;
-const headers = {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${apiToken}`,
-};
+// let endpoint = `${url}/api/tags`;
+// const headers = {
+//   "Content-Type": "application/json",
+//   Authorization: `Bearer ${apiToken}`,
+// };
 
-const response = await fetch(endpoint, { headers });
-const data = await response.json();
-const tags = data.data;
+// const response = await fetch(endpoint, { headers });
+// const data = await response.json();
+// const tags = data.data;
 
 ---
 
@@ -90,9 +90,9 @@ const tags = data.data;
       <label for="tags">
         category tags
         <select name="tags" id="tags" multiple>
-          {tags.map((tag) => (
+          <!-- {tags.map((tag) => (
             <option value={tag.attributes.name}>{tag.attributes.name}</option>
-          ))}
+          ))} -->
         </select>
       </label>
       <button
@@ -105,6 +105,7 @@ const tags = data.data;
 </Dialog>
 
 <script>
+  import { API_URL, BEARER_TOKEN } from "../consts";
   import convertAutomatic111Metadata from "../assets/js/convertAutomatic111Metadata.js";
   import convertInvokeMetadata from "../assets/js/convertInvokeMetadata.js";
   import convertMochiMetadata from "../assets/js/convertMochiMetadata.js";
@@ -209,11 +210,6 @@ const tags = data.data;
       event.preventDefault();
 
       const form = event.target as HTMLFormElement;
-
-      const BEARER_TOKEN =
-        "eaaee52512d5885e2f301c3d39b314eda624605e6c94e190c5a21a28dd4a5065f5a652940320ae8a19c2ad4499bcf54d86c931f83dbff7c57c26fd0c3b920bf7b5dfaa9eea973c8863b2070d33e46582ed88c6266aa57243583a95564ae3465009362aec750c1aa6df841e4e3edb9db6c337474d4f5bb44514728f2db06485bf";
-      const API_URL = "http://localhost:1337/api/images";
-
       const data = {};
       const formData = new FormData();
 

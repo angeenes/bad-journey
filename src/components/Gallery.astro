@@ -3,7 +3,6 @@ import Dialog from "./Dialog.astro";
 ---
 
 <section class="container-full">
-  <!-- grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 -->
   <article id="gallery" class="block w-full relative"></article>
   <div id="load-more" class="text-center">Loading...</div>
 </section>
@@ -15,15 +14,17 @@ import Dialog from "./Dialog.astro";
 <!-- <script is:inline src="https://cdn.jsdelivr.net/npm/minimasonry@latest/build/minimasonry.min.js"></script> -->
 <script is:inline src="/mini-masonry.js"></script>
 
-<script is:inline>
+<script>
+
+import { API_URL, BEARER_TOKEN } from "../consts";
+
   class Gallery {
-    // url: string;
-    // currentPage: number;
-    // itemsPerPage: number;
-    // total: number | null;
-    // loadedCount: number;
-    // loading: boolean;
-    // apiToken: string;
+    url: string;
+    currentPage: number;
+    itemsPerPage: number;
+    total: number | null;
+    loadedCount: number;
+    loading: boolean;
 
     constructor() {
       this.url = "http://localhost:1337";
@@ -45,10 +46,10 @@ import Dialog from "./Dialog.astro";
 
     async fetchData(page) {
       const tags = localStorage.getItem("tags");
-      let endpoint = `${this.url}/api/images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.itemsPerPage}`;
+      let endpoint = `${API_URL}images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.itemsPerPage}`;
       const headers = {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiToken}`,
+        Authorization: `Bearer ${BEARER_TOKEN}`,
       };
 
       if (tags) {

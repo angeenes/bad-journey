@@ -1,7 +1,10 @@
 ---
 import Dialog from '../components/Dialog.astro'
 ---
- <button id="openModalButton">Account</button>
+ <button id="openModalButton" class="uppercase mr-5 font-semibold"> 
+  <img id="profile-picture" src="" alt="profile picture">
+  Account
+</button>
 
   <Dialog id="loginDialog" title="LOGIN">
     <form id="loginForm">
@@ -14,7 +17,21 @@ import Dialog from '../components/Dialog.astro'
   </Dialog>
   
   <script>
+
+import { User, UserObject } from "../assets/types/userObject";
 import { API_URL } from "../consts";
+
+const openModalButton = document.getElementById('openModalButton');
+    const loginDialog = document.getElementById('loginDialog');
+    if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement) {
+      openModalButton.addEventListener('click', () => {
+        loginDialog.showModal();
+      });
+      loginDialog.querySelector('button:not([type="submit"])').addEventListener('click', () => {
+        loginDialog.close();
+      });
+    }
+
 
     class Authenticator {
       constructor(url) {
@@ -39,7 +56,8 @@ import { API_URL } from "../consts";
               throw new Error('Network response was not ok');
             }
         })
-        .then(function(data) {
+        .then(function(data: UserObject) {
+
             const jwt = data.jwt;
             const user = data.user;
 
@@ -47,20 +65,54 @@ import { API_URL } from "../consts";
             console.log('User token', jwt);
 
             const errorElement = document.getElementById('error');
-            errorElement.style.display = 'none';
+            if(errorElement){
+              errorElement.style.display = 'none';
+            }
 
             const usernameElement = document.getElementById('username');
-            usernameElement.textContent = 'Welcome, ' + user.username;
-            usernameElement.style.display = 'block';
+            if(usernameElement){
+              usernameElement.textContent = 'Welcome, ' + user.username;
+              usernameElement.style.display = 'block';
+            }
 
             localStorage.setItem('jwt', jwt);
+            localStorage.setItem('user', JSON.stringify(user));
+
+            this.allowAccess();
+
         })
         .catch(function(error) {
             console.log('An error occurred:', error);
 
             const errorElement = document.getElementById('error');
-            errorElement.style.display = 'block';
+            if(errorElement){
+              errorElement.style.display = 'block';
+            }
         });
+      }
+
+      allowAccess() {
+        const jwt = localStorage.getItem('jwt');
+        const user: User = localStorage.getItem('user') as User;
+        const openModalButton = document.getElementById('openModalButton');
+        const profilePicutre: HTMLImageElement = document.getElementById('profile-picture') as HTMLImageElement;
+        // console.log('jwt', jwt);
+        // console.log('user', user);
+        if (jwt && user) {
+          console.log('JWT FOUND');
+          console.log('USER FOUND');
+          console.log('openModalButton', openModalButton);
+          if(openModalButton && profilePicutre){
+            const userJSON = JSON.parse(user);
+            console.log('user.username', userJSON)
+            openModalButton.innerHTML = userJSON.username;
+            // profilePicutre.src = userJSON.profilePicture.url;
+          }
+          loginDialog.close();
+          return true;
+        } else {
+          return false;
+        }
       }
     }
 
@@ -90,14 +142,11 @@ import { API_URL } from "../consts";
     const loginForm = new LoginForm(authenticator);
     loginForm.setupEventListeners();
 
-    const openModalButton = document.getElementById('openModalButton');
-    const loginDialog = document.getElementById('loginDialog');
-    if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement) {
-      openModalButton.addEventListener('click', () => {
-        loginDialog.showModal();
-      });
-      loginDialog.querySelector('button:not([type="submit"])').addEventListener('click', () => {
-        loginDialog.close();
-      });
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      // if (!authenticator.allowAccess()) {
+        // loginDialog.showModal();
+      // }
+      authenticator.allowAccess();
+    });
+
   </script>
