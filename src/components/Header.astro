@@ -5,7 +5,10 @@ import Login from '../components/Login.astro';
 ---
 
 <header class="header">
-  <h2 class="left">{SITE_TITLE}</h2>
+  <h2 class="left flex gap-4 justify-center items-center">
+	<img src="img/logo.webp" alt="logo">
+	<span class="uppercase font-black">	{SITE_TITLE}</span>
+</h2>
   <section class="center"></section>
   <section class="right">
 	<Login />

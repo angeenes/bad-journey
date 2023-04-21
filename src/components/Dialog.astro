@@ -6,13 +6,13 @@ export interface Props {
   className? : string;
 }
 
-const { title, id, buttonLabel, className} = Astro.props;
+const { title, id, buttonLabel, className, classBg} = Astro.props;
 ---
 
 
   <button data-id={id} onclick="openDialog(event)" class:list={[className, { hidden: !buttonLabel }]}>{buttonLabel}</button>
 
-  <dialog id={id} >
+  <dialog id={id} class:list={[classBg]}>
     <button type="button" data-id={id}  onclick="closeDialog(event)" class="absolute top-2 right-2"
       >X</button
     >

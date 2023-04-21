@@ -8,7 +8,8 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
     loadedCount: number;
     loading: boolean;
 
-    constructor() {
+    constructor(
+    ) {
       this.currentPage = 1;
       this.itemsPerPage = 10;
       this.total = null;
@@ -101,27 +102,59 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
         },
       } = item;
 
+      setTimeout(() => {
+        const buttonCopyPrompt: HTMLButtonElement = document.getElementById("button-copy-prompt") as HTMLButtonElement
+        buttonCopyPrompt.addEventListener('click', this.copyPrompt);
+      }, 1000);
+
       return `
-    <div class="flex">
-      <div>
-        <p>Prompt : ${item.attributes.prompt}</p>
-        <p>Negative prompt : ${item.attributes.negative_promt}</p>
-        <p>Height: ${item.attributes.height}</p>
-        <p>Width: ${item.attributes.width}</p>
-        <p>cfg_scale: ${item.attributes.cfg_scale}</p>
-        <p>seed: ${item.attributes.seed}</p>
-        <p>steps: ${item.attributes.steps}</p>
-        <p>generator: ${item.attributes.generator}</p>
-        <p>model: ${item.attributes.model}</p>
-        <p>tag: ${item.attributes.tag.data}</p>
-      </div>
+    <div class="flex gap-16 min-h-[340px]">
       <img width="320px" height="100%"
         src="${IMAGES_URL}${medium?.url ?? small?.url}"
         alt="Image for post ${item.attributes.file_name}"
-        loading="lazy" class="min-h-[160px]"
+        loading="lazy" class="min-h-[160px] h-fit"
       >
+      <div class="rounded-2xl shadow-lg p-6 relative">
+        <p class="font-bold">Prompt</p>
+        <p id="prompt-to-copy">${item.attributes.prompt}</p>
+        <p class="font-bold mt-4">Negative prompt</p>
+        <p>${item.attributes.negative_promt?? 'N/A'}</p>
+        <div class="flex  gap-2 mt-4">
+          <p class="font-bold">Height: </p>
+          <p>${item.attributes.height}</p>
+          <p class="font-bold">Width: </p>
+          <p>${item.attributes.width}</p>
+          <p class="font-bold">cfg_scale: </p>
+          <p>${item.attributes.cfg_scale}</p>
+          <p class="font-bold">seed: </p>
+          <p>${item.attributes.seed}</p>
+          <p class="font-bold">steps: </p>
+          <p>${item.attributes.steps}</p>
+          <p class="font-bold">generator: </p>
+          <p>${item.attributes.generator}</p>
+        </div>
+         <div class="flex  gap-2 mt-4">
+            <p class="font-bold">model: </p>
+            <p>${item.attributes.model}</p>
+            <p class="font-bold">tag: </p>
+            <p>${item.attributes.tag.data?? 'N/A'}</p>
+         </div>
+         <label id="button-copy-prompt" class="absolute left-7 bottom-4 flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-copy.svg' alt='copy'> <span> Copy prompt</span> </label>
+      </div>
     </div>
   `;
+    }
+
+    copyPrompt() {
+      const prompt: HTMLParagraphElement = document.getElementById("prompt-to-copy") as HTMLParagraphElement;
+      const buttonCopyPrompt: HTMLButtonElement = document.getElementById("button-copy-prompt") as HTMLButtonElement
+      if (prompt && buttonCopyPrompt) {
+        const text = prompt.textContent;
+        if(text){
+          navigator.clipboard.writeText(text);
+          buttonCopyPrompt.getElementsByTagName('span')[0].textContent = 'Copied !';
+        }
+      }
     }
 
     renderCards(data) {
