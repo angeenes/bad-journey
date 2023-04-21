@@ -200,10 +200,9 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
           const images = gallery.querySelectorAll("img");
           this.loadedCount = 0;
           images.forEach((image) => {
-            if (this.total === images.length && loadMoreElement) {
-              loadMoreElement.textContent = "No more images to load";
-              return;
-            }
+            console.log('this.total', this.total);
+            console.log('images.length', images.length);
+            
             if (image.complete) {
               this.loadedCount++;
             } else {
@@ -213,7 +212,14 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
                 if (this.loadedCount === images.length) {
                   const newData = await this.fetchData(this.currentPage);
                   this.renderCards(newData);
+                  // console.log('new data',await newData.meta.pagination.total);
+                  
                   // console.log(this.loadedCount, images.length);
+
+                  if (newData.data.length === 0 && loadMoreElement) {
+                    loadMoreElement.textContent = "You reached the end of your journey";
+                    return;
+                  }
                 }
               });
             }
@@ -223,7 +229,15 @@ import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
             const newData = await this.fetchData(this.currentPage);
             this.renderCards(newData);
             // console.log(this.loadedCount, images.length);
+            this.total = await newData.meta.pagination.total;
+            // console.log('new data',await newData.data.length);
             // console.log('new data',await newData.meta.pagination.total);
+
+            if (newData.data.length === 0 && loadMoreElement) {
+              loadMoreElement.textContent = "You reached the end of your journey";
+              return;
+            }
+
           }
         }
       });
