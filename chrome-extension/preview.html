@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Image Preview</title>
+</head>
+
+<body>
+    <img id="previewImage" alt="preview" />
+    <script>
+        chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+            if (message.imageURL) {
+                var previewImage = document.getElementById("previewImage");
+                previewImage.src = message.imageURL;
+            }
+        });
+    </script>
+</body>
+
+</html>
