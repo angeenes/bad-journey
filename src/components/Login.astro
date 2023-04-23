@@ -8,8 +8,8 @@ import Dialog from '../components/Dialog.astro'
 
   <Dialog id="loginDialog" title="LOGIN">
     <form id="loginForm">
-      <input type="email" id="email" name="email" placeholder="Email"><br><br>
-      <input type="password" id="password" name="password" placeholder="Password"><br><br>
+      <input type="email" id="email" name="email" placeholder="Email" autocomplete="username"><br><br>
+      <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password"><br><br>
       <button type="submit">Log in</button>
     </form>
     <p id="error" style="color: red; display: none;">Invalid email or password</p>

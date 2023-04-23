@@ -17,8 +17,10 @@ import Dialog from "./Dialog.astro";
 <script>
   import { Gallery } from "../assets/js/gallery.js";
 
-  console.log('ICI');
+  console.log('GALLERY PAGE STARTS');
 
- const gallery = new Gallery();
+//  const gallery = new Gallery();
+export const loader = new Gallery();
+loader.init();
 
 </script>
