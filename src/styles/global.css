@@ -6,6 +6,36 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+header {
+  flex: 0 1 auto;
+  /* The above is shorthand for:
+  flex-grow: 0,
+  flex-shrink: 1,
+  flex-basis: auto
+  */
+}
+
+main {
+  flex: 1 1 auto;
+  display: flex;
+}
+
+footer {
+  flex: 0 1 40px;
+}
+
+
+
 body {
   font-family: 'Inter', sans-serif;
   --color-primary: #172328;
