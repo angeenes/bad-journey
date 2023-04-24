@@ -1,13 +1,13 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-
 type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
 
 const { pathname } = Astro.url;
 const isActive = href === pathname || href === pathname.replace(/\/$/, '');
+
 ---
 <a href={href} class:list={[className, { active: isActive }]} {...props} class="hero-link">
 	<slot />
@@ -28,52 +28,52 @@ const isActive = href === pathname || href === pathname.replace(/\/$/, '');
 
 <script>
 
-import { Gallery } from "../assets/js/gallery.js";
+// import { Gallery } from "../assets/js/gallery.js";
 
 
 // const gallery = new Gallery();
 
-class HeroLink {
-    url: string;
-    currentPage: number;
-    itemsPerPage: number;
-    loading: boolean;
-    apiToken: string;
+// class HeroLink {
+//     url: string;
+//     currentPage: number;
+//     itemsPerPage: number;
+//     loading: boolean;
+//     apiToken: string;
 
-    constructor() {
-      this.init();
-    }
+//     constructor() {
+//       this.init();
+//     }
 
-	click(){
-		const HrefElement = document.getElementsByClassName('hero-link');
-		Array.from(HrefElement)?.forEach((element: HTMLLinkElement) => {
-			const tag =  element.href.split('/').slice(3)[0];
-			element.addEventListener('click', (e) => {
-				e.preventDefault();
-				this.toggleActiveNavItem(HrefElement, e);
-				localStorage.tags = tag !== '/' ? tag : '';
-				gallery.reset() 
-			 })
-		})
+// 	click(){
+// 		const HrefElement = document.getElementsByClassName('hero-link');
+// 		Array.from(HrefElement)?.forEach((element: HTMLLinkElement) => {
+// 			const tag =  element.href.split('/').slice(3)[0];
+// 			element.addEventListener('click', (e) => {
+// 				e.preventDefault();
+// 				this.toggleActiveNavItem(HrefElement, e);
+// 				localStorage.tags = tag !== '/' ? tag : '';
+// 				gallery.reset() 
+// 			 })
+// 		})
 
-	}
+// 	}
 	
-	toggleActiveNavItem(HrefElement, e: EventTarget) {
-		e.target.classList.add('active');
-		Array.from(HrefElement)?.forEach((element: HTMLLinkElement) => {
-			if (element !== e.target) {
-				element.classList.remove('active');
-			}
-		});
-	}
-;
+// 	toggleActiveNavItem(HrefElement, e: EventTarget) {
+// 		e.target.classList.add('active');
+// 		Array.from(HrefElement)?.forEach((element: HTMLLinkElement) => {
+// 			if (element !== e.target) {
+// 				element.classList.remove('active');
+// 			}
+// 		});
+// 	}
+// ;
 
 
-    async init() {
-	  this.click();
-    }
-  }
+//     async init() {
+// 	  this.click();
+//     }
+//   }
 
-  const heroLink = new HeroLink();
+//   const heroLink = new HeroLink();
 
 </script>

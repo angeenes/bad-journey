@@ -1,26 +1,33 @@
 ---
 import Dialog from "./Dialog.astro";
+
+export interface Props {
+  tag?: string;
+}
+
+const { tag } = Astro.props;
 ---
 
 <section class="container-full">
-  <article id="gallery" class="block w-full relative"></article>
-  <div id="load-more" class="text-center py-7 text-gray-400">Loading...</div>
+  <article id="gallery" class="block w-full relative" data-tag={tag}></article>
+  <div id="load-more" class="text-center py-7 text-gray-400 mt-40">Loading...</div>
 </section>
 
-<Dialog id="img-dialog" title="infos">
+<Dialog id="img-dialog" title="infos" classDialog={'md:mx-44'}>
   <p id="image-dialog-text"></p>
 </Dialog>
-
-<!-- <script is:inline src="https://cdn.jsdelivr.net/npm/minimasonry@latest/build/minimasonry.min.js"></script> -->
-<script is:inline src="/mini-masonry.js"></script>
 
 <script>
   import { Gallery } from "../assets/js/gallery.js";
 
   console.log('GALLERY PAGE STARTS');
 
-//  const gallery = new Gallery();
-export const loader = new Gallery();
-loader.init();
+  const dataTag = document.querySelector('#gallery').dataset.tag;
+  // if (dataTag) {
+  //   console.log('dataTag', dataTag);
+  // }
+
+  export const gallery = new Gallery(dataTag);
+  gallery.init();
 
 </script>

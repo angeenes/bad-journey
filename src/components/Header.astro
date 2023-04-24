@@ -5,12 +5,12 @@ import Login from '../components/Login.astro';
 ---
 
 <header class="header">
-  <h2 class="left flex gap-4 justify-center items-center">
-	<img src="img/logo.webp" alt="logo">
+  <a href="/" class="flex gap-4 justify-center items-center">
+	<img src="/img/logo.webp" alt="logo Bad Journey">
 	<span class="uppercase font-black">	{SITE_TITLE}</span>
-</h2>
+</a>
   <section class="center"></section>
-  <section class="right">
+  <section class="">
 	<Login />
 	<AddPicture />
   </section>
@@ -29,7 +29,7 @@ import Login from '../components/Login.astro';
 		height: 80px;
 		background-color: var(--color-primary);
 		color: white;
-		section,h2 {
+		section, a {
 			margin: 0 2rem;
 		}
 		.center {

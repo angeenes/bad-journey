@@ -1,6 +1,7 @@
 
 import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
 import { DatasImages } from "../types/ApiDatasImages";
+import MiniMasonry from "minimasonry";
 
 export class Gallery {
   private readonly url: string;
@@ -8,18 +9,24 @@ export class Gallery {
   private page: number;
   private readonly imagesSection: HTMLDivElement;
   private readonly imageDialogText: HTMLDivElement;
+  private readonly loadMoreTextEl: HTMLDivElement;
   private isLoading: boolean;
+  private noMoreImages: boolean;
   private readonly debounceTimeout: number;
   private masonryInstance: any;
+  public tag: string;
 
-  constructor() {
+  constructor(tag: string) {
+    this.tag = tag;
     this.url = API_URL;
     this.pageSize = 10;
     this.page = 1;
     this.imagesSection = document.getElementById('gallery') as HTMLDivElement;
     this.imageDialogText = document.getElementById('image-dialog-text') as HTMLDivElement;
+    this.loadMoreTextEl = document.getElementById('load-more') as HTMLDivElement;
     this.isLoading = false;
-    this.debounceTimeout = 300;
+    this.noMoreImages = false;
+    this.debounceTimeout = 1000;
     this.masonryInstance = new MiniMasonry({
       container: '#gallery',
       gutter: 10,
@@ -66,7 +73,15 @@ export class Gallery {
       Authorization: `Bearer ${BEARER_TOKEN}`,
     };
 
-    return fetch(`${this.url}images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}`,
+    console.log('tag', this.tag);
+
+    let endpointTags = '';
+
+    if (this.tag) {
+      endpointTags += `&filters[tag][name][$eq]=${this.tag}`;
+    }
+
+    return fetch(`${this.url}images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
       { headers }
     )
       .then(response => response.json())
@@ -121,12 +136,14 @@ export class Gallery {
         alt="Image gallery details"
         loading="lazy" class="min-h-[160px] h-fit"
       >
-      <div class="rounded-2xl shadow-lg p-6 relative">
+      <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
+      <section>
         <p class="font-bold">Prompt</p>
         <p id="prompt-to-copy">${item.prompt}</p>
         <p class="font-bold mt-4">Negative prompt</p>
         <p>${item.negative_promt ?? 'N/A'}</p>
-        <div class="flex  gap-2 mt-4">
+        
+        <div class="flex gap-2 mt-4">
           <p class="font-bold">Height: </p>
           <p>${item.height}</p>
           <p class="font-bold">Width: </p>
@@ -140,14 +157,21 @@ export class Gallery {
           <p class="font-bold">generator: </p>
           <p>${item.generator}</p>
         </div>
-         <div class="flex  gap-2 mt-4">
-            <p class="font-bold">model: </p>
-            <p>${item.model}</p>
+        <div class="mt-4">
+        <div class="flex gap-2">
+          <p class="font-bold">model: </p>
+          <p>${item.model}</p>
+          </div>
+            <div class="flex gap-2">
             <p class="font-bold">tag: </p>
             <p>${item.tag.data ?? 'N/A'}</p>
-         </div>
-         <label id="button-copy-prompt" class="absolute left-7 bottom-4 flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-copy.svg' alt='copy'> <span> Copy prompt</span> </label>
-         <label id="button-twitter-share" class="absolute right-7 bottom-4 flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-twitter.svg' alt='twitter'> <span> Share on Twitter</span> </label>
+          </div>
+        </div>
+        </section>
+        <section class="flex justify-between mt-7">
+         <label id="button-copy-prompt" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-copy.svg' alt='copy'> <span> Copy prompt</span> </label>
+         <label id="button-twitter-share" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-twitter.svg' alt='twitter'> <span> Share on Twitter</span> </label>
+        </section>
       </div>
     </div>
   `;
@@ -176,6 +200,8 @@ export class Gallery {
         await this.addImagesToSection(images);
       } else {
         console.error('Aucune image supplémentaire à charger.');
+        this.loadMoreTextEl.innerText = 'You reached the end of your journey.No more images to load';
+        this.noMoreImages = true;
       }
     } catch (error) {
       console.error('Erreur lors du chargement des images supplémentaires:', error);
@@ -196,6 +222,7 @@ export class Gallery {
         this.isLoading = false;
       } else {
         console.error('Aucune image n\'a été chargée.');
+        this.loadMoreTextEl.innerText = 'No images to load';
       }
     } catch (error) {
       console.error('Erreur lors du chargement des images:', error);
@@ -205,16 +232,18 @@ export class Gallery {
 
   private handleScroll(): void {
     console.log('handleScroll');
+    // console.log('this.noMoreImages', this.noMoreImages);
 
-    if (!this.isLoading) {
+
+    if (!this.isLoading && !this.noMoreImages) {
       // const { scrollTop, scrollHeight, clientHeight } = document.body;
-      // const threshold = 100;
+      const threshold = 500;
 
       // console.log('scrollTop:', scrollTop);
       // console.log('scrollHeight:', scrollHeight);
       // console.log('clientHeight:', clientHeight);
 
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight + threshold) {
         console.log('BOTTOM');
         this.isLoading = true;
         setTimeout(() => {

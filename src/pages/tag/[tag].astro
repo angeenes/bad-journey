@@ -1,0 +1,43 @@
+---
+import Gallery from "../../components/Gallery.astro";
+import { API_URL, BEARER_TOKEN, SITE_TITLE, SITE_DESCRIPTION} from "../../consts";
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Hero from '../../components/Hero.astro';
+
+export async function getStaticPaths() {
+  let endpoint = `${API_URL}tags`;
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${BEARER_TOKEN}`,
+  };
+  const data = await fetch(endpoint, { headers }).then(response => response.json());
+  const tags = data.data;
+
+  return tags.map((tag) => {
+    return {
+      params: { tag: tag.attributes.name },
+      // props: { post },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+// const { post } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header title={SITE_TITLE} />
+		<Hero/>
+		<main>
+			<Gallery tag={tag} />
+		</main>
+		<Footer />
+	</body>
+</html>

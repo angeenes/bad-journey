@@ -18,7 +18,7 @@ const tags = data.data;
   <nav class="mb-32">
     <HeroLink href="/">Latest</HeroLink>
     {tags.map((tag) => (
-      <HeroLink href={tag.attributes.name}>{tag.attributes.name}</HeroLink>
+      <HeroLink href={'/tag/' + tag.attributes.name}>{tag.attributes.name}</HeroLink>
     ))}
   </nav>
   <h1 class="hero-catch text-xl text-left font-black text-white mb-4"><span>WELCOME TO THE</span> <div class="text-9xl">BAD JOURNEY</div></h1>
