@@ -55,13 +55,14 @@ export class Gallery {
     imageElements.forEach((card) => {
       setTimeout(() => {
         card.classList.add('is-visible');
+        this.masonryInstance.layout();
       }, 1500);
     });
 
     // Call layout() once all cards are added to the DOM
-    setTimeout(() => {
-      this.masonryInstance.layout();
-    }, 500);
+    // setTimeout(() => {
+    //   this.masonryInstance.layout();
+    // }, 500);
   }
 
 
