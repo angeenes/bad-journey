@@ -10,6 +10,7 @@ export class Gallery {
   private readonly imagesSection: HTMLDivElement;
   private readonly imageDialogText: HTMLDivElement;
   private readonly loadMoreTextEl: HTMLDivElement;
+  private readonly loaderBarEl: HTMLDivElement;
   private isLoading: boolean;
   private noMoreImages: boolean;
   private readonly debounceTimeout: number;
@@ -24,6 +25,7 @@ export class Gallery {
     this.imagesSection = document.getElementById('gallery') as HTMLDivElement;
     this.imageDialogText = document.getElementById('image-dialog-text') as HTMLDivElement;
     this.loadMoreTextEl = document.getElementById('load-more') as HTMLDivElement;
+    this.loaderBarEl = document.getElementById('loader-bar') as HTMLDivElement;
     this.isLoading = false;
     this.noMoreImages = false;
     this.debounceTimeout = 500;
@@ -203,6 +205,7 @@ export class Gallery {
         console.error('Aucune image supplémentaire à charger.');
         this.loadMoreTextEl.innerText = 'You reached the end of your journey.No more images to load';
         this.noMoreImages = true;
+        this.loaderBarEl.style.display = 'none';
       }
     } catch (error) {
       console.error('Erreur lors du chargement des images supplémentaires:', error);

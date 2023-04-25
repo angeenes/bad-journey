@@ -10,7 +10,8 @@ const { tag } = Astro.props;
 
 <section class="container-full">
   <article id="gallery" class="block w-full relative" data-tag={tag}></article>
-  <div id="load-more" class="text-center py-7 text-gray-400 mt-40">Loading...</div>
+  <div id="load-more" class="text-center text-gray-400 mt-40 pt-7 pb-1">LOADING</div>
+  <i id="loader-bar" class="loader-bar"></i>
 </section>
 
 <Dialog id="img-dialog" title="infos">
@@ -22,7 +23,7 @@ const { tag } = Astro.props;
 
   console.log('GALLERY PAGE STARTS');
 
-  const dataTag = document.querySelector('#gallery').dataset.tag;
+  const dataTag = document.querySelector('#gallery')?.dataset.tag?? '';
   // if (dataTag) {
   //   console.log('dataTag', dataTag);
   // }
