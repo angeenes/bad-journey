@@ -26,7 +26,7 @@ export class Gallery {
     this.loadMoreTextEl = document.getElementById('load-more') as HTMLDivElement;
     this.isLoading = false;
     this.noMoreImages = false;
-    this.debounceTimeout = 1000;
+    this.debounceTimeout = 500;
     this.masonryInstance = new MiniMasonry({
       container: '#gallery',
       gutter: 10,
@@ -133,9 +133,9 @@ export class Gallery {
     return `
     <div class="flex gap-16 min-h-[340px]">
       <img width="320px" height="100%"
-        src="${IMAGES_URL}${item?.image.data.attributes.formats.small?.url}"
+        src="${IMAGES_URL}${item?.image.data.attributes.formats.medium?.url ?? item?.image.data.attributes.formats.small?.url}"
         alt="Image gallery details"
-        loading="lazy" class="min-h-[160px] h-fit"
+        loading="lazy" class="min-h-[160px] h-fit hover:w-min cursor-pointer"
       >
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
