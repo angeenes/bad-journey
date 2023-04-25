@@ -24,9 +24,6 @@ const { tag } = Astro.props;
   console.log('GALLERY PAGE STARTS');
 
   const dataTag = document.querySelector('#gallery')?.dataset.tag?? '';
-  // if (dataTag) {
-  //   console.log('dataTag', dataTag);
-  // }
 
   export const gallery = new Gallery(dataTag);
   gallery.init();

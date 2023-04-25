@@ -99,7 +99,7 @@ export class Gallery {
       const html = `
         <div class="card">
           <img width="320"
-            src="${IMAGES_URL}${attributes.image.data.attributes.formats.small.url}"
+            src="${IMAGES_URL}${attributes.image.data.attributes.formats.medium.url}"
             alt="Image gallery"
             loading="lazy" class="w-full card-img h-full"
             style="transition-delay : ${index * 250}ms"
@@ -135,7 +135,7 @@ export class Gallery {
     return `
     <div class="flex gap-16 min-h-[340px]">
       <img width="320px" height="100%"
-        src="${IMAGES_URL}${item?.image.data.attributes.formats.medium?.url ?? item?.image.data.attributes.formats.small?.url}"
+        src="${IMAGES_URL}${item?.image.data.attributes.formats.large?.url ?? item?.image.data.attributes.formats.medium?.url}"
         alt="Image gallery details"
         loading="lazy" class="min-h-[160px] h-fit hover:w-min"
       >
