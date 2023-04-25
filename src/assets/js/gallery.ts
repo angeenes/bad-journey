@@ -135,7 +135,7 @@ export class Gallery {
       <img width="320px" height="100%"
         src="${IMAGES_URL}${item?.image.data.attributes.formats.medium?.url ?? item?.image.data.attributes.formats.small?.url}"
         alt="Image gallery details"
-        loading="lazy" class="min-h-[160px] h-fit hover:w-min cursor-pointer"
+        loading="lazy" class="min-h-[160px] h-fit hover:w-min"
       >
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
