@@ -98,19 +98,20 @@ const openModalButton = document.getElementById('openModalButton');
       }
 
       allowAccess() {
-        console.log('allowAccess');
         const jwt = localStorage.getItem('jwt');
         const user = localStorage.getItem('user');
         const openModalButton = document.getElementById('openModalButton');
         const profilePicutre: HTMLImageElement = document.getElementById('profile-picture') as HTMLImageElement;
-        console.log('jwt LOGIN COMPONENT', jwt);
-        console.log('user', user);
-        if (jwt && user) {
-          console.log('JWT FOUND');
-          console.log('USER FOUND');
+        // console.log('jwt LOGIN COMPONENT', jwt);
+        // console.log('user', user);
+        if (jwt && user && openModalButton) {
+          // console.log('JWT FOUND');
+          // console.log('USER FOUND');
+          const userJSON: User = JSON.parse(user);
+          const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
+          openModalButton.innerHTML = userInitials;
           if(openModalButton && profilePicutre){
-            const userJSON = JSON.parse(user);
-            console.log('user.username', userJSON)
+            // console.log('user.username', userJSON)
             openModalButton.innerHTML = userJSON.username;
             // profilePicutre.src = userJSON.profilePicture.url;
           }
