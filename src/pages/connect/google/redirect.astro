@@ -35,7 +35,8 @@
                 console.log(res);
                 localStorage.setItem("token", res.token);
                 localStorage.setItem("user", JSON.stringify(res.user));
-                window.location.href = "/";
+                // window.location.href = "/";
+                alert("You are now logged in" + res)
             })
             .catch(err => console.log(err));
     }
