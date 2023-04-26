@@ -17,7 +17,7 @@
 <script>
 
     import { GoogleOauth } from "../../../assets/types/googleOauth.js";
-import { API_URL } from "../../../consts.js";
+    import { API_URL } from "../../../consts.js";
 
     function getUrlParameters(): GoogleOauth {
         var params = {};
@@ -29,7 +29,7 @@ import { API_URL } from "../../../consts.js";
 
     function retrieveUserInfos() {
         const params: GoogleOauth = getUrlParameters();
-        console.log(params);
+        console.log(params.access_token);
         this.http.get(`${API_URL}auth/google/callback${params.access_token}`).subscribe((res) => {
             console.log(res);
         });
