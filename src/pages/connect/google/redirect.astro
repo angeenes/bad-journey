@@ -30,7 +30,7 @@
     function retrieveUserInfos() {
         const params: GoogleOauth = getUrlParameters();
         console.log(params.access_token);
-        this.http.get(`${API_URL}auth/google/callback${params.access_token}`).subscribe((res) => {
+        this.http.get(`${API_URL}auth/google/callback?access_token=${params.access_token}`).subscribe((res) => {
             console.log(res);
         });
     }
