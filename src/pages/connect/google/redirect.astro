@@ -33,7 +33,7 @@
             .then(res => res.json())
             .then(res => {
                 console.log(res);
-                localStorage.setItem("token", res.token);
+                localStorage.setItem("jwt", res.jwt);
                 localStorage.setItem("user", JSON.stringify(res.user));
                 // window.location.href = "/";
                 alert("You are now logged in" + res)
