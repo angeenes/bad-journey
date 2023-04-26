@@ -16,12 +16,13 @@
 
 <script>
 
-    import { GoogleOauth } from "../../../assets/types/googleOauth.js";
+    import { string } from "astro/zod.js";
+import { GoogleOauth } from "../../../assets/types/googleOauth.js";
     import { API_URL } from "../../../consts.js";
 
     function getUrlParameters(): GoogleOauth {
         var params = {};
-        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
+        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (str?: string, key: string, value: string) => {
             params[key] = value;
         });
         return params as GoogleOauth;
@@ -29,14 +30,13 @@
 
     function retrieveUserInfos() {
         const params: GoogleOauth = getUrlParameters();
-        console.log(params.access_token);
         fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
             .then(res => res.json())
             .then(res => {
                 console.log(res);
-                // localStorage.setItem("token", res.token);
-                // localStorage.setItem("user", JSON.stringify(res.user));
-                // window.location.href = "/";
+                localStorage.setItem("token", res.token);
+                localStorage.setItem("user", JSON.stringify(res.user));
+                window.location.href = "/";
             })
             .catch(err => console.log(err));
     }
