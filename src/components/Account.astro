@@ -1,4 +1,4 @@
-<article id="account">Account components</article>
+<article id="account" class="bg-primary flex justify-center items-center text-white w-full">Account components</article>
 
 <script>
   import { User } from "../assets/types/userObject";
@@ -34,7 +34,7 @@
         const user = this.user;
         const html = `
         <div class="">
-          <h2>Account</h2>
+          <h2 class="mb-4 text-bold uppercase">Account</h2>
           <p>Username: ${user.username}</p>
           <p>Email: ${user.email}</p>
           <p>Provider: ${user.provider}</p>
@@ -42,6 +42,10 @@
           <p>Blocked: ${user.blocked}</p>
           <p>Created at: ${user.createdAt}</p>
           <p>Updated at: ${user.updatedAt}</p>
+          <section class="flex mt-3 gap-x-5">
+            <button id="btnDisconnect">Disconnect</button>
+            <button id="btnDelete">Delete account</button>
+        </section>
       `;
         this.accountEl.innerHTML = html;
     }

@@ -183,3 +183,9 @@ dialog > .loading.active {
 		transform: scaleX(1);
 	}
 }
+
+
+/* UTILS */
+.bg-primary {
+  background: var(--color-primary);
+}
