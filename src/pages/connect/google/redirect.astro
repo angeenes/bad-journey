@@ -17,7 +17,7 @@
 <script>
 
     import { GoogleOauth } from "../../../assets/types/googleOauth.js";
-import { WEB_APP_URL } from "../../../consts.js";
+import { API_URL } from "../../../consts.js";
 
     function getUrlParameters(): GoogleOauth {
         var params = {};
@@ -30,7 +30,7 @@ import { WEB_APP_URL } from "../../../consts.js";
     function retrieveUserInfos() {
         const params: GoogleOauth = getUrlParameters();
         console.log(params);
-        this.http.get(`https://bd-ai-boom.netlify.app/auth/google/callback${params.access_token}`).subscribe((res) => {
+        this.http.get(`${API_URL}auth/google/callback${params.access_token}`).subscribe((res) => {
             console.log(res);
         });
     }
