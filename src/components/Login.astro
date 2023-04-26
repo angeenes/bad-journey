@@ -23,18 +23,23 @@ import { User, UserObject } from "../assets/types/userObject";
 import { API_URL } from "../consts";
 
 const openModalButton = document.getElementById('openModalButton');
-    const loginDialog = document.getElementById('loginDialog');
-    if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement) {
+    const loginDialog: HTMLDialogElement = document.getElementById('loginDialog') as HTMLDialogElement;
+    if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement && openModalButton instanceof HTMLButtonElement) {
       openModalButton.addEventListener('click', () => {
         loginDialog.showModal();
       });
-      loginDialog.querySelector('button:not([type="submit"])').addEventListener('click', () => {
+      if(loginDialog) {
+        loginDialog?.querySelector('button:not([type="submit"])').addEventListener('click', () => {
         loginDialog.close();
       });
+      }
+
     }
 
 
     class Authenticator {
+      private readonly url: string;
+
       constructor(url) {
         this.url = url;
       }
@@ -93,12 +98,13 @@ const openModalButton = document.getElementById('openModalButton');
       }
 
       allowAccess() {
+        console.log('allowAccess');
         const jwt = localStorage.getItem('jwt');
-        const user: User = localStorage.getItem('user') as User;
+        const user = localStorage.getItem('user');
         const openModalButton = document.getElementById('openModalButton');
         const profilePicutre: HTMLImageElement = document.getElementById('profile-picture') as HTMLImageElement;
-        // console.log('jwt', jwt);
-        // console.log('user', user);
+        console.log('jwt', jwt);
+        console.log('user', user);
         if (jwt && user) {
           console.log('JWT FOUND');
           console.log('USER FOUND');
@@ -142,11 +148,11 @@ const openModalButton = document.getElementById('openModalButton');
     const loginForm = new LoginForm(authenticator);
     loginForm.setupEventListeners();
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // document.addEventListener('DOMContentLoaded', () => {
       // if (!authenticator.allowAccess()) {
         // loginDialog.showModal();
       // }
       authenticator.allowAccess();
-    });
+    // });
 
   </script>
