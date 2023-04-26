@@ -30,9 +30,15 @@
     function retrieveUserInfos() {
         const params: GoogleOauth = getUrlParameters();
         console.log(params.access_token);
-        this.http.get(`${API_URL}auth/google/callback?access_token=${params.access_token}`).subscribe((res) => {
-            console.log(res);
-        });
+        fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);
+                // localStorage.setItem("token", res.token);
+                // localStorage.setItem("user", JSON.stringify(res.user));
+                // window.location.href = "/";
+            })
+            .catch(err => console.log(err));
     }
 
     retrieveUserInfos();
