@@ -16,20 +16,21 @@
 
 <script>
 
-    import { WEB_APP_URL } from "../../../consts.js";
+    import { GoogleOauth } from "../../../assets/types/googleOauth.js";
+import { WEB_APP_URL } from "../../../consts.js";
 
-    function getUrlParameters(): { [key: string]: string } {
+    function getUrlParameters(): GoogleOauth {
         var params = {};
         window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
             params[key] = value;
         });
-        return params;
+        return params as GoogleOauth;
     }
 
     function retrieveUserInfos() {
-        const params = getUrlParameters();
+        const params: GoogleOauth = getUrlParameters();
         console.log(params);
-        this.http.get(`https://bd-ai-boom.netlify.app/auth/google/callback`).subscribe((res) => {
+        this.http.get(`https://bd-ai-boom.netlify.app/auth/google/callback${params.access_token}`).subscribe((res) => {
             console.log(res);
         });
     }
