@@ -1,0 +1,61 @@
+<article id="account">Account components</article>
+
+<script>
+  import { User } from "../assets/types/userObject";
+
+  class Account {
+    private user: User;
+    public accountEl: HTMLElement;
+
+
+    constructor() {
+      this.user = {
+        id: 0,
+        username: "",
+        email: "",
+        provider: "",
+        confirmed: false,
+        blocked: true,
+        createdAt: "",
+        updatedAt: "",
+      };
+      this.accountEl = document.getElementById("account") as HTMLElement;
+    }
+    public async init(): Promise<void> {
+      console.log("account init");
+      this.user = await this.getUser();
+      if (this.user.confirmed) {
+        this.displayAccount();
+      }
+      console.log(this.user);
+    }
+
+    private displayAccount() {
+        const user = this.user;
+        const html = `
+        <div class="">
+          <h2>Account</h2>
+          <p>Username: ${user.username}</p>
+          <p>Email: ${user.email}</p>
+          <p>Provider: ${user.provider}</p>
+          <p>Confirmed: ${user.confirmed}</p>
+          <p>Blocked: ${user.blocked}</p>
+          <p>Created at: ${user.createdAt}</p>
+          <p>Updated at: ${user.updatedAt}</p>
+      `;
+        this.accountEl.innerHTML = html;
+    }
+
+    private getUser(): User | PromiseLike<User> {
+      const userLocalStorage = localStorage.getItem("user");
+      if (!userLocalStorage) {
+        throw new Error("No user in local storage");
+      } else {
+        return JSON.parse(userLocalStorage);
+      }
+    }
+  }
+
+  const account = new Account();
+  account.init();
+</script>
