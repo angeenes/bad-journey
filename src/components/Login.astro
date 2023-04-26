@@ -6,6 +6,10 @@ import Dialog from '../components/Dialog.astro'
   Account
 </button>
 
+<button id="btnConnected" class="uppercase mr-5 font-semibold rounded-full bg-pink-400 text-white" style="display: none;">
+
+</button>
+
   <Dialog id="loginDialog" title="LOGIN">
     <form id="loginForm">
       <input type="email" id="email" name="email" placeholder="Email" autocomplete="username"><br><br>
@@ -22,7 +26,8 @@ import Dialog from '../components/Dialog.astro'
 import { User, UserObject } from "../assets/types/userObject";
 import { API_URL } from "../consts";
 
-const openModalButton = document.getElementById('openModalButton');
+    const openModalButton = document.getElementById('openModalButton');
+    const btnConnected = document.getElementById('btnConnected');
     const loginDialog: HTMLDialogElement = document.getElementById('loginDialog') as HTMLDialogElement;
     if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement && openModalButton instanceof HTMLButtonElement) {
       openModalButton.addEventListener('click', () => {
@@ -102,17 +107,13 @@ const openModalButton = document.getElementById('openModalButton');
         const user = localStorage.getItem('user');
         const openModalButton = document.getElementById('openModalButton');
         const profilePicutre: HTMLImageElement = document.getElementById('profile-picture') as HTMLImageElement;
-        // console.log('jwt LOGIN COMPONENT', jwt);
-        // console.log('user', user);
-        if (jwt && user && openModalButton) {
-          // console.log('JWT FOUND');
-          // console.log('USER FOUND');
+        if (jwt && user && openModalButton && btnConnected) {
           const userJSON: User = JSON.parse(user);
           const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
-          openModalButton.innerHTML = userInitials;
-          if(openModalButton && profilePicutre){
-            // console.log('user.username', userJSON)
-            openModalButton.innerHTML = userJSON.username;
+          openModalButton.style.display = 'none';
+          btnConnected.style.display = 'block';
+          btnConnected.innerHTML = userInitials;
+          if(profilePicutre){
             // profilePicutre.src = userJSON.profilePicture.url;
           }
           loginDialog.close();
