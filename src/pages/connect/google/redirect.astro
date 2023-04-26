@@ -1,0 +1,38 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    REDIRECT FROM GOOGLE
+</body>
+</html>
+
+<script>
+
+    import { WEB_APP_URL } from "../../../consts.js";
+
+    function getUrlParameters(): { [key: string]: string } {
+        var params = {};
+        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(str, key, value) {
+            params[key] = value;
+        });
+        return params;
+    }
+
+    function retrieveUserInfos() {
+        const params = getUrlParameters();
+        console.log(params);
+        this.http.get(`${WEB_APP_URL}/auth/google/callback`, { withCredentials: true }).subscribe((res) => {
+            console.log(res);
+        });
+    }
+
+    retrieveUserInfos();
+</script>
