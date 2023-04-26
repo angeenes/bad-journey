@@ -29,7 +29,7 @@
     function retrieveUserInfos() {
         const params = getUrlParameters();
         console.log(params);
-        this.http.get(`${WEB_APP_URL}/auth/google/callback`, { withCredentials: true }).subscribe((res) => {
+        this.http.get(`https://bd-ai-boom.netlify.app/auth/google/callback`).subscribe((res) => {
             console.log(res);
         });
     }
