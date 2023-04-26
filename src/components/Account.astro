@@ -1,4 +1,13 @@
-<article id="account" class="bg-primary flex justify-center items-center text-white w-full">Account components</article>
+<article class="bg-primary flex flex-col justify-center items-center text-white w-full">
+
+    <section id="account"></section>
+    
+    <section class="flex mt-3 gap-x-5">
+        <button id="btnDisconnect">Disconnect</button>
+        <button id="btnDelete">Delete account</button>
+    </section>
+    
+</article>
 
 <script>
   import { User } from "../assets/types/userObject";
@@ -6,7 +15,7 @@
   class Account {
     private user: User;
     public accountEl: HTMLElement;
-
+    public btnDisconnect: HTMLButtonElement;
 
     constructor() {
       this.user = {
@@ -20,14 +29,23 @@
         updatedAt: "",
       };
       this.accountEl = document.getElementById("account") as HTMLElement;
+      this.btnDisconnect = document.getElementById("btnDisconnect") as HTMLButtonElement;
     }
     public async init(): Promise<void> {
-      console.log("account init");
       this.user = await this.getUser();
       if (this.user.confirmed) {
         this.displayAccount();
+        this.disconnect();
       }
       console.log(this.user);
+    }
+
+    public disconnect() {
+        this.btnDisconnect.addEventListener("click", () => {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            window.location.href = "/";
+        });
     }
 
     private displayAccount() {
@@ -42,10 +60,6 @@
           <p>Blocked: ${user.blocked}</p>
           <p>Created at: ${user.createdAt}</p>
           <p>Updated at: ${user.updatedAt}</p>
-          <section class="flex mt-3 gap-x-5">
-            <button id="btnDisconnect">Disconnect</button>
-            <button id="btnDelete">Delete account</button>
-        </section>
       `;
         this.accountEl.innerHTML = html;
     }
