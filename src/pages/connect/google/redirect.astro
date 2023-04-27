@@ -46,6 +46,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
     }
 
     function retrieveUserInfos() {
+        const bodyEl = document.querySelector("body");
         const params: OauthObject = getUrlParameters();
         fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
             .then(res => res.json())
@@ -57,7 +58,13 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
                     window.location.href = "/account";
                 }, 2500);
             })
-            .catch(err => console.log(err));
+            .catch((err) => {
+            const message = err.message || err;
+          if (bodyEl) {
+            bodyEl.innerHTML = `An error occured: ${message}`;
+          }
+          console.log(err);
+        });
     }
 
     retrieveUserInfos();
