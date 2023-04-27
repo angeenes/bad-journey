@@ -5,17 +5,19 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../../../consts";
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+    <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    Welcome to {SITE_TITLE}
-    <br />
-    You have been successfully logged in with your DISCORD account.
-    <br />
-    You will be redirected in a few seconds...
-  </body>
-  
+    </head>
+    <body>
+        Welcome to {SITE_TITLE}
+        <br />
+        You have been successfully logged in with your DISCORD account.
+        <br />
+        You will be redirected in a few seconds...
+    </body>
+</html>
+
+
   <style>
     body {
       background-color: var(--color-primary);
@@ -29,52 +31,10 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../../../consts";
     }
   </style>
 
-  <script>
-    import { OauthObject } from "../../../assets/types/OauthObject.js";
-    import { API_URL } from "../../../consts.js";
+<script>
+    import { Login } from "../../../assets/js/loginRedirection";
 
-    function getUrlParameters(): OauthObject {
-      var params = {};
-      window.location.search.replace(
-        /[?&]+([^=&]+)=([^&]*)/gi,
-        (str?: string, key: string, value: string) => {
-          params[key] = value;
-        }
-      );
-      console.log("params", params);
-      return params as OauthObject;
-    }
+    const redirectLogin = new Login("discord");
+    redirectLogin.init();
 
-    function retrieveUserInfos() {
-      const bodyEl = document.querySelector("body");
-      const params: OauthObject = getUrlParameters();
-      fetch(
-        `${API_URL}auth/discord/callback?access_token=${params.access_token}`
-      )
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error(`Couldn't login to Strapi. Status: ${res.status}`);
-          }
-          return res;
-        })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res);
-          localStorage.setItem("jwt", res.jwt);
-          localStorage.setItem("user", JSON.stringify(res.user));
-          setTimeout(() => {
-            window.location.href = "/account";
-          }, 2500);
-        })
-        .catch((err) => {
-            const message = err.message || err;
-          if (bodyEl) {
-            bodyEl.innerHTML = `An error occured: ${message}`;
-          }
-          console.log(err);
-        });
-    }
-
-    retrieveUserInfos();
-  </script>
-</html>
+</script>

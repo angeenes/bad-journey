@@ -33,56 +33,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
 
 
 <script>
-    import { OauthObject } from "../../../assets/types/OauthObject.js";
-    import { API_URL } from "../../../consts.js";
+import { Login } from "../../../assets/js/loginRedirection";
 
-class Login {
-
-  getUrlParameters(): OauthObject {
-    var params = {};
-    window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (substring: string, key: string, value: string) => {
-        params[key] = value;
-        return ''; // renvoie une chaîne vide pour remplacer la correspondance
-    });
-
-    return params as OauthObject;
-  }
-
-  retrieveUserInfos() {
-    const bodyEl = document.querySelector("body");
-    const params: OauthObject = this.getUrlParameters();
-    fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
-      .then(res => {
-        if (res.status !== 200) {
-          res.json().then(res =>{
-            // console.log('ERRORR', res);
-            const message = res.error.message;
-            if (bodyEl) {
-              bodyEl.innerHTML = `An error occured while logging : ${message}, <br>  You will be redirected in a few seconds...`;
-            }
-          })
-          throw new Error(`Couldn't login. Status: ${res.status}`);
-        }
-        return res;
-      })
-      .then(res => res.json())
-      .then(res => {
-        console.log(res);
-        localStorage.setItem("jwt", res.jwt);
-        localStorage.setItem("user", JSON.stringify(res.user));
-        setTimeout(() => {
-          window.location.href = "/account";
-        }, 2500);
-      })
-      .catch(err => console.log(err));
-  }
-
-  init() {
-    this.retrieveUserInfos();
-  }
-}
-
-const redirectLogin = new Login();
+const redirectLogin = new Login("google");
 redirectLogin.init();
 
 </script>
