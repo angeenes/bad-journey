@@ -32,7 +32,7 @@ export class Login {
             // console.log('ERRORR', res);
             const message = res.error.message;
             if (this.bodyEl) {
-              this.bodyEl.innerHTML = `An error occured while logging : ${message}, <br>  You will be redirected in a few seconds...`;
+              this.bodyEl.innerHTML = `An error occured while logging : ${message} <br>  You will be redirected in a few seconds...`;
               setTimeout(() => {
                 window.location.href = "/account";
               }, 2500);
