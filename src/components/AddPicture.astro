@@ -26,6 +26,24 @@ const tags = data.data;
   </article>
 </Dialog>
 
+<Dialog id="not-authorized">
+  <article class="text-center">
+    You need to be registerd to uplaod an image
+    <br>
+    <br>
+    <a href="/account/subscribe">Click here to <span class="text-pink-500">register an account</span></a>
+  </article>
+</Dialog>
+
+<Dialog id="error">
+  <article class="text-center">
+    Something went wrong. Please try again.
+    <br>
+    <br>
+    <button onclick="location.reload(true)">Click here to reload the page and try again</button>
+  </article>
+</Dialog>
+
 <Dialog id="uploadImage" buttonLabel="UPLOAD" title="upload an image" className="bg-pink-500 px-6 py-2 rounded-full uppercase font-bold text-sm">
   <div id="publishing-loading" class="loading">
     <div class="loader"></div>
@@ -130,10 +148,15 @@ const tags = data.data;
       private imageInput = document.getElementById("image") as HTMLInputElement,
       public formEl: HTMLFormElement = document.getElementById("image-form") as HTMLFormElement,
       private loadingEl: HTMLDivElement = document.getElementById("publishing-loading") as HTMLDivElement,
-      private successDialog: HTMLDialogElement = document.getElementById("success-upload-image") as HTMLDialogElement,
+      // private successDialog: HTMLDialogElement = document.getElementById("success-upload-image") as HTMLDialogElement,
+      // private notAuthorizedDialog: HTMLDialogElement = document.getElementById("not-authorized") as HTMLDialogElement,
       private publishButtonSubmitEl: HTMLButtonElement = document.getElementById("publish-button") as HTMLButtonElement,
+      private token: string | null = "",
+      private isConnected = false,
     ) {
       this.init();
+      this.token = localStorage.getItem('jwt');
+      this.isConnected = this.token !== 'undefined';
     }
 
     private async init(): Promise<void> {
@@ -210,7 +233,19 @@ const tags = data.data;
           element.value = data[key];
         }
       }
-      this.allowBtnPublish();
+      console.log(this.isConnected, this.token);
+      if (this.isConnected) {
+        this.allowBtnPublish();
+      } else {
+        this.notAuthorizedToUpload();
+      }
+    }
+
+    private notAuthorizedToUpload() {
+      closeDialogId("uploadImage");
+      this.resetForm();
+      openDialogId("not-authorized");
+      throw new Error("Method not implemented.");
     }
 
     private allowBtnPublish(): void{
@@ -257,11 +292,11 @@ const tags = data.data;
       formData.append("data", JSON.stringify(data));
 
       try {
-        console.log("formData", formData);
         const response = await fetch(`${API_URL}images`, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${BEARER_TOKEN_POST_IMAGES}`,
+            Authorization: `Bearer ${this.token}`,
+            // Authorization: `Bearer ${BEARER_TOKEN_POST_IMAGES}`,
           },
           body: formData,
         });
