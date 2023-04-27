@@ -1,70 +1,79 @@
 ---
 import BaseHead from "../../../components/BaseHead.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../../consts";
 ---
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-            Welcome to {SITE_TITLE}
-            <br>
-            You have been successfully logged in with your DISCORD account.
-            <br>
-            You will be redirected in a few seconds...
-	</body>
-</html>
-
-
-<style>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    Welcome to {SITE_TITLE}
+    <br />
+    You have been successfully logged in with your DISCORD account.
+    <br />
+    You will be redirected in a few seconds...
+  </body>
+  
+  <style>
     body {
-        background-color: var(--color-primary);
-        text-align: center;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
+      background-color: var(--color-primary);
+      text-align: center;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
     }
-</style>
+  </style>
 
-<script>
-
-    import { GoogleOauth } from "../../../assets/types/googleOauth.js";
+  <script>
+    import { OauthObject } from "../../../assets/types/OauthObject.js";
     import { API_URL } from "../../../consts.js";
 
-    function getUrlParameters(): GoogleOauth {
-        var params = {};
-        window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (str?: string, key: string, value: string) => {
-            params[key] = value;
-        });
-        console.log('params', params);
-        return params as GoogleOauth;
+    function getUrlParameters(): OauthObject {
+      var params = {};
+      window.location.search.replace(
+        /[?&]+([^=&]+)=([^&]*)/gi,
+        (str?: string, key: string, value: string) => {
+          params[key] = value;
+        }
+      );
+      console.log("params", params);
+      return params as OauthObject;
     }
 
     function retrieveUserInfos() {
-        const params: GoogleOauth = getUrlParameters();
-        fetch(`${API_URL}auth/discord/callback?access_token=${params.access_token}`)
-        .then(res => {
-            if (res.status !== 200) {
-                    throw new Error(`Couldn't login to Strapi. Status: ${res.status}`);
-                }
-                return res;
-            })
-            .then(res => res.json())
-            .then(res => {
-                console.log(res);
-                localStorage.setItem("jwt", res.jwt);
-                localStorage.setItem("user", JSON.stringify(res.user));
-                setTimeout(() => {
-                    window.location.href = "/account";
-                }, 2500);
-            })
-            .catch(err => console.log(err));
+      const bodyEl = document.querySelector("body");
+      const params: OauthObject = getUrlParameters();
+      fetch(
+        `${API_URL}auth/discord/callback?access_token=${params.access_token}`
+      )
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error(`Couldn't login to Strapi. Status: ${res.status}`);
+          }
+          return res;
+        })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          localStorage.setItem("jwt", res.jwt);
+          localStorage.setItem("user", JSON.stringify(res.user));
+          setTimeout(() => {
+            window.location.href = "/account";
+          }, 2500);
+        })
+        .catch((err) => {
+          if (bodyEl) {
+            bodyEl.innerHTML = `An error occured. Please try again later.`;
+          }
+          console.log(err);
+        });
     }
 
     retrieveUserInfos();
-</script>
+  </script>
+</html>

@@ -34,19 +34,19 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
 
 <script>
 
-    import { GoogleOauth } from "../../../assets/types/googleOauth.js";
+    import { OauthObject } from "../../../assets/types/OauthObject.js";
     import { API_URL } from "../../../consts.js";
 
-    function getUrlParameters(): GoogleOauth {
+    function getUrlParameters(): OauthObject {
         var params = {};
         window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (str?: string, key: string, value: string) => {
             params[key] = value;
         });
-        return params as GoogleOauth;
+        return params as OauthObject;
     }
 
     function retrieveUserInfos() {
-        const params: GoogleOauth = getUrlParameters();
+        const params: OauthObject = getUrlParameters();
         fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
             .then(res => res.json())
             .then(res => {

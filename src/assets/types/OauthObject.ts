@@ -1,4 +1,4 @@
-export interface GoogleOauth {
+export interface OauthObject {
     id_token: string
     access_token: string
     "raw%5Baccess_token%5D": string
