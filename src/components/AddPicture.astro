@@ -156,7 +156,7 @@ const tags = data.data;
     ) {
       this.init();
       this.token = localStorage.getItem('jwt');
-      this.isConnected = this.token !== 'undefined';
+      this.isConnected = this.token !== 'undefined' || this.token !== null;
     }
 
     private async init(): Promise<void> {
