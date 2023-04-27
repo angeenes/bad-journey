@@ -14,7 +14,7 @@ const { title, id, buttonLabel, className, classDialog} = Astro.props;
   <button data-id={id} onclick="openDialog(event)" class:list={[className, { hidden: !buttonLabel }]}>{buttonLabel}</button>
 
   <dialog id={id} class:list={[classDialog]}>
-    <button type="button" data-id={id}  onclick="closeDialog(event)" class="absolute top-2 right-2"
+    <button type="button" data-id={id}  onclick="closeDialog(event)" class="absolute top-2 right-3 outline-none scale-x-125"
       >X</button
     >
     <h3 class="mb-2">{title}</h3>
