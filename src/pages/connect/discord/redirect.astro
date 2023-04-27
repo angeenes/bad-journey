@@ -11,9 +11,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
 	<body>
             Welcome to {SITE_TITLE}
             <br>
-            You are now logged in with your DISCORD account
+            You have been successfully logged in with your DISCORD account.
             <br>
-            You will be redirected to your account page in a few seconds
+            You will be redirected in a few seconds...
 	</body>
 </html>
 
@@ -48,14 +48,20 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
     function retrieveUserInfos() {
         const params: GoogleOauth = getUrlParameters();
         fetch(`${API_URL}auth/discord/callback?access_token=${params.access_token}`)
+        .then(res => {
+            if (res.status !== 200) {
+                    throw new Error(`Couldn't login to Strapi. Status: ${res.status}`);
+                }
+                return res;
+            })
             .then(res => res.json())
             .then(res => {
                 console.log(res);
                 localStorage.setItem("jwt", res.jwt);
                 localStorage.setItem("user", JSON.stringify(res.user));
-                // setTimeout(() => {
-                //     window.location.href = "/account";
-                // }, 5000);
+                setTimeout(() => {
+                    window.location.href = "/account";
+                }, 2500);
             })
             .catch(err => console.log(err));
     }
