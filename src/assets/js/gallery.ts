@@ -49,7 +49,7 @@ export class Gallery {
 
   private addImagesToSection(images: DatasImages['data']): void {
 
-    console.log('addImagesToSection');
+    // console.log('addImagesToSection');
 
     const imageElements = this.createImageElements(images);
     this.imagesSection.append(...imageElements);

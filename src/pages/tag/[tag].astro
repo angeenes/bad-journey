@@ -1,10 +1,10 @@
 ---
-import Gallery from "../../components/Gallery.astro";
+import Gallery from "@components/Gallery.astro";
 import { API_URL, BEARER_TOKEN, SITE_TITLE, SITE_DESCRIPTION} from "../../consts";
-import BaseHead from '../../components/BaseHead.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import Hero from '../../components/Hero.astro';
+import BaseHead from '@components/BaseHead.astro';
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import Hero from '@components/Hero.astro';
 
 export async function getStaticPaths() {
   let endpoint = `${API_URL}tags`;

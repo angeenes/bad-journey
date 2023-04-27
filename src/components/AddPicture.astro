@@ -1,6 +1,6 @@
 ---
 import Dialog from "./Dialog.astro";
-import { API_URL, BEARER_TOKEN_POST_IMAGES, BEARER_TOKEN } from "../consts";
+import { API_URL, BEARER_TOKEN } from "../consts";
 
 let endpoint = `${API_URL}tags`;
 const headers = {
@@ -119,9 +119,9 @@ const tags = data.data;
 
 <script>
   import { API_URL, BEARER_TOKEN_POST_IMAGES } from "../consts";
-  import convertAutomatic111Metadata from "../assets/js/converters/convertAutomatic111Metadata.js";
-  import convertInvokeMetadata from "../assets/js/converters/convertInvokeMetadata.js";
-  import convertMochiMetadata from "../assets/js/converters/convertMochiMetadata.js";
+  import convertAutomatic111Metadata from "@classes/converters/convertAutomatic111Metadata";
+  import convertInvokeMetadata from "@classes/converters/convertInvokeMetadata";
+  import convertMochiMetadata from "@classes/converters/convertMochiMetadata";
   import { ImageObject } from "../assets/types/ImageObject.js";
 
   class ImageMetadataForm {
@@ -243,7 +243,7 @@ const tags = data.data;
         if (!["submit", "file"].includes(type)) {
           if(name === 'tags') {
             console.log('tags', type, name, value);
-            data[name] = [value];
+            data[name] = ["1"];
           } else {
             data[name] = value;
           }

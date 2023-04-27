@@ -19,9 +19,9 @@ const { tag } = Astro.props;
 </Dialog>
 
 <script>
-  import { Gallery } from "../assets/js/gallery.js";
+  import { Gallery } from "@classes/gallery";
 
-  console.log('GALLERY PAGE STARTS');
+  // console.log('GALLERY PAGE STARTS');
 
   const dataTag = document.querySelector('#gallery')?.dataset.tag?? '';
 
