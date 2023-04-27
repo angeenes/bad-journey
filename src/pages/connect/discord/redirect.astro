@@ -42,7 +42,7 @@
 
     function retrieveUserInfos() {
         const params: GoogleOauth = getUrlParameters();
-        fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
+        fetch(`${API_URL}auth/discord/callback?access_token=${params.access_token}`)
             .then(res => res.json())
             .then(res => {
                 console.log(res);
