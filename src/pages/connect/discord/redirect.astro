@@ -10,7 +10,7 @@
     <title>Document</title>
 </head>
 <body>
-    You are now logged in with your Google account
+    You are now logged in with your DISCORD account
 </body>
 </html>
 
@@ -36,6 +36,7 @@
         window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (str?: string, key: string, value: string) => {
             params[key] = value;
         });
+        console.log('params', params);
         return params as GoogleOauth;
     }
 
