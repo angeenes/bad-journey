@@ -39,6 +39,7 @@ footer {
 body {
   font-family: 'Inter', sans-serif;
   --color-primary: #172328;
+  --color-primary-light: #5C6166;
 }
 
 .container-full {
@@ -219,4 +220,12 @@ dialog > .loading.active {
 /* UTILS */
 .bg-primary {
   background: var(--color-primary);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-primary-light {
+  color: var(--color-primary-light);
 }

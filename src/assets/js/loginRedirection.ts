@@ -34,7 +34,7 @@ export class Login {
             // console.log('ERRORR', res);
             const message = res.error.message;
             if (this.bodyEl) {
-              this.bodyEl.innerHTML = `An error occured while logging : ${message} <br>  You will be redirected in a few seconds...`;
+              this.bodyEl.innerHTML = `An error occured while logging : ${message} with another provider <br>  You will be redirected in a few seconds... <br> And try to conenct with another provider`;
               setTimeout(() => {
                 window.location.href = "/";
               }, 2500);
