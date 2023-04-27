@@ -36,7 +36,7 @@ export class Login {
             if (this.bodyEl) {
               this.bodyEl.innerHTML = `An error occured while logging : ${message} <br>  You will be redirected in a few seconds...`;
               setTimeout(() => {
-                window.location.href = "/account";
+                window.location.href = "/";
               }, 2500);
             }
           });
@@ -49,7 +49,9 @@ export class Login {
         console.log(res);
         localStorage.setItem("jwt", res.jwt);
         localStorage.setItem("user", JSON.stringify(res.user));
-        this.usernameEl!.innerHTML = res.user.username;
+        if(this.usernameEl){
+          this.usernameEl.innerHTML = res.user.username;
+        }
         setTimeout(() => {
           window.location.href = "/account";
         }, 2500);
