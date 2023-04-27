@@ -43,7 +43,7 @@
     public disconnect() {
         this.btnDisconnect.addEventListener("click", () => {
             localStorage.removeItem("user");
-            localStorage.removeItem("token");
+            localStorage.removeItem("jwt");
             window.location.href = "/";
         });
     }
