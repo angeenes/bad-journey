@@ -38,8 +38,9 @@ footer {
 
 body {
   font-family: 'Inter', sans-serif;
-  --color-primary: #172328;
+  /* --color-primary: #172328;
   --color-primary-light: #5C6166;
+  --color-primary-dark: #202224; */
 }
 
 .container-full {
@@ -178,8 +179,11 @@ dialog > .loading.active {
 
 
 /* UTILS */
-.bg-primary {
+/* .bg-primary {
   background: var(--color-primary);
+}
+.bg-primary-dark {
+  background: var(--color-primary-dark);
 }
 
 .text-primary {
@@ -188,4 +192,4 @@ dialog > .loading.active {
 
 .text-primary-light {
   color: var(--color-primary-light);
-}
+} */
