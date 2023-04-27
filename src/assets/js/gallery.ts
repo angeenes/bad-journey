@@ -236,7 +236,7 @@ export class Gallery {
 
 
   public async init(): Promise<void> {
-    console.log('init Gallery');
+    // console.log('init Gallery');
 
     try {
       const images = await this.loadImages(this.page);
@@ -254,33 +254,18 @@ export class Gallery {
 
 
   private handleScroll(): void {
-    console.log('handleScroll');
-    // console.log('this.noMoreImages', this.noMoreImages);
-
 
     if (!this.isLoading && !this.noMoreImages) {
-      // const { scrollTop, scrollHeight, clientHeight } = document.body;
+
       const threshold = 500;
 
-      // console.log('scrollTop:', scrollTop);
-      // console.log('scrollHeight:', scrollHeight);
-      // console.log('clientHeight:', clientHeight);
-
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight + threshold) {
-        console.log('BOTTOM');
+
         this.isLoading = true;
         setTimeout(() => {
           this.loadMore();
         }, this.debounceTimeout);
       }
-
-      // if (scrollTop + clientHeight >= scrollHeight - threshold) {
-      //   console.log('Déclenchement du chargement de la page suivante');
-      //   this.isLoading = true;
-      //   setTimeout(() => {
-      //     this.loadMore();
-      //   }, this.debounceTimeout);
-      // }
     }
   }
 
