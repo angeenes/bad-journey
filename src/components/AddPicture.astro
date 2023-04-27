@@ -243,7 +243,7 @@ const tags = data.data;
         if (!["submit", "file"].includes(type)) {
           if(name === 'tags') {
             console.log('tags', type, name, value);
-            data[name] = ["1"];
+            data[name] = { "name": value};
           } else {
             data[name] = value;
           }
