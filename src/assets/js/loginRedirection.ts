@@ -4,10 +4,12 @@ import { OauthObject } from "../types/OauthObject";
 export class Login {
   private provider: string;
   private readonly bodyEl: HTMLBodyElement | null;
+  private readonly usernameEl: HTMLSpanElement | null;
 
   constructor(provider: string) {
     this.provider = provider;
     this.bodyEl = document.querySelector("body");
+    this.usernameEl = document.querySelector("#username");
   }
 
   getUrlParameters(): OauthObject {
@@ -47,6 +49,7 @@ export class Login {
         console.log(res);
         localStorage.setItem("jwt", res.jwt);
         localStorage.setItem("user", JSON.stringify(res.user));
+        this.usernameEl!.innerHTML = res.user.username;
         setTimeout(() => {
           window.location.href = "/account";
         }, 2500);
