@@ -76,6 +76,37 @@ body {
   box-sizing: content-box;
 }
 
+.card.is-visible:hover > .card-overlay {
+  opacity: 1;
+}
+
+.card > .card-overlay {
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: auto;
+  width: 100%;
+  height: 2rem;
+  font-size: 1rem;
+  /* background-image: linear-gradient( 135deg, #F761A1 10%, #AC46C8 100%); */
+  opacity: 0;
+  background: rgba(0,0,0,0.5);
+  transition: opacity 0.25s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.card > .card-overlay > .card-like {
+  width: 100%;
+}
+
+.card > .card-overlay:hover > .card-like {
+  height: auto;
+  background: rgba(0,0,0,0.9);
+}
+
 /* #gallery {
   margin-bottom: 380px;
 } */

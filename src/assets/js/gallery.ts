@@ -97,17 +97,30 @@ export class Gallery {
   private createImageElements(images): HTMLElement[] {
     return images.map(({ attributes }, index) => {
       const html = `
-        <div class="card">
+        <article class="card">
           <img width="320"
             src="${IMAGES_URL}${attributes.image.data.attributes.formats.medium.url}"
             alt="Image gallery"
             loading="lazy" class="w-full card-img h-full"
             style="transition-delay : ${index * 250}ms"
           >
-        </div>
+          <section class="card-overlay hover:block inset-0 absolute z-10">
+            <button class="card-like text-pink-500">
+            ♥
+            </button>
+          </section>
+        </article>
       `;
       const card = this.htmlToElement(html);
       if (card) {
+        const btnLike = card.querySelector('.card-like');
+        
+        btnLike.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.likeImage(e.target as HTMLElement);
+        });
+        
         card.addEventListener('click', () => {
           if (this.imageDialogText) {
             const dialogTemplate = this.createDialogImageTemplate(attributes);
@@ -120,6 +133,12 @@ export class Gallery {
       }
       return card;
     });
+  }
+
+  private likeImage(target: HTMLElement) {
+    console.log('likeImage', target);
+    
+    alert('likeImage mot implemented yet');
   }
 
 
@@ -137,7 +156,7 @@ export class Gallery {
       <img width="320px" height="100%"
         src="${IMAGES_URL}${item?.image.data.attributes.formats.large?.url ?? item?.image.data.attributes.formats.medium?.url}"
         alt="Image gallery details"
-        loading="lazy" class="min-h-[160px] h-fit hover:w-min"
+        loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max"
       >
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
@@ -146,7 +165,7 @@ export class Gallery {
         <p class="font-bold mt-4">Negative prompt</p>
         <p>${item.negative_promt ?? 'N/A'}</p>
         
-        <div class="flex gap-2 mt-4">
+        <div class="flex flex-wrap gap-2 mt-4">
           <p class="font-bold">Height: </p>
           <p>${item.height}</p>
           <p class="font-bold">Width: </p>
