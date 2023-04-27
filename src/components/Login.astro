@@ -12,15 +12,23 @@ import Dialog from '../components/Dialog.astro'
   </button>
 </a>
 
-  <Dialog id="loginDialog" title="LOGIN">
+  <Dialog id="loginDialog">
     <form id="loginForm">
       <input type="email" id="email" name="email" placeholder="Email" autocomplete="username"><br><br>
       <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password"><br><br>
-      <button type="submit">Log in</button>
+      <button type="submit" class="bg-pink-500 p-2 text-center rounded-lg text-white mx-auto w-full mb-2">Log in</button>
     </form>
-    <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/google">Connect with Google</a>
-    <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/discord">Connect with Discord</a>
-    <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/twitter">Connect with Twitter</a>
+    <section class="flex">
+      <div class="flex-1 border-t border-gray-300 my-5"></div>
+      <p class="mx-5">OR</p>
+      <div class="flex-1 border-t border-gray-300 my-5"></div>
+    </section>
+    <section class="flex flex-col gap-2 text-center text-white mb-2">
+      <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/google" class="p-2 bg-blue-800">Connect with Google</a>
+      <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/discord" class="p-2 d bg-purple-700">Connect with Discord</a>
+      <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/twitter" class="p-2 bg-blue-400">Connect with Twitter</a>
+    </section>
+    <a href="acount/subscribe" class="text-center mt-5 block">Create an account</a>
     <p id="error" style="color: red; display: none;">Invalid email or password</p>
     <p id="username" style="display: none;"></p>
   </Dialog>
