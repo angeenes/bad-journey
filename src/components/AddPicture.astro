@@ -34,7 +34,7 @@ const tags = data.data;
   <form id="image-form" class="grid grid-cols-2 gap-16">
     <label
       for="image"
-      class="w-full h-full border border-slate-500 border-dashed rounded-2xl p-2 pt-14 text-center cursor-s-resize md:min-h-[664px] md:w-[669px]"
+      class="w-full h-full border-custom p-2 pt-14 text-center cursor-s-resize md:min-h-[664px] md:w-[669px]"
     >
       <img
         id="imagePreview"
@@ -101,14 +101,21 @@ const tags = data.data;
         </select>
       </label>
       <button
+        disabled
         id="publish-button"
         type="submit"
-        class="mt-4 text-white text-center p-3 rounded-3xl text-sm"
-        style="background-color: var(--color-primary);">PUBLISH NOW</button
+        class="mt-4 text-white text-center p-3 rounded-3xl text-sm bg-primary font-bold flex items-center justify-center gap-x-2 cursor-not-allowed opacity-5"> <img src="/img/send-airplane.svg" alt="publich now"> PUBLISH NOW</button
       >
     </div>
   </form>
 </Dialog>
+
+<style>
+  .border-custom {
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='hotpink' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    border-radius: 16px;
+  }
+</style>
 
 <script>
   import { API_URL, BEARER_TOKEN_POST_IMAGES } from "../consts";
@@ -203,6 +210,13 @@ const tags = data.data;
           element.value = data[key];
         }
       }
+      this.allowBtnPublish();
+    }
+
+    private allowBtnPublish(): void{
+      this.publishButtonSubmitEl.classList.remove("opacity-5");
+      this.publishButtonSubmitEl.disabled = false;
+      this.publishButtonSubmitEl.classList.toggle("cursor-not-allowed");
     }
 
     private toggleLoadingPublishImage(): void {

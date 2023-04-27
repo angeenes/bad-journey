@@ -1,4 +1,5 @@
 export interface ImageObject {
+  id?: string;
   prompt: string;
   negative_prompt?: string;
   model?: string;

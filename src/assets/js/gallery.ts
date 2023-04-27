@@ -95,7 +95,9 @@ export class Gallery {
 
 
   private createImageElements(images): HTMLElement[] {
-    return images.map(({ attributes }, index) => {
+    // console.log(images, 'images');
+    
+    return images.map(({ attributes }, index, images) => {    
       const html = `
         <article class="card">
           <img width="320"
@@ -104,21 +106,28 @@ export class Gallery {
             loading="lazy" class="w-full card-img h-full"
             style="transition-delay : ${index * 250}ms"
           >
+          <div class="btn-like icon-like px-3 py-2 bg-white font-black flex justify-center items-center rounded-md absolute top-3 right-3 text-black hover:text-pink-500 text-base"> ♡ </div>
           <section class="card-overlay hover:block inset-0 absolute z-10">
-            <button class="card-like text-pink-500">
-            ♥
+          <div class="flex items-center justify-between w-full p-3 text-white">
+          <button class="flex items-center">  <img src="/img/fake-avatar.webp" alt="username" width="71" height="72" />  Lucas Dedouze </button>
+            <button class="btn-like">
+            ♥ 66
             </button>
+            <span class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg> 35841
+            </span>
+            </div>
           </section>
         </article>
       `;
       const card = this.htmlToElement(html);
       if (card) {
-        const btnLike = card.querySelector('.card-like');
+        const btnLike = card.querySelector('.btn-like');
         
         btnLike.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          this.likeImage(e.target as HTMLElement);
+          this.likeImage(images[index]);
         });
         
         card.addEventListener('click', () => {
@@ -135,8 +144,8 @@ export class Gallery {
     });
   }
 
-  private likeImage(target: HTMLElement) {
-    console.log('likeImage', target);
+  private likeImage(id ) {
+    console.log('likeImage receives the image id: ', id);
     
     alert('likeImage mot implemented yet');
   }
@@ -158,6 +167,8 @@ export class Gallery {
         alt="Image gallery details"
         loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max"
       >
+      <article>
+      <button class="flex items-center">  <img src="/img/fake-avatar.webp" alt="username" width="71" height="72" />  Lucas Dedouze </button>
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
         <p class="font-bold">Prompt</p>
@@ -191,10 +202,17 @@ export class Gallery {
         </div>
         </section>
         <section class="flex justify-between mt-7">
-         <label id="button-copy-prompt" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-copy.svg' alt='copy'> <span> Copy prompt</span> </label>
-         <label id="button-twitter-share" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-twitter.svg' alt='twitter'> <span> Share on Twitter</span> </label>
+         <button id="button-copy-prompt" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-copy.svg' alt='copy'> <span> Copy prompt</span> </button>
         </section>
       </div>
+      <section class="flex items-center justify-between">
+      <div class="flex gap-5 items-center p-3 text-primary">
+      <button class="btn-like">♥ 66</button>
+      <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg> 35841</span>
+      </div>
+      <button id="button-twitter-share" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='icons/icon-twitter.svg' alt='twitter'> <span> Share on Twitter</span> </button>
+</section>
+      <article>
     </div>
   `;
   }
