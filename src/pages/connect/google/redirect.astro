@@ -49,6 +49,17 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
         const bodyEl = document.querySelector("body");
         const params: OauthObject = getUrlParameters();
         fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
+            .then(res => {
+                if (res.status !== 200) {
+                    console.log('ERRORR', res);
+                    const message = res.error.message || "An error occured while logging in. Please try again later.";
+                    if (bodyEl) {
+                        bodyEl.innerHTML = `${message}}`;
+                    }
+                    throw new Error(`Couldn't login to Strapi. Status: ${res.status}`);
+                }
+                return res;
+            })
             .then(res => res.json())
             .then(res => {
                 console.log(res);
@@ -58,13 +69,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
                     window.location.href = "/account";
                 }, 2500);
             })
-            .catch((err) => {
-            const message = err.message || err;
-          if (bodyEl) {
-            bodyEl.innerHTML = `An error occured: ${message}`;
-          }
-          console.log(err);
-        });
+            .catch(err => console.log(err));
     }
 
     retrieveUserInfos();
