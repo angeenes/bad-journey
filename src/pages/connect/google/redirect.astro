@@ -51,11 +51,13 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../../consts';
         fetch(`${API_URL}auth/google/callback?access_token=${params.access_token}`)
             .then(res => {
                 if (res.status !== 200) {
-                    console.log('ERRORR', res);
-                    const message = res.error.message || "An error occured while logging in. Please try again later.";
-                    if (bodyEl) {
-                        bodyEl.innerHTML = `${message}}`;
-                    }
+                    res.json().then(res =>{
+                        console.log('ERRORR', res);
+                        const message = res.error.message || "An error occured while logging in. Please try again later.";
+                        if (bodyEl) {
+                            bodyEl.innerHTML = `${message}}`;
+                        }
+                    })
                     throw new Error(`Couldn't login to Strapi. Status: ${res.status}`);
                 }
                 return res;
