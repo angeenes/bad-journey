@@ -92,11 +92,11 @@ const tags = data.data;
         Steps (optional)
         <input type="number" name="steps" id="steps" />
       </label>
-      <label for="tags">
+      <label for="tag">
         category tags
-        <select name="tags" id="tags" multiple>
+        <select name="tag" id="tag">
           {tags.map((tag) => (
-            <option value={tag.attributes.name}>{tag.attributes.name}</option>
+            <option value={tag.id}>{tag.attributes.name}</option>
           ))}
         </select>
       </label>
@@ -241,9 +241,9 @@ const tags = data.data;
 
       Array.from(form.elements).forEach(({ name, type, value, files }) => {
         if (!["submit", "file"].includes(type)) {
-          if(name === 'tags') {
-            console.log('tags', type, name, value);
-            data[name] = { "name": value};
+          if(name === 'tag') {
+            console.log('tag', type, name, value);
+            data[name] = value;
           } else {
             data[name] = value;
           }
@@ -257,6 +257,7 @@ const tags = data.data;
       formData.append("data", JSON.stringify(data));
 
       try {
+        console.log("formData", formData);
         const response = await fetch(`${API_URL}images`, {
           method: "POST",
           headers: {
