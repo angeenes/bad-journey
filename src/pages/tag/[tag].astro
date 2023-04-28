@@ -28,7 +28,7 @@ const { tag } = Astro.params;
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-tag={tag}>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
@@ -41,3 +41,13 @@ const { tag } = Astro.params;
 		<Footer />
 	</body>
 </html>
+
+<script>
+import { Gallery } from "@classes/gallery";
+
+  const dataTag = document.querySelector('html')?.dataset.tag?? null;
+
+  export const gallery = new Gallery(dataTag, null);
+  gallery.init();
+
+</script>

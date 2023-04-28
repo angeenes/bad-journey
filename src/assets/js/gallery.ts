@@ -16,10 +16,12 @@ export class Gallery {
   private noMoreImages: boolean;
   private readonly debounceTimeout: number;
   private masonryInstance: any;
-  public tag: string;
+  public tag: string | null | undefined;
+  public userId: number | null | undefined;
 
-  constructor(tag: string) {
+  constructor(tag?: string, userId?: number) {
     this.tag = tag;
+    this.userId = userId;
     this.url = API_URL;
     this.pageSize = 10;
     this.page = 1;
@@ -83,6 +85,10 @@ export class Gallery {
 
     if (this.tag) {
       endpointTags += `&filters[tag][name][$eq]=${this.tag}`;
+    }
+
+    if(this.userId) {
+      endpointTags += `&filters[users_permissions_user][id][$eq]=${this.userId}`;
     }
 
     return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][populate][0]=avatar&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,

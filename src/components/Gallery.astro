@@ -3,13 +3,14 @@ import Dialog from "./Dialog.astro";
 
 export interface Props {
   tag?: string;
+  userId?: number;
 }
 
-const { tag } = Astro.props;
+const { tag, userId } = Astro.props;
 ---
 
 <section class="container-full">
-  <article id="gallery" class="block w-full relative" data-tag={tag}></article>
+  <article id="gallery" class="block w-full relative"></article>
   <div id="load-more" class="text-center text-gray-400 mt-40 pt-7 pb-1">LOADING</div>
   <i id="loader-bar" class="loader-bar"></i>
 </section>
@@ -19,14 +20,15 @@ const { tag } = Astro.props;
 </Dialog>
 
 <script>
-  import { Gallery } from "@classes/gallery";
+//   import { Gallery } from "@classes/gallery";
 
-  // console.log('GALLERY PAGE STARTS');
+//   // console.log('GALLERY PAGE STARTS');
 
-  const dataTag = document.querySelector('#gallery')?.dataset.tag?? '';
+//   const dataTag = document.querySelector('#gallery')?.dataset.tag?? '';
+// //   const dataUserId = document.querySelector('#gallery')?.dataset.userId?? null;
 
-  export const gallery = new Gallery(dataTag);
-  gallery.init();
+//   export const gallery = new Gallery(dataTag, null);
+//   gallery.init();
 
 </script>
 

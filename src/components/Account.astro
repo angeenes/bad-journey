@@ -1,5 +1,9 @@
+---
+
+---
+
 <article
-  class="bg-primary flex flex-col justify-center items-center text-white w-full"
+  class="bg-primary flex flex-col justify-center items-center text-white w-full mt-11 p-4"
 >
   <section id="account"></section>
 
@@ -8,7 +12,6 @@
     <button id="btnDelete">Delete account</button>
   </section>
 
-  <section>GALLERY</section>
 </article>
 
 <script>
@@ -99,4 +102,12 @@
 
   const account = new Account();
   account.init();
+</script>
+
+<script>
+import { Gallery } from "@classes/gallery";
+  
+export const loader = new Gallery('', 5);
+loader.init();
+
 </script>
