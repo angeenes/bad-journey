@@ -1,4 +1,5 @@
 
+import { User } from "@types/userObject";
 import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
 import { DatasImages } from "../types/ApiDatasImages";
 import MiniMasonry from "minimasonry";
@@ -84,7 +85,7 @@ export class Gallery {
       endpointTags += `&filters[tag][name][$eq]=${this.tag}`;
     }
 
-    return fetch(`${this.url}images?populate[users_permissions_user][fields][0]=username&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
+    return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
     // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
       { headers }
     )
@@ -153,10 +154,17 @@ export class Gallery {
     alert('likeImage mot implemented yet');
   }
 
+  private getUser(): User {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
+
 
   private createDialogImageTemplate(item) {
     // console.log('createDialogImageTemplate', item);
     const userName = item.users_permissions_user.data?.attributes?.username ? item.users_permissions_user.data.attributes?.username : 'Anonymous';
+    const user = this.getUser();
+    const userAvatar = user.avatar?.formats.thumbnail.url ?? '/img/fake-avatar.webp';
 
     setTimeout(() => {
       const buttonCopyPrompt: HTMLButtonElement = document.getElementById("button-copy-prompt") as HTMLButtonElement
@@ -171,7 +179,7 @@ export class Gallery {
         loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max"
       >
       <article>
-      <button class="flex items-center">  <img src="/img/fake-avatar.webp" alt="${userName}" width="71" height="72" />  ${userName} </button>
+      <button class="flex items-center">  <img src="${IMAGES_URL}${userAvatar}" alt="${userName}" width="32" height="32" class="rounded-full mr-2" />  ${userName} </button>
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
         <p class="font-bold">Prompt</p>

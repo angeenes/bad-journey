@@ -7,7 +7,7 @@ import Footer from '@components/Footer.astro';
 import Hero from '@components/Hero.astro';
 
 export async function getStaticPaths() {
-  let endpoint = `${API_URL}tags`;
+  let endpoint = `${API_URL}/tags`;
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${BEARER_TOKEN}`,

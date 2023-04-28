@@ -2,7 +2,7 @@
 import Dialog from "./Dialog.astro";
 import { API_URL, BEARER_TOKEN } from "../consts";
 
-let endpoint = `${API_URL}tags`;
+let endpoint = `${API_URL}/tags`;
 const headers = {
   "Content-Type": "application/json",
   Authorization: `Bearer ${BEARER_TOKEN}`,
@@ -138,7 +138,7 @@ const tags = data.data;
 </style>
 
 <script>
-  import { API_URL, BEARER_TOKEN_POST_IMAGES } from "../consts";
+  import { API_URL } from "../consts";
   import convertAutomatic111Metadata from "@classes/converters/convertAutomatic111Metadata";
   import convertInvokeMetadata from "@classes/converters/convertInvokeMetadata";
   import convertMochiMetadata from "@classes/converters/convertMochiMetadata";
@@ -155,9 +155,11 @@ const tags = data.data;
       private publishButtonSubmitEl: HTMLButtonElement = document.getElementById("publish-button") as HTMLButtonElement,
       private token: string | null = "",
       private isConnected = false,
+      private user: string | null = "",
     ) {
       this.init();
       this.token = localStorage.getItem('jwt');
+      this.user = localStorage.getItem('user');
       this.isConnected = this.token === 'undefined' || this.token === null ? false : true;
     }
 
@@ -273,13 +275,18 @@ const tags = data.data;
       this.toggleLoadingPublishImage();
 
       const form = event.target as HTMLFormElement;
-      const data = {};
+      let data = {};
       const formData = new FormData();
+
+      data = {
+        ...data,
+        "users_permissions_user" : "5",
+      };
 
       Array.from(form.elements).forEach(({ name, type, value, files }) => {
         if (!["submit", "file"].includes(type)) {
           if(name === 'tag') {
-            console.log('tag', type, name, value);
+            // console.log('tag', type, name, value);
             data[name] = value;
           } else {
             data[name] = value;
@@ -294,7 +301,7 @@ const tags = data.data;
       formData.append("data", JSON.stringify(data));
 
       try {
-        const response = await fetch(`${API_URL}images`, {
+        const response = await fetch(`${API_URL}/images`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${this.token}`,

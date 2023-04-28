@@ -2,12 +2,12 @@
 import Dialog from '@components/Dialog.astro'
 ---
  <button id="openModalButton" class="uppercase mr-5 font-semibold"> 
-  <!-- <img id="profile-picture" src="" alt="profile picture" class="hidden"> -->
   Log in
 </button>
 
 <a href="/account" class="flex">
-  <button id="btnConnected" class="uppercase mr-5 rounded-full bg-pink-400 min-w-fit px-3" style="display: none;">
+  <img id="profile-picture" src="" alt="profile picture" class="hidden rounded-full h-9">
+  <button id="btnConnected" class="uppercase mr-5 font-bold px-3 hidden">
 
   </button>
 </a>
@@ -37,10 +37,11 @@ import Dialog from '@components/Dialog.astro'
   <script>
 
 import { User, UserObject } from "../assets/types/userObject";
-import { API_URL } from "../consts";
+import { API_URL, IMAGES_URL } from "../consts";
 
     const openModalButton = document.getElementById('openModalButton');
     const btnConnected = document.getElementById('btnConnected');
+    const imgProfileAvatar: HTMLImageElement = document.getElementById('profile-picture') as HTMLImageElement;
     const loginDialog: HTMLDialogElement = document.getElementById('loginDialog') as HTMLDialogElement;
     if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement && openModalButton instanceof HTMLButtonElement) {
       openModalButton.addEventListener('click', () => {
@@ -119,15 +120,15 @@ import { API_URL } from "../consts";
         const jwt = localStorage.getItem('jwt');
         const user = localStorage.getItem('user');
         const openModalButton = document.getElementById('openModalButton');
-        const profilePicutre: HTMLImageElement = document.getElementById('profile-picture') as HTMLImageElement;
         if (jwt && user && openModalButton && btnConnected && user !== 'undefined') {
           const userJSON: User = JSON.parse(user);
-          const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
+          // const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
           openModalButton.style.display = 'none';
-          btnConnected.style.display = 'block';
-          btnConnected.innerHTML = userInitials;
-          if(profilePicutre){
-            // profilePicutre.src = userJSON.profilePicture.url;
+          btnConnected.classList.toggle('hidden');
+          imgProfileAvatar.classList.toggle('hidden');
+          btnConnected.innerHTML = userJSON.username;
+          if(imgProfileAvatar){
+            imgProfileAvatar.src = `${IMAGES_URL}${userJSON.avatar?.formats.thumbnail.url}`;
           }
           loginDialog.close();
           return true;
@@ -138,10 +139,15 @@ import { API_URL } from "../consts";
     }
 
     class LoginForm {
+      private readonly form: HTMLFormElement;
+      private readonly emailInput: HTMLInputElement;
+      private readonly passwordInput: HTMLInputElement;
+      private readonly authenticator: Authenticator;
+
       constructor(authenticator) {
-        this.form = document.getElementById('loginForm');
-        this.emailInput = document.getElementById('email');
-        this.passwordInput = document.getElementById('password');
+        this.form = document.getElementById('loginForm') as HTMLFormElement;
+        this.emailInput = document.getElementById('email') as HTMLInputElement;
+        this.passwordInput = document.getElementById('password') as HTMLInputElement;
         this.authenticator = authenticator;
       }
 
@@ -159,7 +165,7 @@ import { API_URL } from "../consts";
       }
     }
 
-    const authenticator = new Authenticator(`${API_URL}auth/local`);
+    const authenticator = new Authenticator(`${API_URL}/auth/local`);
     const loginForm = new LoginForm(authenticator);
     loginForm.setupEventListeners();
 

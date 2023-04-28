@@ -27,7 +27,7 @@ export class Login {
 
   retrieveUserInfos() {
     const params: OauthObject = this.getUrlParameters();
-    fetch(`${API_URL}auth/${this.provider}/callback?access_token=${params.access_token}`)
+    fetch(`${API_URL}/auth/${this.provider}/callback?access_token=${params.access_token}`)
       .then((res) => {
         if (res.status !== 200) {
           res.json().then((res) => {

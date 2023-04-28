@@ -1,20 +1,19 @@
-<article class="bg-primary flex flex-col justify-center items-center text-white w-full">
+<article
+  class="bg-primary flex flex-col justify-center items-center text-white w-full"
+>
+  <section id="account"></section>
 
-    <section id="account"></section>
-    
-    <section class="flex mt-3 gap-x-5">
-        <button id="btnDisconnect">Disconnect</button>
-        <button id="btnDelete">Delete account</button>
-    </section>
+  <section class="flex mt-3 gap-x-5">
+    <button id="btnDisconnect">Disconnect</button>
+    <button id="btnDelete">Delete account</button>
+  </section>
 
-    <section>
-      GALLERY
-    </section>
-    
+  <section>GALLERY</section>
 </article>
 
 <script>
-  import { User } from "../assets/types/userObject";
+  import { API_URL, IMAGES_URL } from "src/consts";
+  import { Avatar, User } from "../assets/types/userObject";
 
   class Account {
     private user: User;
@@ -31,13 +30,17 @@
         blocked: true,
         createdAt: "",
         updatedAt: "",
+        avatar: {} as Avatar,
       };
       this.accountEl = document.getElementById("account") as HTMLElement;
-      this.btnDisconnect = document.getElementById("btnDisconnect") as HTMLButtonElement;
+      this.btnDisconnect = document.getElementById(
+        "btnDisconnect"
+      ) as HTMLButtonElement;
     }
     public async init(): Promise<void> {
       this.user = await this.getUser();
       if (this.user.confirmed) {
+        this.saveUser(this.user);
         this.displayAccount();
         this.disconnect();
       }
@@ -45,18 +48,23 @@
     }
 
     public disconnect() {
-        this.btnDisconnect.addEventListener("click", () => {
-            localStorage.removeItem("user");
-            localStorage.removeItem("jwt");
-            window.location.href = "/";
-        });
+      this.btnDisconnect.addEventListener("click", () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("jwt");
+        window.location.href = "/";
+      });
+    }
+
+    private saveUser(user: User) {
+      localStorage.setItem("user", JSON.stringify(user));
     }
 
     private displayAccount() {
-        const user = this.user;
-        const html = `
+      const user = this.user;
+      const html = `
         <div class="">
           <h2 class="mb-4 text-bold uppercase">Account</h2>
+          <img src="${IMAGES_URL}${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full"/>
           <p>Username: ${user.username}</p>
           <p>Email: ${user.email}</p>
           <p>Provider: ${user.provider}</p>
@@ -65,15 +73,26 @@
           <p>Created at: ${user.createdAt}</p>
           <p>Updated at: ${user.updatedAt}</p>
       `;
-        this.accountEl.innerHTML = html;
+      this.accountEl.innerHTML = html;
     }
 
     private getUser(): User | PromiseLike<User> {
       const userLocalStorage = localStorage.getItem("user");
-      if (!userLocalStorage) {
+      const jwtLocalStorage = localStorage.getItem("jwt");
+      if (!userLocalStorage && !jwtLocalStorage) {
         throw new Error("No user in local storage");
       } else {
-        return JSON.parse(userLocalStorage);
+        // return JSON.parse(userLocalStorage);
+        console.log(jwtLocalStorage);
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtLocalStorage}`,
+        };
+        return fetch(`${API_URL}/users/me?populate[avatar][fields][0]=formats`, {
+          headers,
+        })
+          .then((response) => response.json())
+          .then((data) => data);
       }
     }
   }

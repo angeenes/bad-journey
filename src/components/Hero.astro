@@ -2,7 +2,7 @@
 import HeroLink from "./HeroLink.astro";
 import { API_URL, BEARER_TOKEN } from "../consts";
 
-let endpoint = `${API_URL}tags`;
+let endpoint = `${API_URL}/tags`;
 const headers = {
   "Content-Type": "application/json",
   Authorization: `Bearer ${BEARER_TOKEN}`,
