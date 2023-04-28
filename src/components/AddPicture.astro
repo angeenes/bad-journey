@@ -28,10 +28,12 @@ const tags = data.data;
 
 <Dialog id="not-authorized">
   <article class="text-center">
-    You need to be registerd to uplaod an image
+    You need to be registerd to upload an image
     <br>
     <br>
     <a href="/account/subscribe">Click here to <span class="text-pink-500">register an account</span></a>
+    <br>
+    <div onclick="closeDialogId('not-authorized');openDialogId('loginDialog')">Click here to <span class="text-pink-500">login</span></div>
   </article>
 </Dialog>
 
