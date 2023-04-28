@@ -137,10 +137,12 @@ export class ImageMetadataForm {
     let data = {};
     const formData = new FormData();
 
-    data = {
-      ...data,
-      "users_permissions_user" : "5",
-    };
+    if(this.user){
+      const userId = JSON.parse(this.user);
+      data = {
+        "users_permissions_user" : userId.id,
+      };
+    }
 
     Array.from(form.elements).forEach(({ name, type, value, files }) => {
       if (!["submit", "file"].includes(type)) {
@@ -160,7 +162,7 @@ export class ImageMetadataForm {
     formData.append("data", JSON.stringify(data));
 
     try {
-      const response = await fetch(`${API_URL}/images`, {
+      const response = await fetch(`${API_URL}/images?populate=*`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.token}`,

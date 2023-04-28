@@ -85,7 +85,7 @@ export class Gallery {
       endpointTags += `&filters[tag][name][$eq]=${this.tag}`;
     }
 
-    return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
+    return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][populate][0]=avatar&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
     // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
       { headers }
     )
@@ -100,7 +100,8 @@ export class Gallery {
     // console.log(images, 'images');
     
     return images.map(({ attributes }, index, images) => {    
-      const userName = attributes.users_permissions_user.data?.attributes?.username ? attributes.users_permissions_user.data.attributes?.username : 'Anonymous';
+      const creatorUserName = attributes.users_permissions_user.data?.attributes?.username ? attributes.users_permissions_user.data.attributes?.username : 'Anonymous';
+      const creatorUserAvatar = attributes.users_permissions_user.data?.attributes?.avatar?.data?.attributes?.formats?.thumbnail.url ?? '/uploads/fake_avatar_e5303ab97f.jpg';
       const html = `
         <article class="card">
           <img width="320"
@@ -110,13 +111,13 @@ export class Gallery {
             style="transition-delay : ${index * 250}ms"
           >
           <div class="btn-like icon-like px-3 py-2 bg-white font-black flex justify-center items-center rounded-md absolute z-20 top-3 right-3 text-black hover:text-pink-500 text-base"> ♡ </div>
-          <section class="card-overlay hover:block inset-0 absolute z-10">
+          <section class="card-overlay hover:block inset-0 absolute z-10 px-3">
             <div class="flex items-center justify-between w-full text-white">
               <button class="flex items-center">  
-                <img src="/img/fake-avatar.webp" alt="username" width="71" height="72" />  ${userName}
+                <img src="${IMAGES_URL}${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8 />  ${creatorUserName}
               </button>
               <button class="btn-like"> ♥ 66 </button>
-              <span class="flex items-center gap-x-2 mr-3">
+              <span class="flex items-center gap-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg> 
                 35k
               </span>
@@ -162,9 +163,8 @@ export class Gallery {
 
   private createDialogImageTemplate(item) {
     // console.log('createDialogImageTemplate', item);
-    const userName = item.users_permissions_user.data?.attributes?.username ? item.users_permissions_user.data.attributes?.username : 'Anonymous';
-    const user = this.getUser();
-    const userAvatar = user.avatar?.formats.thumbnail.url ?? '/img/fake-avatar.webp';
+    const creatorUserName = item.users_permissions_user.data?.attributes?.username ? item.users_permissions_user.data.attributes?.username : 'Anonymous';
+    const creatorUserAvatar = item.users_permissions_user.data?.attributes?.avatar?.data?.attributes?.formats?.thumbnail.url ?? '/uploads/fake_avatar_e5303ab97f.jpg';
 
     setTimeout(() => {
       const buttonCopyPrompt: HTMLButtonElement = document.getElementById("button-copy-prompt") as HTMLButtonElement
@@ -179,7 +179,7 @@ export class Gallery {
         loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max"
       >
       <article>
-      <button class="flex items-center">  <img src="${IMAGES_URL}${userAvatar}" alt="${userName}" width="32" height="32" class="rounded-full mr-2" />  ${userName} </button>
+      <button class="flex items-center">  <img src="${IMAGES_URL}${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8" />  ${creatorUserName} </button>
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
         <p class="font-bold">Prompt</p>
