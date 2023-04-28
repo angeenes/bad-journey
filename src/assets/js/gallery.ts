@@ -84,7 +84,8 @@ export class Gallery {
       endpointTags += `&filters[tag][name][$eq]=${this.tag}`;
     }
 
-    return fetch(`${this.url}images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
+    return fetch(`${this.url}images?populate[users_permissions_user][fields][0]=username&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
+    // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
       { headers }
     )
       .then(response => response.json())
@@ -98,6 +99,7 @@ export class Gallery {
     // console.log(images, 'images');
     
     return images.map(({ attributes }, index, images) => {    
+      const userName = attributes.users_permissions_user.data?.attributes?.username ? attributes.users_permissions_user.data.attributes?.username : 'Anonymous';
       const html = `
         <article class="card">
           <img width="320"
@@ -110,7 +112,7 @@ export class Gallery {
           <section class="card-overlay hover:block inset-0 absolute z-10">
             <div class="flex items-center justify-between w-full text-white">
               <button class="flex items-center">  
-                <img src="/img/fake-avatar.webp" alt="username" width="71" height="72" />  Lucas Dédouze 
+                <img src="/img/fake-avatar.webp" alt="username" width="71" height="72" />  ${userName}
               </button>
               <button class="btn-like"> ♥ 66 </button>
               <span class="flex items-center gap-x-2 mr-3">
@@ -153,8 +155,8 @@ export class Gallery {
 
 
   private createDialogImageTemplate(item) {
-
-    console.log('createDialogImageTemplate', item);
+    // console.log('createDialogImageTemplate', item);
+    const userName = item.users_permissions_user.data?.attributes?.username ? item.users_permissions_user.data.attributes?.username : 'Anonymous';
 
     setTimeout(() => {
       const buttonCopyPrompt: HTMLButtonElement = document.getElementById("button-copy-prompt") as HTMLButtonElement
@@ -169,7 +171,7 @@ export class Gallery {
         loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max"
       >
       <article>
-      <button class="flex items-center">  <img src="/img/fake-avatar.webp" alt="username" width="71" height="72" />  Lucas Dedouze </button>
+      <button class="flex items-center">  <img src="/img/fake-avatar.webp" alt="${userName}" width="71" height="72" />  ${userName} </button>
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
         <p class="font-bold">Prompt</p>

@@ -11,4 +11,6 @@ export interface ImageObject {
   steps?: string;
   generator: string;
   sampler?: string;
+  creator?: string;
+  creatorId?: string;
 }
