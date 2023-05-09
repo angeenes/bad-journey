@@ -5,6 +5,12 @@ export class User {
 
     }
 
+    private login(jwt: string, user: IUser): void {
+        localStorage.setItem("jwt", jwt);
+        localStorage.setItem("user", JSON.stringify(user));
+        window.location.href = "/";
+    }
+
     private isConnected(): boolean {
         const jwt = localStorage.getItem("jwt");
         const user = localStorage.getItem("user");

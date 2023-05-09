@@ -1,5 +1,4 @@
 
-import { User } from "@types/User";
 import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
 import { DatasImages } from "../interfaces/ApiDatasImages";
 import MiniMasonry from "minimasonry";
@@ -161,10 +160,10 @@ export class Gallery {
     alert('likeImage mot implemented yet');
   }
 
-  private getUser(): User {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  }
+  // private getUser(): User {
+  //   const user = localStorage.getItem('user');
+  //   return user ? JSON.parse(user) : null;
+  // }
 
 
   private createDialogImageTemplate(item) {
