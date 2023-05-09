@@ -22,7 +22,7 @@ export class Gallery {
     this.tag = tag;
     this.userId = userId;
     this.url = API_URL;
-    this.pageSize = 15;
+    this.pageSize = 20;
     this.page = 1;
     this.imagesSection = document.getElementById('gallery') as HTMLDivElement;
     this.imageDialogText = document.getElementById('image-dialog-text') as HTMLDivElement;
