@@ -50,49 +50,28 @@ export class Gallery {
 
 
   private addImagesToSection(images: DatasImages['data']): void {
-    console.log('addImagesToSection', images);
-
-    let loadedImages = 0;
-
     const imageElements = this.createImageElements(images);
     this.imagesSection.append(...imageElements);
 
-    imageElements.forEach((card) => {
-      const image = card.querySelector('img') as HTMLImageElement;
+    let loadedImages = 0;
 
-      // console.log('image', image);
+    imageElements.forEach((card) => {
+      const image = card.querySelector('img') as HTMLImageElement | null;
 
       if (image) {
-
-        setTimeout(() => {
-          card.classList.add('is-visible');
-        }, 250);
-
-        // console.log('image.src', image.src);
-
         image.addEventListener('load', () => {
-
-          console.log('image loaded', image);
-
+          card.classList.add('is-visible');
           loadedImages++;
 
-          console.log(loadedImages, images.length, loadedImages === images.length);
-
           if (loadedImages === images.length) {
-            console.log('loadedImages', loadedImages, images.length);
-
             this.calllayout('addImagesToSection');
             this.isLoading = false;
           }
         });
-        image.removeEventListener('load', () => { });
-      } else {
-        console.log('no image');
       }
-
-
     });
   }
+
 
   private calllayout(id?: string) {
     this.masonryInstance.layout();
@@ -243,7 +222,7 @@ export class Gallery {
           </div>
             <div class="flex gap-2">
             <p class="font-bold">tag: </p>
-            <p>${item.tag.data.attributes.name ?? 'N/A'}</p>
+            <p>${item.tag?.data?.attributes.name ?? 'N/A'}</p>
           </div>
         </div>
         </section>
