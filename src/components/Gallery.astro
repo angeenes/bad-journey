@@ -11,7 +11,9 @@ const { tag, userId } = Astro.props;
 
 <section class="container-full">
   <article id="gallery" class="block w-full relative"></article>
-  <div id="load-more" class="text-center text-gray-400 mt-40 pt-7 pb-1">LOADING</div>
+  <div id="load-more" class="text-center text-gray-400 mt-40 pt-7 pb-1">
+    LOADING
+  </div>
   <i id="loader-bar" class="loader-bar"></i>
 </section>
 
@@ -19,54 +21,46 @@ const { tag, userId } = Astro.props;
   <p id="image-dialog-text"></p>
 </Dialog>
 
-<script>
-//   import { Gallery } from "@classes/gallery";
-
-//   // console.log('GALLERY PAGE STARTS');
-
-//   const dataTag = document.querySelector('#gallery')?.dataset.tag?? '';
-// //   const dataUserId = document.querySelector('#gallery')?.dataset.userId?? null;
-
-//   export const gallery = new Gallery(dataTag, null);
-//   gallery.init();
-
-</script>
-
 <style lang="scss">
-
-@keyframes loader-bar-anim {
-	0%,44%,88.1%,100% {
-		transform-origin: left;
-	}
-	0%,100%,88% {
-		transform: scaleX(0);
-	}
-	44.1%,88% {
-		transform-origin: right;
-	}
-	33%,44% {
-		transform: scaleX(1);
-	}
-}
-.loader-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-	&::before {
-		content: '';
-		box-sizing: border-box;
-		position: absolute;
-		height: 5px;
-    padding: 0 2rem;
-		background-color: #9ca3af;;
-		animation: loader-bar-anim 0.8s cubic-bezier(0, 0, 0.03, 0.9) infinite;
-	}
-	&::after {
-		content: '';
-		box-sizing: border-box;
-		position: absolute;
-	}
-}
-
+  @keyframes loader-bar-anim {
+    0%,
+    44%,
+    88.1%,
+    100% {
+      transform-origin: left;
+    }
+    0%,
+    100%,
+    88% {
+      transform: scaleX(0);
+    }
+    44.1%,
+    88% {
+      transform-origin: right;
+    }
+    33%,
+    44% {
+      transform: scaleX(1);
+    }
+  }
+  .loader-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    &::before {
+      content: "";
+      box-sizing: border-box;
+      position: absolute;
+      height: 5px;
+      padding: 0 2rem;
+      background-color: #9ca3af;
+      animation: loader-bar-anim 0.8s cubic-bezier(0, 0, 0.03, 0.9) infinite;
+    }
+    &::after {
+      content: "";
+      box-sizing: border-box;
+      position: absolute;
+    }
+  }
 </style>

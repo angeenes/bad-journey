@@ -9,7 +9,7 @@ export class Gallery {
   private page: number;
   private readonly imagesSection: HTMLDivElement;
   private readonly imageDialogText: HTMLDivElement;
-  private readonly loadMoreTextEl: HTMLDivElement;
+  private readonly loadMoreEl: HTMLDivElement;
   private readonly loaderBarEl: HTMLDivElement;
   private isLoading: boolean;
   private noMoreImages: boolean;
@@ -26,7 +26,7 @@ export class Gallery {
     this.page = 1;
     this.imagesSection = document.getElementById('gallery') as HTMLDivElement;
     this.imageDialogText = document.getElementById('image-dialog-text') as HTMLDivElement;
-    this.loadMoreTextEl = document.getElementById('load-more') as HTMLDivElement;
+    this.loadMoreEl = document.getElementById('load-more') as HTMLDivElement;
     this.loaderBarEl = document.getElementById('loader-bar') as HTMLDivElement;
     this.isLoading = false;
     this.noMoreImages = false;
@@ -50,23 +50,53 @@ export class Gallery {
 
 
   private addImagesToSection(images: DatasImages['data']): void {
+    console.log('addImagesToSection', images);
 
-    // console.log('addImagesToSection');
+    let loadedImages = 0;
 
     const imageElements = this.createImageElements(images);
     this.imagesSection.append(...imageElements);
 
     imageElements.forEach((card) => {
-      setTimeout(() => {
-        card.classList.add('is-visible');
-        this.masonryInstance.layout();
-      }, 1500);
-    });
+      const image = card.querySelector('img') as HTMLImageElement;
 
-    // Call layout() once all cards are added to the DOM
-    // setTimeout(() => {
-    //   this.masonryInstance.layout();
-    // }, 500);
+      // console.log('image', image);
+
+      if (image) {
+
+        setTimeout(() => {
+          card.classList.add('is-visible');
+        }, 250);
+
+        // console.log('image.src', image.src);
+
+        image.addEventListener('load', () => {
+
+          console.log('image loaded', image);
+
+          loadedImages++;
+
+          console.log(loadedImages, images.length, loadedImages === images.length);
+
+          if (loadedImages === images.length) {
+            console.log('loadedImages', loadedImages, images.length);
+
+            this.calllayout('addImagesToSection');
+            this.isLoading = false;
+          }
+        });
+        image.removeEventListener('load', () => { });
+      } else {
+        console.log('no image');
+      }
+
+
+    });
+  }
+
+  private calllayout(id?: string) {
+    this.masonryInstance.layout();
+    console.log('calllayout', id);
   }
 
 
@@ -86,12 +116,12 @@ export class Gallery {
       endpointTags += `&filters[tag][name][$eq]=${this.tag}`;
     }
 
-    if(this.userId) {
+    if (this.userId) {
       endpointTags += `&filters[users_permissions_user][id][$eq]=${this.userId}`;
     }
 
     return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][populate][0]=avatar&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
-    // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
+      // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
       { headers }
     )
       .then(response => response.json())
@@ -103,8 +133,8 @@ export class Gallery {
 
   private createImageElements(images): HTMLElement[] {
     // console.log(images, 'images');
-    
-    return images.map(({ attributes }, index, images) => {    
+
+    return images.map(({ attributes }, index, images) => {
       const creatorUserName = attributes.users_permissions_user.data?.attributes?.username ? attributes.users_permissions_user.data.attributes?.username : 'Anonymous';
       const creatorUserAvatar = attributes.users_permissions_user.data?.attributes?.avatar?.data?.attributes?.formats?.thumbnail.url ?? '/uploads/fake_avatar_e5303ab97f.jpg';
       const html = `
@@ -133,13 +163,13 @@ export class Gallery {
       const card = this.htmlToElement(html);
       if (card) {
         const btnLike = card.querySelector('.btn-like');
-        
+
         btnLike.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
           this.likeImage(images[index]);
         });
-        
+
         card.addEventListener('click', () => {
           if (this.imageDialogText) {
             const dialogTemplate = this.createDialogImageTemplate(attributes);
@@ -154,9 +184,9 @@ export class Gallery {
     });
   }
 
-  private likeImage(id ) {
+  private likeImage(id) {
     console.log('likeImage receives the image id: ', id);
-    
+
     alert('likeImage mot implemented yet');
   }
 
@@ -256,14 +286,17 @@ export class Gallery {
         await this.addImagesToSection(images);
       } else {
         console.error('Aucune image supplémentaire à charger.');
-        this.loadMoreTextEl.innerText = 'You reached the end of your journey.No more images to load';
+        this.loadMoreEl.innerText = 'You reached the end of your journey.No more images to load';
         this.noMoreImages = true;
         this.loaderBarEl.style.display = 'none';
       }
     } catch (error) {
       console.error('Erreur lors du chargement des images supplémentaires:', error);
     } finally {
-      this.isLoading = false; // Réinitialisez isLoading à false dans le bloc finally
+      // this.isLoading = false; // Réinitialisez isLoading à false dans le bloc finally
+      // setTimeout(() => {
+      //   this.calllayout('loadMore');
+      // }, 1500);
     }
   }
 
@@ -276,32 +309,65 @@ export class Gallery {
       const images = await this.loadImages(this.page);
       if (images && images.length > 0) {
         await this.addImagesToSection(images);
-        this.isLoading = false;
       } else {
         console.error('Aucune image n\'a été chargée.');
-        this.loadMoreTextEl.innerText = 'No images to load';
+        this.loadMoreEl.innerText = 'No images to load';
       }
     } catch (error) {
       console.error('Erreur lors du chargement des images:', error);
+    } finally {
+      // this.isLoading = false; // Réinitialisez isLoading à false dans le bloc finally
+      // setTimeout(() => {
+      //   this.calllayout('init');
+      // }, 1500);
     }
   }
 
+  private handleScroll(target, callback) {
+    console.log('handleScroll');
 
-  private handleScroll(): void {
+    const targetElement = this.loadMoreEl;
 
-    if (!this.isLoading && !this.noMoreImages) {
+    const options = {
+      root: null,
+      rootMargin: '30px',
+      threshold: 1.0
+    };
 
-      const threshold = 500;
+    const observer = new IntersectionObserver((entries) => {
+      // console.log('entries', entries);
 
-      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight + threshold) {
+      // console.log('this.isLoading', this.isLoading);
+      // console.log('this.noMoreImages', this.noMoreImages);
 
-        this.isLoading = true;
-        setTimeout(() => {
-          this.loadMore();
-        }, this.debounceTimeout);
+
+      if (!this.isLoading && !this.noMoreImages && entries[0].isIntersecting) {
+        console.log('--------------------- IS INTERSECTING');
+
+        this.loadMore();
       }
-    }
+
+    }, options);
+
+    observer.observe(targetElement);
   }
+
+
+  // private handleScroll(): void {
+
+  //   if (!this.isLoading && !this.noMoreImages) {
+
+  //     const threshold = 500;
+
+  //     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight + threshold) {
+
+  //       this.isLoading = true;
+  //       setTimeout(() => {
+  //         this.loadMore();
+  //       }, this.debounceTimeout);
+  //     }
+  //   }
+  // }
 
 
 }

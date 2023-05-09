@@ -1,7 +1,7 @@
 {
     "css.validate": false,
     "less.validate": false,
-    "scss.validate": false
+    "scss.validate": false,
   /**
    * Controls whether suggestions should be accepted on commit characters.
    * For example, in JavaScript, the semi-colon (;) can be a commit character that accepts a suggestion and types that character.
@@ -116,7 +116,7 @@
    * Format a file on save.
    * Defaults to true.
    */
-  // "editor.formatOnSave": true,
+  "editor.formatOnSave": true,
   /**
    * Controls whether the editor should automatically format the line after typing.
    * Defaults to false.
