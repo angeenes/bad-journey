@@ -36,7 +36,7 @@ import Dialog from '@components/Dialog.astro'
   
   <script>
 
-import { User, UserObject } from "../assets/types/userObject";
+import { User, UserInterface } from "../assets/types/userObject";
 import { API_URL, IMAGES_URL } from "../consts";
 
     const openModalButton = document.getElementById('openModalButton');
@@ -81,7 +81,7 @@ import { API_URL, IMAGES_URL } from "../consts";
               throw new Error('Network response was not ok');
             }
         })
-        .then(function(data: UserObject) {
+        .then(function(data: UserInterface) {
 
             const jwt = data.jwt;
             const user = data.user;

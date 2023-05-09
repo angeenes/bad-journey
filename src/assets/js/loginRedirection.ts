@@ -1,5 +1,5 @@
 import { API_URL } from "../../consts";
-import { OauthObject } from "../types/OauthObject";
+import { OauthObject } from "../interfaces/OauthObject";
 
 export class Login {
   private provider: string;

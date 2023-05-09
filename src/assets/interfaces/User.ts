@@ -1,9 +1,9 @@
-  export interface UserObject {
+  export interface UserInterface {
     jwt: string
-    user: User
+    user: IUser
   }
   
-  export interface User {
+  export interface IUser {
     id: number
     username: string
     email: string

@@ -1,4 +1,4 @@
-import { ImageObject } from "../../types/ImageObject";
+import { ImageObject } from "../../interfaces/ImageObject";
 
 interface InputObject {
     model: string;

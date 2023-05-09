@@ -2,7 +2,7 @@ import { API_URL } from "../../consts";
 import convertAutomatic111Metadata from "@classes/converters/convertAutomatic111Metadata";
 import convertInvokeMetadata from "@classes/converters/convertInvokeMetadata";
 import convertMochiMetadata from "@classes/converters/convertMochiMetadata";
-import { ImageObject } from "../types/ImageObject.js";
+import { ImageObject } from "../interfaces/ImageObject.js";
 
 export class ImageMetadataForm {
   constructor(

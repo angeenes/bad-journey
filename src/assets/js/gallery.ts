@@ -1,7 +1,7 @@
 
-import { User } from "@types/userObject";
+import { User } from "@types/User";
 import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
-import { DatasImages } from "../types/ApiDatasImages";
+import { DatasImages } from "../interfaces/ApiDatasImages";
 import MiniMasonry from "minimasonry";
 
 export class Gallery {
@@ -23,7 +23,7 @@ export class Gallery {
     this.tag = tag;
     this.userId = userId;
     this.url = API_URL;
-    this.pageSize = 10;
+    this.pageSize = 15;
     this.page = 1;
     this.imagesSection = document.getElementById('gallery') as HTMLDivElement;
     this.imageDialogText = document.getElementById('image-dialog-text') as HTMLDivElement;
