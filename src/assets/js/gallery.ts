@@ -139,15 +139,17 @@ export class Gallery {
           </section>
         </article>
       `;
-      const card = this.htmlToElement(html);
+      const card = this.htmlToElement(html) as HTMLButtonElement;
       if (card) {
         const btnLike = card.querySelector('.btn-like');
 
-        btnLike.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          this.likeImage(images[index]);
-        });
+        if (btnLike) {
+          btnLike.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.likeImage(images[index]);
+          });
+        }
 
         card.addEventListener('click', () => {
           if (this.imageDialogText) {
@@ -222,7 +224,7 @@ export class Gallery {
           </div>
             <div class="flex gap-2">
             <p class="font-bold">tag: </p>
-            <p>${item.tag?.data?.attributes.name ?? 'N/A'}</p>
+            <p>${item.tag?.data?.attributes?.name ?? 'N/A'}</p>
           </div>
         </div>
         </section>
