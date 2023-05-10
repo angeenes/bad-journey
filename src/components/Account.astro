@@ -1,5 +1,4 @@
 ---
-
 ---
 
 <article
@@ -11,7 +10,6 @@
     <button id="btnDisconnect">Disconnect</button>
     <button id="btnDelete">Delete account</button>
   </section>
-
 </article>
 
 <script>
@@ -91,9 +89,12 @@
           "Content-Type": "application/json",
           Authorization: `Bearer ${jwtLocalStorage}`,
         };
-        return fetch(`${API_URL}/users/me?populate[avatar][fields][0]=formats`, {
-          headers,
-        })
+        return fetch(
+          `${API_URL}/users/me?populate[avatar][fields][0]=formats`,
+          {
+            headers,
+          }
+        )
           .then((response) => response.json())
           .then((data) => data);
       }
@@ -105,9 +106,12 @@
 </script>
 
 <script>
-import { Gallery } from "@classes/gallery";
-  
-export const loader = new Gallery('', 5);
-loader.init();
+  import { Gallery } from "@classes/gallery";
+  import { User } from "@classes/user";
 
+  export const user = new User();
+  const userId = user.getUserId();
+
+  export const loader = new Gallery(undefined, userId);
+  loader.init();
 </script>

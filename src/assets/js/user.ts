@@ -1,7 +1,7 @@
 import { IUser } from "../interfaces/User";
 
 export class User {
-    constructor(){
+    constructor() {
 
     }
 
@@ -23,7 +23,7 @@ export class User {
         window.location.href = "/";
     }
 
-    private getUser(): IUser | null {
+    public getUser(): IUser | null {
         const isConnected = this.isConnected();
         const user = localStorage.getItem("user");
         if (user && isConnected) {
@@ -34,10 +34,19 @@ export class User {
         }
     }
 
-    private getUsername(): IUser['username'] | null {
+    public getUsername(): IUser['username'] | null {
         const user: IUser | null = this.getUser();
         if (user) {
             return user.username;
+        } else {
+            return null;
+        }
+    }
+
+    public getUserId(): IUser['id'] | null {
+        const user: IUser | null = this.getUser();
+        if (user) {
+            return user.id;
         } else {
             return null;
         }

@@ -1,31 +1,30 @@
 ---
-import Account from '@components/Account.astro';
-import BaseHead from '@components/BaseHead.astro';
-import Footer from '@components/Footer.astro';
-import Header from '@components/Header.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
-import Gallery from '@components/Gallery.astro';
+import Account from "@components/Account.astro";
+import BaseHead from "@components/BaseHead.astro";
+import Footer from "@components/Footer.astro";
+import Header from "@components/Header.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import Gallery from "@components/Gallery.astro";
 ---
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header title={SITE_TITLE} />
-		<main class="flex flex-colflex flex-col justify-center items-center w-full bg-primary">
-			<Account/>
-			<Gallery />
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header title={SITE_TITLE} />
+    <main
+      class="flex flex-colflex flex-col justify-center items-center w-full bg-primary"
+    >
+      <Account />
+      <Gallery />
+    </main>
+    <Footer />
+  </body><script>
+    import { Gallery } from "@classes/gallery";
+
+    export const loader = new Gallery(undefined, 5);
+    loader.init();
+  </script>
 </html>
-
-<script>
-	import { Gallery } from "@classes/gallery";
-
-	export const loader = new Gallery(undefined, 5);
-	loader.init();
-
-</script>

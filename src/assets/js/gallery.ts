@@ -18,7 +18,7 @@ export class Gallery {
   public tag: string | null | undefined;
   public userId: number | null | undefined;
 
-  constructor(tag?: string, userId?: number) {
+  constructor(tag?: string, userId?: number | null) {
     this.tag = tag;
     this.userId = userId;
     this.url = API_URL;
