@@ -99,7 +99,8 @@ export class Gallery {
       endpointTags += `&filters[users_permissions_user][id][$eq]=${this.userId}`;
     }
 
-    return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][populate][0]=avatar&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
+    return fetch(`${this.url}/images?populate=*`,
+      // return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][populate][0]=avatar&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
       // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
       { headers }
     )
@@ -111,15 +112,13 @@ export class Gallery {
 
 
   private createImageElements(images): HTMLElement[] {
-    // console.log(images, 'images');
-
-    return images.map(({ attributes }, index, images) => {
-      const creatorUserName = attributes.users_permissions_user.data?.attributes?.username ? attributes.users_permissions_user.data.attributes?.username : 'Anonymous';
-      const creatorUserAvatar = attributes.users_permissions_user.data?.attributes?.avatar?.data?.attributes?.formats?.thumbnail.url ?? '/uploads/fake_avatar_e5303ab97f.jpg';
+    return images.map(({ image, creator, likes, attributes, tag }, index, images) => {
+      const creatorUserName = creator.username ?? 'Anonymous';
+      const creatorUserAvatar = creator.avatar ?? '/uploads/fake_avatar_e5303ab97f.jpg';
       const html = `
         <article class="card">
           <img width="320"
-            src="${IMAGES_URL}${attributes.image.data.attributes.formats.medium.url}"
+            src="${IMAGES_URL}${image}"
             alt="Image gallery"
             loading="lazy" class="w-full card-img h-full"
             style="transition-delay : ${index * 250}ms"
@@ -130,7 +129,7 @@ export class Gallery {
               <button class="flex items-center">  
                 <img src="${IMAGES_URL}${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8 />  ${creatorUserName}
               </button>
-              <button class="btn-like"> ♥ 66 </button>
+              <button class="btn-like"> ♥ ${likes} </button>
               <span class="flex items-center gap-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg> 
                 35k
@@ -153,7 +152,7 @@ export class Gallery {
 
         card.addEventListener('click', () => {
           if (this.imageDialogText) {
-            const dialogTemplate = this.createDialogImageTemplate(attributes);
+            const dialogTemplate = this.createDialogImageTemplate(image, creator, likes, attributes, tag);
             this.imageDialogText.innerHTML = "";
             this.imageDialogText.insertAdjacentHTML("beforeend", dialogTemplate);
           }
@@ -177,10 +176,10 @@ export class Gallery {
   // }
 
 
-  private createDialogImageTemplate(item) {
-    // console.log('createDialogImageTemplate', item);
-    const creatorUserName = item.users_permissions_user.data?.attributes?.username ? item.users_permissions_user.data.attributes?.username : 'Anonymous';
-    const creatorUserAvatar = item.users_permissions_user.data?.attributes?.avatar?.data?.attributes?.formats?.thumbnail.url ?? '/uploads/fake_avatar_e5303ab97f.jpg';
+  private createDialogImageTemplate(image, creator, likes, attributes, tag) {
+    console.log('createDialogImageTemplate', tag);
+    const creatorUserName = creator.username ?? 'Anonymous';
+    const creatorUserAvatar = creator.avatar ?? '/uploads/fake_avatar_e5303ab97f.jpg';
 
     setTimeout(() => {
       const buttonCopyPrompt: HTMLButtonElement = document.getElementById("button-copy-prompt") as HTMLButtonElement
@@ -190,7 +189,7 @@ export class Gallery {
     return `
     <div class="flex gap-16 min-h-[340px]">
       <img width="320px" height="100%"
-        src="${IMAGES_URL}${item?.image.data.attributes.formats.large?.url ?? item?.image.data.attributes.formats.medium?.url}"
+        src="${IMAGES_URL}${image}"
         alt="Image gallery details"
         loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max"
       >
@@ -199,32 +198,32 @@ export class Gallery {
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
         <p class="font-bold">Prompt</p>
-        <p id="prompt-to-copy">${item.prompt}</p>
+        <p id="prompt-to-copy">${attributes.prompt}</p>
         <p class="font-bold mt-4">Negative prompt</p>
-        <p>${item.negative_promt ?? 'N/A'}</p>
+        <p>${attributes.negative_promt ?? 'N/A'}</p>
         
         <div class="flex flex-wrap gap-2 mt-4">
           <p class="font-bold">Height: </p>
-          <p>${item.height}</p>
+          <p>${attributes.height}</p>
           <p class="font-bold">Width: </p>
-          <p>${item.width}</p>
+          <p>${attributes.width}</p>
           <p class="font-bold">cfg_scale: </p>
-          <p>${item.cfg_scale}</p>
+          <p>${attributes.cfg_scale}</p>
           <p class="font-bold">seed: </p>
-          <p>${item.seed}</p>
+          <p>${attributes.seed}</p>
           <p class="font-bold">steps: </p>
-          <p>${item.steps}</p>
+          <p>${attributes.steps}</p>
           <p class="font-bold">generator: </p>
-          <p>${item.generator}</p>
+          <p>${attributes.generator}</p>
         </div>
         <div class="mt-4">
         <div class="flex gap-2">
           <p class="font-bold">model: </p>
-          <p>${item.model}</p>
+          <p>${attributes.model}</p>
           </div>
             <div class="flex gap-2">
             <p class="font-bold">tag: </p>
-            <p>${item.tag?.data?.attributes?.name ?? 'N/A'}</p>
+            <p>${tag ?? 'N/A'}</p>
           </div>
         </div>
         </section>
@@ -234,7 +233,7 @@ export class Gallery {
       </div>
       <section class="flex items-center justify-between">
       <div class="flex gap-5 items-center p-3 text-primary">
-      <button class="btn-like">♥ 66</button>
+      <button class="btn-like">♥ ${likes}</button>
       <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg> 35841</span>
       </div>
       <button id="button-twitter-share" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='/icons/icon-twitter.svg' alt='twitter'> <span> Share on Twitter</span> </button>

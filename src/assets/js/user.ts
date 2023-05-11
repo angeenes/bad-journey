@@ -1,9 +1,7 @@
 import { IUser } from "../interfaces/User";
 
 export class User {
-    constructor() {
-
-    }
+    constructor() { }
 
     private login(jwt: string, user: IUser): void {
         localStorage.setItem("jwt", jwt);
