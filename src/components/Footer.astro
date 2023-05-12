@@ -1,20 +1,16 @@
 ---
 const today = new Date();
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE } from "../consts";
 ---
 
-<footer class="bg-primary">
-	&copy; {today.getFullYear()} {SITE_TITLE}. All rights reserved.
+<footer
+  class="bg-white dark:bg-primary text-primary dark:text-white transition-colors text-center p-6"
+>
+  &copy; {today.getFullYear()}
+  {SITE_TITLE}. All rights reserved.
 </footer>
-<style>
-	footer {
-		padding: 25px;
-		text-align: center;
-		color: white;
-	}
-</style>
 
 <script>
-import { ThemeManager } from '@classes/darkMode';
-const themeManager = new ThemeManager();
+  import { ThemeManager } from "@classes/darkMode";
+  const themeManager = new ThemeManager();
 </script>

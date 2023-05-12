@@ -202,3 +202,7 @@ dialog > .loading.active {
 .text-primary-light {
   color: var(--color-primary-light);
 } */
+
+.bg-gradient-pink {
+  background: linear-gradient(270deg, #F361A7 0%, #C225C6 100%);
+}

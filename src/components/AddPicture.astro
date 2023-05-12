@@ -11,7 +11,6 @@ const headers = {
 const response = await fetch(endpoint, { headers });
 const data = await response.json();
 const tags = data.data;
-
 ---
 
 <!-- <script is:inline src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script> -->
@@ -20,33 +19,49 @@ const tags = data.data;
 <Dialog id="success-upload-image">
   <article class="text-center">
     You did it!
-    <br>
-    <br>
-    <button onclick="location.reload(true)">Click here to reload the page and see your uploaded image</button>
+    <br />
+    <br />
+    <button onclick="location.reload(true)"
+      >Click here to reload the page and see your uploaded image</button
+    >
   </article>
 </Dialog>
 
 <Dialog id="not-authorized">
   <article class="text-center">
     You need to be registerd to upload an image
-    <br>
-    <br>
-    <a href="/account/subscribe">Click here to <span class="text-pink-500">register an account</span></a>
-    <br>
-    <div onclick="closeDialogId('not-authorized');openDialogId('loginDialog')" class="cursor-pointer">Click here to <span class="text-pink-500">login</span></div>
+    <br />
+    <br />
+    <a href="/account/subscribe"
+      >Click here to <span class="text-pink-500">register an account</span></a
+    >
+    <br />
+    <div
+      onclick="closeDialogId('not-authorized');openDialogId('loginDialog')"
+      class="cursor-pointer"
+    >
+      Click here to <span class="text-pink-500">login</span>
+    </div>
   </article>
 </Dialog>
 
 <Dialog id="error">
   <article class="text-center">
     Something went wrong. Please try again.
-    <br>
-    <br>
-    <button onclick="location.reload(true)">Click here to reload the page and try again</button>
+    <br />
+    <br />
+    <button onclick="location.reload(true)"
+      >Click here to reload the page and try again</button
+    >
   </article>
 </Dialog>
 
-<Dialog id="uploadImage" buttonLabel="UPLOAD" title="upload an image" className="bg-pink-500 px-6 py-2 rounded-full uppercase font-bold text-sm">
+<Dialog
+  id="uploadImage"
+  buttonLabel="UPLOAD"
+  title="upload an image"
+  className="bg-gradient-pink px-6 py-1 rounded-full uppercase font-bold text-sm h-7 text-white"
+>
   <div id="publishing-loading" class="loading">
     <div class="loader"></div>
     <div class="font-black text-pink-500">PUBLISHING IMAGE...</div>
@@ -65,7 +80,11 @@ const tags = data.data;
       <p class="mt-4">Drag and drop an image, or Browse</p>
       <p class="text-slate-400 text-xs mt-2">Minimum 512px width, max 10MB</p>
       <div class="flex items-center gap-4 mx-auto">
-        <input type="number" name="width" id="width"> x <input type="number" name="height" id="height">
+        <input type="number" name="width" id="width" /> x <input
+          type="number"
+          name="height"
+          id="height"
+        />
       </div>
       <input
         type="file"
@@ -106,7 +125,13 @@ const tags = data.data;
       </label>
       <label for="cfg_scale">
         Cfg scale (optional)
-        <input type="number" name="cfg_scale" id="cfg_scale" step="0.1" min="0" />
+        <input
+          type="number"
+          name="cfg_scale"
+          id="cfg_scale"
+          step="0.1"
+          min="0"
+        />
       </label>
       <label for="steps">
         Steps (optional)
@@ -115,16 +140,20 @@ const tags = data.data;
       <label for="tag">
         category tags
         <select name="tag" id="tag">
-          {tags.map((tag) => (
-            <option value={tag.id}>{tag.attributes.name}</option>
-          ))}
+          {
+            tags.map((tag) => (
+              <option value={tag.id}>{tag.attributes.name}</option>
+            ))
+          }
         </select>
       </label>
       <button
         disabled
         id="publish-button"
         type="submit"
-        class="mt-4 text-white text-center p-3 rounded-3xl text-sm bg-primary font-bold flex items-center justify-center gap-x-2 cursor-not-allowed opacity-5"> <img src="/img/send-airplane.svg" alt="publich now"> PUBLISH NOW</button
+        class="mt-4 text-white text-center p-3 rounded-3xl text-sm bg-primary font-bold flex items-center justify-center gap-x-2 cursor-not-allowed opacity-5"
+      >
+        <img src="/img/send-airplane.svg" alt="publich now" /> PUBLISH NOW</button
       >
     </div>
   </form>
