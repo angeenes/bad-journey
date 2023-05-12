@@ -12,7 +12,12 @@
 <article
   class="bg-white dark:bg-primary flex flex-col justify-center items-center text-primary dark:text-white w-full mt-11 p-4"
 >
-  <section id="account"></section>
+  <article class="flex justify-between">
+    <section id="account"></section>
+
+    <button>EDIT PROFIL</button>
+    <button>UPLOAD A NEW IMAGE</button>
+  </article>
 
   <section class="flex mt-3 gap-x-5">
     <button id="btnDisconnect">Disconnect</button>
@@ -79,7 +84,7 @@
     private displayAccount() {
       const user = this.user;
       const html = `
-        <div class="flex text-primary dark:text-white">
+        <div class="flex items-center gap-5 text-primary dark:text-white">
           <img src="${IMAGES_URL}${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full h-40 w-40"/>
           <section>
             <p class="fontblack text-xl">Username: ${user.username}</p>
