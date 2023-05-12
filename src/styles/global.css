@@ -46,7 +46,6 @@ body {
 .container-full {
   padding-top: .5rem;
   width: 100%;
-  background: var(--color-primary);
 }
 
 .card-img {

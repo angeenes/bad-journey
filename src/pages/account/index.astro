@@ -15,16 +15,17 @@ import Gallery from "@components/Gallery.astro";
   <body>
     <Header title={SITE_TITLE} />
     <main
-      class="flex flex-colflex flex-col justify-center items-center w-full bg-primary"
+      class="flex flex-colflex flex-col justify-center items-center w-full bg-white dark:bg-primary"
     >
       <Account />
       <Gallery />
     </main>
     <Footer />
-  </body><script>
-    import { Gallery } from "@classes/gallery";
+    <script>
+      import { Gallery } from "@classes/gallery";
 
-    export const loader = new Gallery(undefined, 5);
-    loader.init();
-  </script>
+      export const loader = new Gallery(undefined, 5);
+      loader.init();
+    </script>
+  </body>
 </html>
