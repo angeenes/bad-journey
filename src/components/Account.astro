@@ -79,16 +79,12 @@
     private displayAccount() {
       const user = this.user;
       const html = `
-        <div class="">
-          <h2 class="mb-4 text-bold uppercase">Account</h2>
+        <div class="flex">
           <img src="${IMAGES_URL}${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full"/>
-          <p>Username: ${user.username}</p>
-          <p>Email: ${user.email}</p>
-          <p>Provider: ${user.provider}</p>
-          <p>Confirmed: ${user.confirmed}</p>
-          <p>Blocked: ${user.blocked}</p>
-          <p>Created at: ${user.createdAt}</p>
-          <p>Updated at: ${user.updatedAt}</p>
+          <section>
+            <p class="fontblack text-xl">Username: ${user.username}</p>
+          </section>
+        </div>
       `;
       this.accountEl.innerHTML = html;
     }
