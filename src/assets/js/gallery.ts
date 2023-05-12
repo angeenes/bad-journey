@@ -99,7 +99,7 @@ export class Gallery {
       endpointTags += `&filters[users_permissions_user][id][$eq]=${this.userId}`;
     }
 
-    return fetch(`${this.url}/images?populate=*`,
+    return fetch(`${this.url}/images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
       // return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][populate][0]=avatar&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
       // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
       { headers }

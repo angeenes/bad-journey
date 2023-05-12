@@ -178,7 +178,6 @@ import Dialog from "@components/Dialog.astro";
         btnConnected.classList.toggle("hidden");
         imgProfileAvatar.classList.toggle("hidden");
         btnConnected.innerHTML = userJSON.username;
-        console.log(userJSON.avatar);
         if (imgProfileAvatar) {
           imgProfileAvatar.src = `${IMAGES_URL}${userJSON.avatar?.formats.thumbnail.url}`;
         }
