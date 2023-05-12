@@ -79,8 +79,8 @@
     private displayAccount() {
       const user = this.user;
       const html = `
-        <div class="flex">
-          <img src="${IMAGES_URL}${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full"/>
+        <div class="flex text-primary dark:text-white">
+          <img src="${IMAGES_URL}${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full h-40 w-40"/>
           <section>
             <p class="fontblack text-xl">Username: ${user.username}</p>
           </section>
