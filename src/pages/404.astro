@@ -1,0 +1,28 @@
+---
+import BaseHead from "@components/BaseHead.astro";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import Gallery from "@components/Gallery.astro";
+import Hero from "@components/Hero.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body class="bg-white dark:bg-primary transition-colors">
+    <Header title={SITE_TITLE} />
+    <main class="flex justify-center items-center">
+      <div class="text-center font-black text-9xl">404</div>
+    </main>
+    <Footer />
+    <script>
+      import { Gallery } from "@classes/gallery";
+
+      export const gallery = new Gallery();
+      gallery.init();
+    </script>
+  </body>
+</html>
