@@ -1,179 +1,232 @@
 ---
-import Dialog from '@components/Dialog.astro'
+import Dialog from "@components/Dialog.astro";
 ---
- <button id="openModalButton" class="uppercase mr-5 font-semibold"> 
+
+<button id="openModalButton" class="uppercase mr-5 font-semibold">
   Log in
 </button>
 
 <a href="/account" class="flex">
-  <img id="profile-picture" src="" alt="profile picture" class="hidden rounded-full h-9">
+  <img
+    id="profile-picture"
+    src=""
+    alt="profile picture"
+    class="hidden rounded-full h-9"
+  />
   <button id="btnConnected" class="uppercase mr-5 font-bold px-3 hidden">
-
   </button>
 </a>
 
-  <Dialog id="loginDialog">
-    <form id="loginForm">
-      <input type="email" id="email" name="email" placeholder="Email" autocomplete="username" class="w-full"><br><br>
-      <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" class="w-full"><br><br>
-      <button type="submit" class="bg-pink-500 p-2 text-center rounded-lg text-white mx-auto w-full mb-2 cursor-not-allowed">Log in</button>
-    </form>
-    <section class="flex">
-      <div class="flex-1 border-t border-gray-300 my-5"></div>
-      <p class="mx-5">OR</p>
-      <div class="flex-1 border-t border-gray-300 my-5"></div>
-    </section>
-    <section class="flex flex-col gap-2 text-center text-white mb-2">
-      <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/google" class="p-2 bg-blue-800">Connect with Google</a>
-      <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/discord" class="p-2 d bg-purple-700">Connect with Discord</a>
-      <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/twitter" class="p-2 bg-blue-400 cursor-not-allowed">Connect with Twitter</a>
-    </section>
-    <a href="/account/subscribe" class="text-center mt-5 block mx-auto text-primary-light text-sm">Don't have an account? Create your <span class="text-pink-400">account now!</span></a>
-    <button class="text-center mb-3 block mx-auto text-primary-light text-sm">Forgot your <span class="text-pink-400">password ?</span></button>
-    <p id="error" style="color: red; display: none;">Invalid email or password</p>
-    <p id="username" style="display: none;"></p>
-  </Dialog>
-  
-  <script>
+<Dialog id="loginDialog">
+  <form id="loginForm">
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="Email"
+      autocomplete="username"
+      class="w-full"
+    /><br /><br />
+    <input
+      type="password"
+      id="password"
+      name="password"
+      placeholder="Password"
+      autocomplete="current-password"
+      class="w-full"
+    /><br /><br />
+    <button
+      type="submit"
+      class="bg-pink-500 p-2 text-center rounded-lg text-white mx-auto w-full mb-2 cursor-not-allowed"
+      >Log in</button
+    >
+  </form>
+  <section class="flex">
+    <div class="flex-1 border-t border-gray-300 my-5"></div>
+    <p class="mx-5">OR</p>
+    <div class="flex-1 border-t border-gray-300 my-5"></div>
+  </section>
+  <section class="flex flex-col gap-2 text-center text-white mb-2">
+    <a
+      href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/google"
+      class="p-2 bg-blue-800">Connect with Google</a
+    >
+    <a
+      href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/discord"
+      class="p-2 d bg-purple-700">Connect with Discord</a
+    >
+    <a
+      href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/twitter"
+      class="p-2 bg-blue-400 cursor-not-allowed">Connect with Twitter</a
+    >
+  </section>
+  <a
+    href="/account/subscribe"
+    class="text-center mt-5 block mx-auto text-primary-light text-sm"
+    >Don't have an account? Create your <span class="text-pink-400"
+      >account now!</span
+    ></a
+  >
+  <button class="text-center mb-3 block mx-auto text-primary-light text-sm"
+    >Forgot your <span class="text-pink-400">password ?</span></button
+  >
+  <p id="error" style="color: red; display: none;">Invalid email or password</p>
+  <p id="username" style="display: none;"></p>
+</Dialog>
 
-import { User, UserInterface } from "../assets/types/userObject";
-import { API_URL, IMAGES_URL } from "../consts";
+<script>
+  import { User, UserInterface } from "../assets/types/userObject";
+  import { API_URL, IMAGES_URL } from "../consts";
 
-    const openModalButton = document.getElementById('openModalButton');
-    const btnConnected = document.getElementById('btnConnected');
-    const imgProfileAvatar: HTMLImageElement = document.getElementById('profile-picture') as HTMLImageElement;
-    const loginDialog: HTMLDialogElement = document.getElementById('loginDialog') as HTMLDialogElement;
-    if (typeof HTMLDialogElement !== 'undefined' && loginDialog instanceof HTMLDialogElement && openModalButton instanceof HTMLButtonElement) {
-      openModalButton.addEventListener('click', () => {
-        loginDialog.showModal();
-      });
-      if(loginDialog) {
-        loginDialog?.querySelector('button:not([type="submit"])').addEventListener('click', () => {
-        loginDialog.close();
-      });
-      }
-
-    }
-
-
-    class Authenticator {
-      private readonly url: string;
-
-      constructor(url) {
-        this.url = url;
-      }
-
-      authenticate(email, password) {
-        return fetch(this.url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                identifier: email,
-                password: password
-            })
-        })
-        .then(function(response) {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error('Network response was not ok');
-            }
-        })
-        .then(function(data: UserInterface) {
-
-            const jwt = data.jwt;
-            const user = data.user;
-
-            console.log('User profile', user);
-            console.log('User token', jwt);
-
-            const errorElement = document.getElementById('error');
-            if(errorElement){
-              errorElement.style.display = 'none';
-            }
-
-            const usernameElement = document.getElementById('username');
-            if(usernameElement){
-              usernameElement.textContent = 'Welcome, ' + user.username;
-              usernameElement.style.display = 'block';
-            }
-
-            localStorage.setItem('jwt', jwt);
-            localStorage.setItem('user', JSON.stringify(user));
-
-            this.allowAccess();
-
-        })
-        .catch(function(error) {
-            console.log('An error occurred:', error);
-
-            const errorElement = document.getElementById('error');
-            if(errorElement){
-              errorElement.style.display = 'block';
-            }
-        });
-      }
-
-      allowAccess() {
-        const jwt = localStorage.getItem('jwt');
-        const user = localStorage.getItem('user');
-        const openModalButton = document.getElementById('openModalButton');
-        if (jwt && user && openModalButton && btnConnected && user !== 'undefined') {
-          const userJSON: User = JSON.parse(user);
-          // const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
-          openModalButton.style.display = 'none';
-          btnConnected.classList.toggle('hidden');
-          imgProfileAvatar.classList.toggle('hidden');
-          btnConnected.innerHTML = userJSON.username;
-          if(imgProfileAvatar){
-            imgProfileAvatar.src = `${IMAGES_URL}${userJSON.avatar?.formats.thumbnail.url}`;
-          }
+  const openModalButton = document.getElementById("openModalButton");
+  const btnConnected = document.getElementById("btnConnected");
+  const imgProfileAvatar: HTMLImageElement = document.getElementById(
+    "profile-picture"
+  ) as HTMLImageElement;
+  const loginDialog: HTMLDialogElement = document.getElementById(
+    "loginDialog"
+  ) as HTMLDialogElement;
+  if (
+    typeof HTMLDialogElement !== "undefined" &&
+    loginDialog instanceof HTMLDialogElement &&
+    openModalButton instanceof HTMLButtonElement
+  ) {
+    openModalButton.addEventListener("click", () => {
+      loginDialog.showModal();
+    });
+    if (loginDialog) {
+      loginDialog
+        ?.querySelector('button:not([type="submit"])')
+        .addEventListener("click", () => {
           loginDialog.close();
-          return true;
-        } else {
-          return false;
+        });
+    }
+  }
+
+  class Authenticator {
+    private readonly url: string;
+
+    constructor(url) {
+      this.url = url;
+    }
+
+    authenticate(email, password) {
+      return fetch(this.url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          identifier: email,
+          password: password,
+        }),
+      })
+        .then(function (response) {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Network response was not ok");
+          }
+        })
+        .then(function (data: UserInterface) {
+          const jwt = data.jwt;
+          const user = data.user;
+
+          console.log("User profile", user);
+          console.log("User token", jwt);
+
+          const errorElement = document.getElementById("error");
+          if (errorElement) {
+            errorElement.style.display = "none";
+          }
+
+          const usernameElement = document.getElementById("username");
+          if (usernameElement) {
+            usernameElement.textContent = "Welcome, " + user.username;
+            usernameElement.style.display = "block";
+          }
+
+          localStorage.setItem("jwt", jwt);
+          localStorage.setItem("user", JSON.stringify(user));
+
+          this.allowAccess();
+        })
+        .catch(function (error) {
+          console.log("An error occurred:", error);
+
+          const errorElement = document.getElementById("error");
+          if (errorElement) {
+            errorElement.style.display = "block";
+          }
+        });
+    }
+
+    allowAccess() {
+      const jwt = localStorage.getItem("jwt");
+      const user = localStorage.getItem("user");
+      const openModalButton = document.getElementById("openModalButton");
+      if (
+        jwt &&
+        user &&
+        openModalButton &&
+        btnConnected &&
+        user !== "undefined"
+      ) {
+        const userJSON: User = JSON.parse(user);
+        // const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
+        openModalButton.style.display = "none";
+        btnConnected.classList.toggle("hidden");
+        imgProfileAvatar.classList.toggle("hidden");
+        btnConnected.innerHTML = userJSON.username;
+        console.log(userJSON.avatar);
+        if (imgProfileAvatar) {
+          imgProfileAvatar.src = `${IMAGES_URL}${userJSON.avatar?.formats.thumbnail.url}`;
         }
+        loginDialog.close();
+        return true;
+      } else {
+        return false;
       }
     }
+  }
 
-    class LoginForm {
-      private readonly form: HTMLFormElement;
-      private readonly emailInput: HTMLInputElement;
-      private readonly passwordInput: HTMLInputElement;
-      private readonly authenticator: Authenticator;
+  class LoginForm {
+    private readonly form: HTMLFormElement;
+    private readonly emailInput: HTMLInputElement;
+    private readonly passwordInput: HTMLInputElement;
+    private readonly authenticator: Authenticator;
 
-      constructor(authenticator) {
-        this.form = document.getElementById('loginForm') as HTMLFormElement;
-        this.emailInput = document.getElementById('email') as HTMLInputElement;
-        this.passwordInput = document.getElementById('password') as HTMLInputElement;
-        this.authenticator = authenticator;
-      }
-
-      submitLoginForm(event) {
-        event.preventDefault();
-
-        const email = this.emailInput.value;
-        const password = this.passwordInput.value;
-
-        this.authenticator.authenticate(email, password);
-      }
-
-      setupEventListeners() {
-        this.form.addEventListener('submit', this.submitLoginForm.bind(this));
-      }
+    constructor(authenticator) {
+      this.form = document.getElementById("loginForm") as HTMLFormElement;
+      this.emailInput = document.getElementById("email") as HTMLInputElement;
+      this.passwordInput = document.getElementById(
+        "password"
+      ) as HTMLInputElement;
+      this.authenticator = authenticator;
     }
 
-    const authenticator = new Authenticator(`${API_URL}/auth/local`);
-    const loginForm = new LoginForm(authenticator);
-    loginForm.setupEventListeners();
+    submitLoginForm(event) {
+      event.preventDefault();
 
-    // document.addEventListener('DOMContentLoaded', () => {
-      // if (!authenticator.allowAccess()) {
-        // loginDialog.showModal();
-      // }
-      authenticator.allowAccess();
-    // });
+      const email = this.emailInput.value;
+      const password = this.passwordInput.value;
 
-  </script>
+      this.authenticator.authenticate(email, password);
+    }
+
+    setupEventListeners() {
+      this.form.addEventListener("submit", this.submitLoginForm.bind(this));
+    }
+  }
+
+  const authenticator = new Authenticator(`${API_URL}/auth/local`);
+  const loginForm = new LoginForm(authenticator);
+  loginForm.setupEventListeners();
+
+  // document.addEventListener('DOMContentLoaded', () => {
+  // if (!authenticator.allowAccess()) {
+  // loginDialog.showModal();
+  // }
+  authenticator.allowAccess();
+  // });
+</script>

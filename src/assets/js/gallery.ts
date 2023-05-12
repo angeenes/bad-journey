@@ -315,11 +315,6 @@ export class Gallery {
     };
 
     const observer = new IntersectionObserver((entries) => {
-      // console.log('entries', entries);
-
-      // console.log('this.isLoading', this.isLoading);
-      // console.log('this.noMoreImages', this.noMoreImages);
-
 
       if (!this.isLoading && !this.noMoreImages && entries[0].isIntersecting) {
         console.log('--------------------- IS INTERSECTING');
@@ -332,26 +327,6 @@ export class Gallery {
     observer.observe(targetElement);
   }
 
-
-  // private handleScroll(): void {
-
-  //   if (!this.isLoading && !this.noMoreImages) {
-
-  //     const threshold = 500;
-
-  //     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight + threshold) {
-
-  //       this.isLoading = true;
-  //       setTimeout(() => {
-  //         this.loadMore();
-  //       }, this.debounceTimeout);
-  //     }
-  //   }
-  // }
-
-
 }
 
-// export const loader = new Gallery();
-// loader.init();
 
