@@ -82,6 +82,15 @@ body {
   opacity: 1;
 }
 
+.card.card.is-visible:hover > .card-img {
+  transition: transform 1s ease-in-out;
+  transform: scale3d(1.05, 1.05, 1.05);
+}
+
+.card.card.is-visible:hover > img {
+  transition-delay: unset !important;
+}
+
 .card > .card-overlay {
   overflow: hidden;
   position: absolute;

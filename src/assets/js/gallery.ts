@@ -191,7 +191,7 @@ export class Gallery {
       <img width="320px" height="100%"
         src="${IMAGES_URL}${image}"
         alt="Image gallery details"
-        loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max"
+        loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max rounded-md"
       >
       <article>
       <button class="flex items-center">  <img src="${IMAGES_URL}${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8" />  ${creatorUserName} </button>
