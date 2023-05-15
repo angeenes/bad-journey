@@ -173,7 +173,6 @@ import Dialog from "@components/Dialog.astro";
         user !== "undefined"
       ) {
         const userJSON: User = JSON.parse(user);
-        console.log(userJSON);
         // const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
         openModalButton.style.display = "none";
         btnConnected.classList.toggle("hidden");
