@@ -118,7 +118,7 @@ export class Gallery {
       const html = `
         <article class="card">
           <img width="320"
-            src="${IMAGES_URL}${image}"
+            src="${image}"
             alt="Image gallery"
             loading="lazy" class="w-full card-img h-full"
             style="transition-delay : ${index * 250}ms"
@@ -127,7 +127,7 @@ export class Gallery {
           <section class="card-overlay hover:block inset-0 absolute z-10 px-3">
             <div class="flex items-center justify-between w-full text-white">
               <button class="flex items-center">  
-                <img src="${IMAGES_URL}${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8 />  ${creatorUserName}
+                <img src="${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8 />  ${creatorUserName}
               </button>
               <button class="btn-like"> ♥ ${likes} </button>
               <span class="flex items-center gap-x-2">
@@ -189,12 +189,12 @@ export class Gallery {
     return `
     <div class="flex gap-16 min-h-[340px]">
       <img width="320px" height="100%"
-        src="${IMAGES_URL}${image}"
+        src="${image}"
         alt="Image gallery details"
         loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max rounded-md"
       >
       <article>
-      <button class="flex items-center">  <img src="${IMAGES_URL}${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8" />  ${creatorUserName} </button>
+      <button class="flex items-center">  <img src="${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8" />  ${creatorUserName} </button>
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
         <p class="font-bold">Prompt</p>
