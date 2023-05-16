@@ -52,7 +52,7 @@
     private user: User;
     private readonly accountEl: HTMLElement;
     private readonly btnDisconnect: HTMLButtonElement;
-    // private readonly btnDelete: HTMLButtonElement;
+    private readonly btnDelete: HTMLButtonElement;
     private readonly btnEditProfil: HTMLButtonElement;
     private readonly btnUploadImage: HTMLButtonElement;
 
@@ -69,7 +69,9 @@
         avatar: {} as Avatar,
       };
       this.accountEl = document.getElementById("account") as HTMLElement;
-      // this.btnDelete = document.getElementById("btnDelete") as HTMLButtonElement;
+      this.btnDelete = document.getElementById(
+        "btnDelete"
+      ) as HTMLButtonElement;
       this.btnDisconnect = document.getElementById(
         "btnDisconnect"
       ) as HTMLButtonElement;
@@ -84,6 +86,7 @@
         this.displayAccount();
         this.disconnect();
         this.editProfil();
+        this.deleteAccount();
         this.eventListeners();
       }
       console.log(this.user);
@@ -94,6 +97,12 @@
       this.btnUploadImage.addEventListener("click", () => {
         // window.location.href = "/upload";
         openDialogId("uploadImage");
+      });
+    }
+
+    private deleteAccount() {
+      this.btnDelete.addEventListener("click", () => {
+        alert("Not implemented yet");
       });
     }
 
