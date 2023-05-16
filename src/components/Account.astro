@@ -3,7 +3,7 @@
 
 <section class="h-48 w-full overflow-hidden mt-16">
   <img
-    src="https://hammerhead-app-377qb.ondigitalocean.app/uploads/small_00029_161308978_d8d29dff05.webp"
+    src="img/bg-account-001_result.webp"
     alt="account background"
     class="top-0 left-0 w-full object-cover"
   />
@@ -78,6 +78,7 @@
     }
 
     public disconnect() {
+      console.log(this.btnDisconnect);
       this.btnDisconnect.addEventListener("click", () => {
         localStorage.removeItem("user");
         localStorage.removeItem("jwt");
@@ -93,7 +94,7 @@
       const user = this.user;
       const html = `
         <div class="flex items-center gap-5 text-primary dark:text-white">
-          <img src="${IMAGES_URL}${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full h-40 w-40"/>
+          <img src="${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full h-40 w-40"/>
           <section>
             <p class="fontblack text-xl">${user.username}</p>
           </section>
