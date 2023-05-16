@@ -100,8 +100,7 @@ export class ImageMetadataForm {
     if (this.isConnected) {
       this.allowBtnPublish();
     } else {
-      // this.notAuthorizedToUpload();
-      this.allowBtnPublish();
+      this.notAuthorizedToUpload();
     }
   }
 

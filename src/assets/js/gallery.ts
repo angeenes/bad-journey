@@ -11,12 +11,14 @@ export class Gallery {
   private readonly imageDialogText: HTMLDivElement;
   private readonly loadMoreEl: HTMLDivElement;
   private readonly loaderBarEl: HTMLDivElement;
+  private readonly inputEl: HTMLInputElement | null;
   private isLoading: boolean;
   private noMoreImages: boolean;
   private readonly debounceTimeout: number;
   private masonryInstance: any;
   public tag: string | null | undefined;
   public userId: number | null | undefined;
+  private searchString: string | null | undefined;
 
   constructor(tag?: string, userId?: number | null) {
     this.tag = tag;
@@ -28,9 +30,11 @@ export class Gallery {
     this.imageDialogText = document.getElementById('image-dialog-text') as HTMLDivElement;
     this.loadMoreEl = document.getElementById('load-more') as HTMLDivElement;
     this.loaderBarEl = document.getElementById('loader-bar') as HTMLDivElement;
+    this.inputEl = document.querySelector('#search-input') as HTMLInputElement | null;
     this.isLoading = false;
     this.noMoreImages = false;
     this.debounceTimeout = 500;
+    this.searchString = null;
     this.masonryInstance = new MiniMasonry({
       container: '#gallery',
       gutter: 10,
@@ -75,19 +79,32 @@ export class Gallery {
 
   private calllayout(id?: string) {
     this.masonryInstance.layout();
-    console.log('calllayout', id);
+    // console.log('calllayout', id);
+  }
+
+  public inputValue(): void {
+    const value = this.inputEl ? this.inputEl.value : '';
+    this.searchString = value;
+    console.log('inputValue', value);
+    console.log('searchString', this.searchString);
+    this.noMoreImages = false;
+    this.resetGallery();
+  }
+
+  private addInputListener(): void {
+    if (this.inputEl) {
+      this.inputEl.addEventListener('input', () => this.inputValue());
+    }
   }
 
 
-  private loadImages(page: number): Promise<any[]> {
+  private loadImages(page?: number): Promise<any[]> {
     this.isLoading = true;
 
     const headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${BEARER_TOKEN}`,
     };
-
-    console.log('tag', this.tag);
 
     let endpointTags = '';
 
@@ -96,7 +113,11 @@ export class Gallery {
     }
 
     if (this.userId) {
-      endpointTags += `&filters[users_permissions_user][id][$eq]=${this.userId}`;
+      endpointTags += `&filters[users_permissions_user][prompt][$$containsi]=${this.userId}`;
+    }
+
+    if (this.searchString) {
+      endpointTags += `&filters[prompt][$containsi]=${this.searchString}`;
     }
 
     return fetch(`${this.url}/images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
@@ -273,17 +294,23 @@ export class Gallery {
     } catch (error) {
       console.error('Erreur lors du chargement des images supplémentaires:', error);
     } finally {
-      // this.isLoading = false; // Réinitialisez isLoading à false dans le bloc finally
-      // setTimeout(() => {
-      //   this.calllayout('loadMore');
-      // }, 1500);
+    }
+  }
+
+  private resetGallery(): void {
+    console.log('resetGallery');
+
+    if (!this.noMoreImages && !this.isLoading) {
+      this.imagesSection.innerHTML = '';
+      this.page = 1;
+      this.init();
     }
   }
 
 
-
   public async init(): Promise<void> {
     // console.log('init Gallery');
+    // this.resetGallery();
 
     try {
       const images = await this.loadImages(this.page);
@@ -296,15 +323,11 @@ export class Gallery {
     } catch (error) {
       console.error('Erreur lors du chargement des images:', error);
     } finally {
-      // this.isLoading = false; // Réinitialisez isLoading à false dans le bloc finally
-      // setTimeout(() => {
-      //   this.calllayout('init');
-      // }, 1500);
+      this.addInputListener();
     }
   }
 
   private handleScroll(target, callback) {
-    console.log('handleScroll');
 
     const targetElement = this.loadMoreEl;
 
@@ -328,5 +351,3 @@ export class Gallery {
   }
 
 }
-
-
