@@ -199,8 +199,8 @@ export class Gallery {
 
   private createDialogImageTemplate(image, creator, likes, attributes, tag) {
     console.log('createDialogImageTemplate', tag);
-    const creatorUserName = creator.username ?? 'Anonymous';
-    const creatorUserAvatar = creator.avatar ?? '/uploads/fake_avatar_e5303ab97f.jpg';
+    const creatorUserName = creator?.username ?? 'Anonymous';
+    const creatorUserAvatar = creator?.avatar ?? '/img/anonymous.webp';
 
     setTimeout(() => {
       const buttonCopyPrompt: HTMLButtonElement = document.getElementById("button-copy-prompt") as HTMLButtonElement
