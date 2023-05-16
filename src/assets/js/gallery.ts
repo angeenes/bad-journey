@@ -134,8 +134,8 @@ export class Gallery {
 
   private createImageElements(images): HTMLElement[] {
     return images.map(({ image, creator, likes, attributes, tag }, index, images) => {
-      const creatorUserName = creator.username ?? 'Anonymous';
-      const creatorUserAvatar = creator.avatar ?? '/uploads/fake_avatar_e5303ab97f.jpg';
+      const creatorUserName = creator?.username ?? 'Anonymous';
+      const creatorUserAvatar = creator?.avatar ?? '/img/anonymous.webp';
       const html = `
         <article class="card">
           <img width="320"
