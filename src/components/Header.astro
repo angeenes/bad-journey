@@ -78,17 +78,15 @@ import Login from "@components/Login.astro";
 </style>
 
 <script>
-  import { ThemeManager } from "@classes/darkMode";
+  import { ThemeManager } from "@classes/ThemeManager";
 
   const themeManager = new ThemeManager();
   const btnSwitchDarkMode = document.querySelector("#btn-dark-mode");
   const btnSwitchDarkModeSvg = document.querySelector("#btn-switch-dark-mode");
-  if (btnSwitchDarkMode) {
+  if (btnSwitchDarkMode && btnSwitchDarkModeSvg) {
     btnSwitchDarkMode.addEventListener("click", () => {
-      themeManager.switchDarkMode();
+      themeManager.switchTheme();
       btnSwitchDarkModeSvg.classList.toggle("active");
     });
   }
-
-  themeManager.setLightMode();
 </script>
