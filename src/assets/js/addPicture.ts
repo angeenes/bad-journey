@@ -100,7 +100,8 @@ export class ImageMetadataForm {
     if (this.isConnected) {
       this.allowBtnPublish();
     } else {
-      this.notAuthorizedToUpload();
+      // this.notAuthorizedToUpload();
+      this.allowBtnPublish();
     }
   }
 
@@ -111,14 +112,14 @@ export class ImageMetadataForm {
     throw new Error("Method not implemented.");
   }
 
-  private allowBtnPublish(): void{
+  private allowBtnPublish(): void {
     this.publishButtonSubmitEl.classList.remove("opacity-5");
     this.publishButtonSubmitEl.disabled = false;
     this.publishButtonSubmitEl.classList.toggle("cursor-not-allowed");
   }
 
   private toggleLoadingPublishImage(): void {
-    
+
     this.publishButtonSubmitEl.classList.toggle("opacity-70");
     this.publishButtonSubmitEl.disabled = !this.publishButtonSubmitEl.disabled;
     this.loadingEl.classList.toggle("active");
@@ -137,16 +138,16 @@ export class ImageMetadataForm {
     let data = {};
     const formData = new FormData();
 
-    if(this.user){
+    if (this.user) {
       const userId = JSON.parse(this.user);
       data = {
-        "users_permissions_user" : userId.id,
+        "users_permissions_user": userId.id,
       };
     }
 
     Array.from(form.elements).forEach(({ name, type, value, files }) => {
       if (!["submit", "file"].includes(type)) {
-        if(name === 'tag') {
+        if (name === 'tag') {
           // console.log('tag', type, name, value);
           data[name] = value;
         } else {
