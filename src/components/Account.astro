@@ -10,9 +10,9 @@
 </section>
 
 <article
-  class="z-0 bg-white dark:bg-primary flex flex-col justify-center items-center text-primary dark:text-white w-full mt-11 p-4"
+  class="z-0 bg-transparent flex flex-col justify-center items-center text-primary dark:text-white w-full mt-40 p-4"
 >
-  <article class="flex justify-between container -mt-32">
+  <article class="flex justify-between container">
     <section id="account"></section>
 
     <section class="flex flex-col gap-4 mt-24">
@@ -94,7 +94,7 @@
       const user = this.user;
       const html = `
         <div class="flex items-center gap-5 text-primary dark:text-white">
-          <img src="${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full h-40 w-40"/>
+          <img src="${user.avatar?.formats.thumbnail.url}" alt="${user.username}" class="rounded-full h-40 w-40 radius"/>
           <section>
             <p class="fontblack text-xl">${user.username}</p>
           </section>
