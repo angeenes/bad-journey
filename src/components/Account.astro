@@ -85,14 +85,14 @@
         this.saveUser(this.user);
         this.displayAccount();
         this.disconnect();
-        this.editProfil();
-        this.deleteAccount();
         this.eventListeners();
+        this.deleteAccount();
+        this.editProfil();
       }
       console.log(this.user);
     }
 
-    private eventListeners() {
+    public eventListeners() {
       console.log("this.btnUploadImage", this.btnUploadImage);
       this.btnUploadImage.addEventListener("click", () => {
         // window.location.href = "/upload";
@@ -100,13 +100,13 @@
       });
     }
 
-    private deleteAccount() {
+    public deleteAccount() {
       this.btnDelete.addEventListener("click", () => {
         alert("Not implemented yet");
       });
     }
 
-    private editProfil() {
+    public editProfil() {
       this.btnEditProfil.addEventListener("click", () => {
         // window.location.href = "/edit-profil";
         alert("Not implemented yet");
