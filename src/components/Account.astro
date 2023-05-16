@@ -17,10 +17,12 @@
 
     <section class="flex flex-col gap-4 mt-24">
       <button
+        id="btnEditProfil"
         class="bg-gradient-pink px-6 py-1 rounded-full uppercase font-bold text-sm h-7 text-white"
         >EDIT PROFIL</button
       >
       <button
+        id="btnUploadImage"
         class="bg-gradient-pink px-6 py-1 rounded-full uppercase font-bold text-sm h-7 text-white"
         >UPLOAD A NEW IMAGE</button
       >
@@ -44,11 +46,15 @@
 <script>
   import { API_URL, IMAGES_URL } from "src/consts";
   import { Avatar, User } from "../assets/types/userObject";
+  import Dialog from "./Dialog.astro";
 
   class Account {
     private user: User;
-    public accountEl: HTMLElement;
-    public btnDisconnect: HTMLButtonElement;
+    private readonly accountEl: HTMLElement;
+    private readonly btnDisconnect: HTMLButtonElement;
+    // private readonly btnDelete: HTMLButtonElement;
+    private readonly btnEditProfil: HTMLButtonElement;
+    private readonly btnUploadImage: HTMLButtonElement;
 
     constructor() {
       this.user = {
@@ -63,8 +69,12 @@
         avatar: {} as Avatar,
       };
       this.accountEl = document.getElementById("account") as HTMLElement;
+      // this.btnDelete = document.getElementById("btnDelete") as HTMLButtonElement;
       this.btnDisconnect = document.getElementById(
         "btnDisconnect"
+      ) as HTMLButtonElement;
+      this.btnUploadImage = document.getElementById(
+        "btnUploadImage"
       ) as HTMLButtonElement;
     }
     public async init(): Promise<void> {
@@ -73,8 +83,25 @@
         this.saveUser(this.user);
         this.displayAccount();
         this.disconnect();
+        this.editProfil();
+        this.eventListeners();
       }
       console.log(this.user);
+    }
+
+    private eventListeners() {
+      console.log("this.btnUploadImage", this.btnUploadImage);
+      this.btnUploadImage.addEventListener("click", () => {
+        // window.location.href = "/upload";
+        openDialogId("uploadImage");
+      });
+    }
+
+    private editProfil() {
+      this.btnEditProfil.addEventListener("click", () => {
+        // window.location.href = "/edit-profil";
+        alert("Not implemented yet");
+      });
     }
 
     public disconnect() {
