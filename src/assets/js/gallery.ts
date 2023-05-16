@@ -87,8 +87,14 @@ export class Gallery {
     this.searchString = value;
     console.log('inputValue', value);
     console.log('searchString', this.searchString);
-    this.noMoreImages = false;
-    this.resetGallery();
+    if (value.length > 2) {
+      this.resetGallery();
+      // this.noMoreImages = false;
+    } if (value.length == 0) {
+      // this.resetGallery();
+      // this.noMoreImages = false;
+      this.resetGallery();
+    }
   }
 
   private addInputListener(): void {
