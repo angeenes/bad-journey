@@ -113,7 +113,7 @@ export class Gallery {
     }
 
     if (this.userId) {
-      endpointTags += `&filters[users_permissions_user][prompt][$$containsi]=${this.userId}`;
+      endpointTags += `&filters[users_permissions_user][id][$eq]=${this.userId}`;
     }
 
     if (this.searchString) {
