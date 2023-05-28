@@ -32,6 +32,16 @@ export class User {
         }
     }
 
+    public getJwt(): string | null {
+        const isConnected = this.isConnected();
+        const jwt = localStorage.getItem("jwt");
+        if (jwt && isConnected) {
+            return jwt;
+        } else {
+            return null;
+        }
+    }
+
     public getUsername(): IUser['username'] | null {
         const user: IUser | null = this.getUser();
         if (user) {
