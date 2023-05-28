@@ -109,12 +109,12 @@ body {
   align-items: center;
 }
 
-.card.is-visible:hover > .icon-like {
+.card.is-visible:hover > .icon-like, .card.is-visible:hover > .icon-delete {
   opacity: 1;
   transition: opacity 0.25s ease-in-out;
 }
 
-.card > .icon-like {
+.card > .icon-like, .card > .icon-delete {
   opacity: 0;
 }
 

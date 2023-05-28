@@ -33,12 +33,10 @@
     <button id="btnDisconnect">Disconnect</button>
     <button id="btnDelete">Delete account</button>
   </section>
-  <section class="flex justify-center items-center gap-x-3 mt-4 cursor-pointer">
-    <div class="active text-pink-500 text-bold">35 prompts</div>
-    <div class="text-gray">35 private prompts</div>
-    <div class="text-gray">67 favorites</div>
-    <div class="text-gray">32 likes</div>
-    <div class="text-gray">32 people liked your images</div>
+  <section
+    id="counts"
+    class="flex justify-center items-center gap-x-3 mt-4 cursor-pointer"
+  >
   </section>
 </article>
 <hr class="bg-pink-500 w-full mb-3 h-[2px]" />
@@ -46,11 +44,11 @@
 <script>
   import { API_URL, IMAGES_URL } from "src/consts";
   import { Avatar, User } from "../assets/types/userObject";
-  import Dialog from "./Dialog.astro";
 
   class Account {
     private user: User;
     private readonly accountEl: HTMLElement;
+    private readonly countsEl: HTMLElement;
     private readonly btnDisconnect: HTMLButtonElement;
     private readonly btnDelete: HTMLButtonElement;
     private readonly btnEditProfil: HTMLButtonElement;
@@ -69,6 +67,7 @@
         avatar: {} as Avatar,
       };
       this.accountEl = document.getElementById("account") as HTMLElement;
+      this.countsEl = document.getElementById("counts") as HTMLElement;
       this.btnDelete = document.getElementById(
         "btnDelete"
       ) as HTMLButtonElement;
@@ -88,12 +87,13 @@
         this.eventListeners();
         this.deleteAccount();
         this.editProfil();
+        this.displayCounts();
       }
-      console.log(this.user);
+      // console.log(this.user);
     }
 
     public eventListeners() {
-      console.log("this.btnUploadImage", this.btnUploadImage);
+      // console.log("this.btnUploadImage", this.btnUploadImage);
       this.btnUploadImage.addEventListener("click", () => {
         // window.location.href = "/upload";
         openDialogId("uploadImage");
@@ -107,14 +107,16 @@
     }
 
     public editProfil() {
-      this.btnEditProfil.addEventListener("click", () => {
-        // window.location.href = "/edit-profil";
-        alert("Not implemented yet");
-      });
+      if (this.btnEditProfil) {
+        this.btnEditProfil.addEventListener("click", () => {
+          // window.location.href = "/edit-profil";
+          alert("Not implemented yet");
+        });
+      }
     }
 
     public disconnect() {
-      console.log(this.btnDisconnect);
+      // console.log(this.btnDisconnect);
       this.btnDisconnect.addEventListener("click", () => {
         localStorage.removeItem("user");
         localStorage.removeItem("jwt");
@@ -139,6 +141,18 @@
       this.accountEl.innerHTML = html;
     }
 
+    private displayCounts() {
+      const html = `
+          <div class="active text-pink-500 text-bold">35 prompts</div>
+          <div class="text-gray">35 private prompts</div>
+          <div class="text-gray">67 favorites</div>
+          <div class="text-gray">32 likes</div>
+          <div class="text-gray">32 people liked your images</div>
+      `;
+      // console.log("html", html);
+      this.countsEl.innerHTML = html;
+    }
+
     private getUser(): User | PromiseLike<User> {
       const userLocalStorage = localStorage.getItem("user");
       const jwtLocalStorage = localStorage.getItem("jwt");
@@ -146,7 +160,6 @@
         throw new Error("No user in local storage");
       } else {
         // return JSON.parse(userLocalStorage);
-        console.log(jwtLocalStorage);
         const headers = {
           "Content-Type": "application/json",
           Authorization: `Bearer ${jwtLocalStorage}`,
