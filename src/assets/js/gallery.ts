@@ -1,7 +1,8 @@
 
-import { API_URL, BEARER_TOKEN, IMAGES_URL } from "../../consts";
+import { API_URL, BEARER_TOKEN } from "../../consts";
 import { DatasImages } from "../interfaces/ApiDatasImages";
 import MiniMasonry from "minimasonry";
+import { User } from "@classes/User";
 
 export class Gallery {
   private readonly url: string;
@@ -136,12 +137,29 @@ export class Gallery {
       .then(data => data.data);
   }
 
+  private deleteImageApi(id: number): Promise<any[]> {
+    const token = User.prototype.getJwt();
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    return fetch(`${this.url}/images/${id}`, {
+      method: 'DELETE',
+      headers,
+    })
+      .then(response => response.json())
+      .then(data => data.data);
+  }
+
 
 
   private createImageElements(images): HTMLElement[] {
     return images.map(({ image, creator, likes, attributes, tag }, index, images) => {
       const creatorUserName = creator?.username ?? 'Anonymous';
       const creatorUserAvatar = creator?.avatar ?? '/img/anonymous.webp';
+
       const html = `
         <article class="card">
           <img width="320"
@@ -150,7 +168,9 @@ export class Gallery {
             loading="lazy" class="w-full card-img h-full"
             style="transition-delay : ${index * 250}ms"
           >
-          <div class="btn-like icon-like px-3 py-2 bg-white font-black flex justify-center items-center rounded-md absolute z-20 top-3 right-3 text-black hover:text-pink-500 text-base"> ♡ </div>
+          ${!this.userId ? '' : '<div class="btn-delete icon-delete px-3 py-2 bg-white font-black flex justify-center items-center rounded-md absolute z-20 top-3 left-3 text-black hover:text-red-500 text-base"> X </div>'}
+          ${!this.userId ? '' : '<div class="btn-like icon-like px-3 py-2 bg-white font-black flex justify-center items-center rounded-md absolute z-20 top-3 right-3 text-black hover:text-pink-500 text-base"> ♡ </div>'}
+          
           <section class="card-overlay hover:block inset-0 absolute z-10 px-3">
             <div class="flex items-center justify-between w-full text-white">
               <button class="flex items-center">  
@@ -168,12 +188,21 @@ export class Gallery {
       const card = this.htmlToElement(html) as HTMLButtonElement;
       if (card) {
         const btnLike = card.querySelector('.btn-like');
+        const btnDelete = card.querySelector('.btn-delete');
 
         if (btnLike) {
           btnLike.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             this.likeImage(images[index]);
+          });
+        }
+
+        if (btnDelete) {
+          btnDelete.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.deleteImage(images[index]);
           });
         }
 
@@ -197,11 +226,15 @@ export class Gallery {
     alert('likeImage mot implemented yet');
   }
 
-  // private getUser(): User {
-  //   const user = localStorage.getItem('user');
-  //   return user ? JSON.parse(user) : null;
-  // }
+  private deleteImage(image) {
+    const id = image.id;
+    this.deleteImageApi(id)
+      .then(() => {
+        alert('Image deleted');
+        this.resetGallery();
 
+      });
+  }
 
   private createDialogImageTemplate(image, creator, likes, attributes, tag) {
     console.log('createDialogImageTemplate', tag);
@@ -281,7 +314,6 @@ export class Gallery {
       }
     }
   }
-
 
 
   public async loadMore(): Promise<void> {
