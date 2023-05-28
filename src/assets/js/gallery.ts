@@ -232,7 +232,6 @@ export class Gallery {
       .then(() => {
         alert('Image deleted');
         this.resetGallery();
-
       });
   }
 
