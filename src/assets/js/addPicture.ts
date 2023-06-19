@@ -16,6 +16,7 @@ export class ImageMetadataForm {
     private token: string | null = "",
     private isConnected = false,
     private user: string | null = "",
+    private uploadImageParameter: boolean = location.href.includes('uploadimage=true')
   ) {
     this.token = localStorage.getItem('jwt');
     this.user = localStorage.getItem('user');
@@ -25,7 +26,16 @@ export class ImageMetadataForm {
   public async init(): Promise<void> {
     this.formEl.addEventListener("submit", this.handleSubmit.bind(this));
     this.imageInput.addEventListener("change", this.previewImage.bind(this));
+    this.listenToImageSrcLoad();
   }
+
+  private listenToImageSrcLoad() {
+    if (!this.uploadImageParameter) return;
+    this.imagePreview.addEventListener("load", (e) => {
+      this.updateFormFields(this.imagePreview.src as unknown as File);
+    });
+  };
+
 
   private previewImage() {
 
