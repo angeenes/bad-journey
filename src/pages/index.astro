@@ -2,9 +2,10 @@
 import BaseHead from "@components/BaseHead.astro";
 import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
-import Gallery from "@components/Gallery.astro";
+// import Gallery from "@components/Gallery.astro";
 import Hero from "@components/Hero.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import GallerySvelte from "@components/GallerySvelte.svelte";
 ---
 
 <!DOCTYPE html>
@@ -16,14 +17,15 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <Header title={SITE_TITLE} />
     <Hero />
     <main>
-      <Gallery />
+      <!-- <Gallery /> -->
+      <GallerySvelte client:load />
     </main>
     <Footer />
     <script>
-      import { Gallery } from "@classes/gallery";
+      // import { Gallery } from "@classes/gallery";
 
-      export const gallery = new Gallery();
-      gallery.init();
+      // export const gallery = new Gallery();
+      // gallery.init();
     </script>
   </body>
 </html>
