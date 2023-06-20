@@ -2,7 +2,7 @@
 import { API_URL, BEARER_TOKEN } from "../../consts";
 import { DatasImages } from "../interfaces/ApiDatasImages";
 import MiniMasonry from "minimasonry";
-import { User } from "@classes/User";
+import { User } from "@classes/user";
 
 export class Gallery {
   private readonly url: string;
