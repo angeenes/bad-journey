@@ -211,7 +211,7 @@ export class ImageMetadataForm {
         console.log("this.imagePreview.src", this.imagePreview.src);
         const nameTimeStamp = Date.now().toString();
         const imageBlob = this.dataURItoBlob(this.imagePreview.src);
-        formData.append(`files.${nameTimeStamp}`, imageBlob as Blob, nameTimeStamp as string);
+        formData.append(`files.${name}`, imageBlob as Blob, `${nameTimeStamp}.png` as string);
       }
     });
 
