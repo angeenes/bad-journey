@@ -187,6 +187,8 @@ export class ImageMetadataForm {
     }
 
     Array.from(form.elements).forEach(({ name, type, value, files }) => {
+      console.log(name, type, value, files);
+      
       if (!["submit", "file"].includes(type)) {
         if (name === 'tag') {
           // console.log('tag', type, name, value);
@@ -200,6 +202,11 @@ export class ImageMetadataForm {
         Array.from(files).forEach((file) => {
           formData.append(`files.${name}`, file as Blob, file.name as string);
         });
+
+
+      } else if (files.length === 0) {
+        console.log("File length is empty");
+
       } else if(type !== "file" && this.imagePreview.src) {
         console.log("this.imagePreview.src", this.imagePreview.src);
         const nameTimeStamp = Date.now().toString();
