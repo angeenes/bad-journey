@@ -9,7 +9,7 @@ export class Api {
         this.url = API_URL;
     }
 
-    public addOneViewToAnImage(imageId, viewsNumber): Promise<any> {
+    public addOneViewToAnImage(imageId: string, viewsNumber: number): Promise<any> {
 
         const options = {
             method: 'PUT',
