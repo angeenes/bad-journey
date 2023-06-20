@@ -29,11 +29,16 @@ export class ImageMetadataForm {
     this.listenToImageSrcLoad();
   }
 
+  private resetUploadImageParameter() {
+    location.href = location.href.replace('?uploadimage=true', '');
+  }
+
   private listenToImageSrcLoad() {
     if (!this.uploadImageParameter) return;
     this.imagePreview.addEventListener("load", (e) => {
-      this.updateFormFields(this.imagePreview.src as unknown as File);
-      location.href = location.href.replace('uploadimage=true', '');
+      this.updateFormFields(this.imagePreview.src as unknown as File).then(() => {
+        this.resetUploadImageParameter();
+      });
     });
   };
 
