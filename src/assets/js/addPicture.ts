@@ -30,8 +30,9 @@ export class ImageMetadataForm {
   }
 
   private resetUploadImageParameter() {
+    if (!this.uploadImageParameter) return;
     setTimeout(() => {
-      location.href = location.href.replace('?uploadimage=true', '');
+      window.history.pushState(null, '', window.location.href.split('?')[0]);
     }, 2000);
   }
 
@@ -196,6 +197,9 @@ export class ImageMetadataForm {
         this.resetForm();
         this.toggleLoadingPublishImage()
         openDialogId("success-upload-image");
+        setTimeout(() => {
+          this.resetUploadImageParameter();
+        }, 2000);
       } else {
         console.error("Failed to submit data:", response.statusText);
       }
