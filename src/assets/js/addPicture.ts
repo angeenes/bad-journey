@@ -207,7 +207,7 @@ export class ImageMetadataForm {
       } else if (!files) {
         console.log("File length is empty");
 
-      } else if(type !== "file" && this.imagePreview.src) {
+      // } else if(type !== "file" && this.imagePreview.src) {
         console.log("this.imagePreview.src", this.imagePreview.src);
         const nameTimeStamp = Date.now().toString();
         const imageBlob = this.dataURItoBlob(this.imagePreview.src);
