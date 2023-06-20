@@ -187,7 +187,7 @@ export class ImageMetadataForm {
     }
 
     Array.from(form.elements).forEach(({ name, type, value, files }) => {
-      console.log(name, type, value, files);
+      // console.log(name, type, value, files);
       
       if (!["submit", "file"].includes(type)) {
         if (name === 'tag') {
@@ -204,7 +204,7 @@ export class ImageMetadataForm {
         });
 
 
-      } else if (!files.length) {
+      } else if (!files) {
         console.log("File length is empty");
 
       } else if(type !== "file" && this.imagePreview.src) {
