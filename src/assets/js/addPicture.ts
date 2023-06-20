@@ -173,16 +173,7 @@ export class ImageMetadataForm {
         }
       } else if (type === "file") {
         Array.from(files).forEach((file) => {
-
-          if (!file && this.imagePreview.src) {
-            console.error("No file but image preview in:", file, this.imagePreview.src);
-            formData.append(`files.${name}`, file, file.name);
-          } else {
-            console.log("file", file);
-
-            formData.append(`files.${name}`, file, file.name);
-          }
-
+          formData.append(`files.${name}`, file, file.name);
         });
       }
     });
