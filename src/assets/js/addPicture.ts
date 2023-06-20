@@ -173,6 +173,13 @@ export class ImageMetadataForm {
         }
       } else if (type === "file") {
         Array.from(files).forEach((file) => {
+
+          if (!file && this.imagePreview.src) {
+            console.error("No file but image preview in:", file);
+            return;
+
+          }
+
           formData.append(`files.${name}`, file, file.name);
         });
       }
@@ -197,9 +204,6 @@ export class ImageMetadataForm {
         this.resetForm();
         this.toggleLoadingPublishImage()
         openDialogId("success-upload-image");
-        setTimeout(() => {
-          this.resetUploadImageParameter();
-        }, 2000);
       } else {
         console.error("Failed to submit data:", response.statusText);
       }
