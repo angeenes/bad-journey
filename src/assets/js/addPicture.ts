@@ -33,6 +33,7 @@ export class ImageMetadataForm {
     if (!this.uploadImageParameter) return;
     this.imagePreview.addEventListener("load", (e) => {
       this.updateFormFields(this.imagePreview.src as unknown as File);
+      location.href = location.href.replace('uploadimage=true', '');
     });
   };
 
