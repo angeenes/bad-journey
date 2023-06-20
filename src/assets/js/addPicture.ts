@@ -176,11 +176,13 @@ export class ImageMetadataForm {
 
           if (!file && this.imagePreview.src) {
             console.error("No file but image preview in:", file, this.imagePreview.src);
-            return;
+            formData.append(`files.${name}`, file, file.name);
+          } else {
+            console.log("file", file);
 
+            formData.append(`files.${name}`, file, file.name);
           }
 
-          formData.append(`files.${name}`, file, file.name);
         });
       }
     });
