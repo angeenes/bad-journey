@@ -2,7 +2,12 @@
 import { API_URL, BEARER_TOKEN } from "../../consts";
 import { DatasImages } from "../interfaces/ApiDatasImages";
 import MiniMasonry from "minimasonry";
-import { User } from "@classes/user";
+import { Utilities } from "@classes/utilities";
+// import { openDialogId, closeDialogId } from "@classes/dialog";
+import { Api } from "@classes/api";
+
+const utilities = new Utilities();
+const api = new Api();
 
 export class Gallery {
   private readonly url: string;
@@ -47,11 +52,7 @@ export class Gallery {
     window.addEventListener('scroll', this.handleScroll.bind(this));
   }
 
-  private htmlToElement(html) {
-    const template = document.createElement('template');
-    template.innerHTML = html.trim();
-    return template.content.firstChild;
-  }
+
 
 
   private addImagesToSection(images: DatasImages['data']): void {
@@ -137,26 +138,9 @@ export class Gallery {
       .then(data => data.data);
   }
 
-  private deleteImageApi(id: number): Promise<any[]> {
-    const token = User.prototype.getJwt();
-
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    };
-
-    return fetch(`${this.url}/images/${id}`, {
-      method: 'DELETE',
-      headers,
-    })
-      .then(response => response.json())
-      .then(data => data.data);
-  }
-
-
 
   private createImageElements(images): HTMLElement[] {
-    return images.map(({ image, creator, likes, attributes, tag }, index, images) => {
+    return images.map(({ image, creator, likes, attributes, tag, views, id }, index, images) => {
       const creatorUserName = creator?.username ?? 'Anonymous';
       const creatorUserAvatar = creator?.avatar ?? '/img/anonymous.webp';
 
@@ -179,13 +163,13 @@ export class Gallery {
               <button class="btn-like"> ♥ ${likes} </button>
               <span class="flex items-center gap-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg> 
-                35k
+                ${views?? 0}
               </span>
             </div>
           </section>
         </article>
       `;
-      const card = this.htmlToElement(html) as HTMLButtonElement;
+      const card = utilities.createDOMElementFromHTMLString(html) as HTMLButtonElement;
       if (card) {
         const btnLike = card.querySelector('.btn-like');
         const btnDelete = card.querySelector('.btn-delete');
@@ -208,17 +192,19 @@ export class Gallery {
 
         card.addEventListener('click', () => {
           if (this.imageDialogText) {
-            const dialogTemplate = this.createDialogImageTemplate(image, creator, likes, attributes, tag);
+            const dialogTemplate = this.createDialogImageTemplate(image, creator, likes, attributes, tag, views);
             this.imageDialogText.innerHTML = "";
             this.imageDialogText.insertAdjacentHTML("beforeend", dialogTemplate);
           }
           openDialogId("img-dialog");
-
+          api.addOneViewToAnImage(id, views?? 0);
         });
       }
       return card;
     });
   }
+
+
 
   private likeImage(id) {
     console.log('likeImage receives the image id: ', id);
@@ -228,15 +214,15 @@ export class Gallery {
 
   private deleteImage(image) {
     const id = image.id;
-    this.deleteImageApi(id)
+    api.deleteImageApi(id)
       .then(() => {
         alert('Image deleted');
         this.resetGallery();
       });
   }
 
-  private createDialogImageTemplate(image, creator, likes, attributes, tag) {
-    console.log('createDialogImageTemplate', tag);
+  private createDialogImageTemplate(image, creator, likes, attributes, tag, views) {
+    // console.log('createDialogImageTemplate', tag);
     const creatorUserName = creator?.username ?? 'Anonymous';
     const creatorUserAvatar = creator?.avatar ?? '/img/anonymous.webp';
 
@@ -293,7 +279,7 @@ export class Gallery {
       <section class="flex items-center justify-between">
       <div class="flex gap-5 items-center p-3 text-primary">
       <button class="btn-like">♥ ${likes}</button>
-      <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg> 35841</span>
+      <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" fill="none"><path fill="currentColor" d="M9.983 4.377a2.634 2.634 0 1 0 0 5.268 2.634 2.634 0 0 0 0-5.268Zm0-4.139C4.997.238.954 5.882.954 7.011c0 1.129 4.044 6.772 9.03 6.772 4.987 0 9.03-5.643 9.03-6.772 0-1.129-4.043-6.773-9.03-6.773Zm0 10.912a4.138 4.138 0 1 1 0-8.277 4.138 4.138 0 0 1 0 8.277Z"/></svg>  ${views?? 0}</span>
       </div>
       <button id="button-twitter-share" class="flex items-center flex-row gap-2 text-md cursor-pointer"><img src='/icons/icon-twitter.svg' alt='twitter'> <span> Share on Twitter</span> </button>
 </section>
