@@ -3,6 +3,7 @@ import convertAutomatic111Metadata from "@classes/converters/convertAutomatic111
 import convertInvokeMetadata from "@classes/converters/convertInvokeMetadata";
 import convertMochiMetadata from "@classes/converters/convertMochiMetadata";
 import { ImageObject } from "../interfaces/ImageObject.js";
+import { date } from "astro/zod";
 
 export class ImageMetadataForm {
   constructor(
@@ -148,6 +149,28 @@ export class ImageMetadataForm {
     this.formEl.reset();
   }
 
+  private dataURItoBlob(dataURI: string): Blob {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    let byteString;
+    if (dataURI.split(",")[0].indexOf("base64") >= 0) {
+      byteString = atob(dataURI.split(",")[1]);
+    } else {
+      byteString = decodeURI(dataURI.split(",")[1]);
+    }
+
+    // separate out the mime component
+    const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+
+    // write the bytes of the string to a typed array
+    const ia = new Uint8Array(byteString.length);
+
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    console.log("ia", ia);
+    return new Blob([ia], { type: mimeString });
+  }
+
   private async handleSubmit(event: Event) {
     event.preventDefault();
     this.toggleLoadingPublishImage();
@@ -172,9 +195,16 @@ export class ImageMetadataForm {
           data[name] = value;
         }
       } else if (type === "file") {
+        console.log("files", files);
+        
         Array.from(files).forEach((file) => {
-          formData.append(`files.${name}`, file, file.name);
+          formData.append(`files.${name}`, file as Blob, file.name as string);
         });
+      } else if(type !== "file" && this.imagePreview.src) {
+        console.log("this.imagePreview.src", this.imagePreview.src);
+        const nameTimeStamp = Date.now().toString();
+        const imageBlob = this.dataURItoBlob(this.imagePreview.src);
+        formData.append(`files.${nameTimeStamp}`, imageBlob as Blob, nameTimeStamp as string);
       }
     });
 
