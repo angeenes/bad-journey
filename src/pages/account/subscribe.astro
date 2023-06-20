@@ -7,58 +7,93 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body class="bg-primary bg-hero-subscribe">
-		<Header title={SITE_TITLE} />
-		<!-- <Hero/> -->
-		<main class="justify-center md:justify-end items-center container flex-col md:flex-row">
-            <section class="font-black text-xl mb-4 md:mb-0 text-center md:text-left md:text-8xl text-white w-3/5">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </head>
+    <body class="bg-primary bg-hero-subscribe">
+        <Header title={SITE_TITLE} />
+        <!-- <Hero/> -->
+        <main
+            class="justify-center md:justify-end items-center container flex-col md:flex-row"
+        >
+            <section
+                class="font-black text-xl mb-4 md:mb-0 text-center md:text-left md:text-8xl text-white w-3/5"
+            >
                 Discover the world's best AI generated art.
-                <br>
-                <span class="text-xl font-bold leading-7 mt-10 flex">Create an account to share your images with the world and to save your work from Automatic111, Invoke or else</span>
+                <br />
+                <span class="text-xl font-bold leading-7 mt-10 flex"
+                    >Create an account to share your images with the world and
+                    to save your work from Automatic111, Invoke or else</span
+                >
             </section>
-            <form class="flex flex-col gap-5 bg-white p-5 text-priamry rounded-2xl shadow-2xl w-full md:w-2/5">
-                <div class="flex justify-center items-center gap-4 text-pink-500 font-black uppercase">
-                    REGISTER TO <img src="/img/logo-pink.svg" alt="logo Bad Journey" width="65" height="63"> {SITE_TITLE}
+            <form
+                class="flex flex-col gap-5 bg-white p-5 text-priamry rounded-2xl shadow-2xl w-full md:w-2/5"
+            >
+                <div
+                    class="flex justify-center items-center gap-4 text-pink-500 font-black uppercase"
+                >
+                    REGISTER TO <img
+                        src="/img/logo-pink.svg"
+                        alt="logo Snack Prompt"
+                        width="65"
+                        height="63"
+                    />
+                    {SITE_TITLE}
                 </div>
                 <label for="email">
                     <span class="text-sm font-bold">Email</span>
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                    />
                 </label>
                 <label for="password">
                     <span class="text-sm font-bold">Password</span>
-                    <input type="password" required>
+                    <input type="password" required />
                 </label>
                 <label for="remember-me" class="flex flex-row gap-2">
-                    <input type="checkbox" name="remember" id="remember-me">
+                    <input type="checkbox" name="remember" id="remember-me" />
                     <span class="text-sm font-normal">Remember me</span>
                 </label>
-                <button type="submit" class="bg-pink-500 px-6 py-2 rounded-full uppercase font-bold text-white text-sm cursor-not-allowed">CREATE AN ACCOUNT</button>
+                <button
+                    type="submit"
+                    class="bg-pink-500 px-6 py-2 rounded-full uppercase font-bold text-white text-sm cursor-not-allowed"
+                    >CREATE AN ACCOUNT</button
+                >
 
                 <section class="flex">
                     <div class="flex-1 border-t border-gray-300 my-5"></div>
                     <p class="mx-5">OR</p>
                     <div class="flex-1 border-t border-gray-300 my-5"></div>
-                  </section>
-                  <section class="flex flex-col gap-2 text-center text-white mb-2">
-                    <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/google" class="p-2 bg-blue-800">Create an account with Google</a>
-                    <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/discord" class="p-2 d bg-purple-700">Create an account with Discord</a>
-                    <a href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/twitter" class="p-2 bg-blue-400 cursor-not-allowed">Create an account with Twitter</a>
-                  </section>
-
+                </section>
+                <section
+                    class="flex flex-col gap-2 text-center text-white mb-2"
+                >
+                    <a
+                        href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/google"
+                        class="p-2 bg-blue-800">Create an account with Google</a
+                    >
+                    <a
+                        href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/discord"
+                        class="p-2 d bg-purple-700"
+                        >Create an account with Discord</a
+                    >
+                    <a
+                        href="https://hammerhead-app-377qb.ondigitalocean.app/api/connect/twitter"
+                        class="p-2 bg-blue-400 cursor-not-allowed"
+                        >Create an account with Twitter</a
+                    >
+                </section>
             </form>
-
-		</main>
-		<Footer />
-	</body>
+        </main>
+        <Footer />
+    </body><style>
+        .bg-hero-subscribe {
+            background-image: url("/img/hero-subscribe.webp");
+            background-repeat: no-repeat;
+            background-size: 100%;
+        }
+    </style>
 </html>
-
-<style>
-.bg-hero-subscribe {
-    background-image: url('/img/hero-subscribe.webp');
-    background-repeat: no-repeat;
-    background-size: 100%;
-}
-</style>

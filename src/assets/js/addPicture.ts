@@ -30,7 +30,9 @@ export class ImageMetadataForm {
   }
 
   private resetUploadImageParameter() {
-    location.href = location.href.replace('?uploadimage=true', '');
+    setTimeout(() => {
+      location.href = location.href.replace('?uploadimage=true', '');
+    }, 2000);
   }
 
   private listenToImageSrcLoad() {
