@@ -73,7 +73,7 @@ export class ImageMetadataForm {
       if (metadata) {
         console.log("metadata", metadata);
         if (metadata["sd-metadata"]) {
-          console.log("INVOKE");
+          // console.log("INVOKE");
           const jsObject = JSON.parse(metadata["sd-metadata"]);
           objectImageDatas = convertInvokeMetadata(jsObject);
           console.log("objectImageDatas RETOURNE", objectImageDatas);
@@ -82,7 +82,7 @@ export class ImageMetadataForm {
 
 
         if (metadata["description"]) {
-          console.log("MOCHI");
+          // console.log("MOCHI");
           objectImageDatas = convertMochiMetadata(metadata["description"]);
           console.log("objectImageDatas RETOURNE", objectImageDatas);
           this.fillForm(objectImageDatas);
@@ -90,7 +90,7 @@ export class ImageMetadataForm {
 
 
         if (metadata["parameters"]) {
-          console.log("AUTOMATIC111");
+          // console.log("AUTOMATIC111");
           const object = metadata["parameters"]
           objectImageDatas = convertAutomatic111Metadata(object);
           console.log("objectImageDatas RETOURNE", objectImageDatas);
@@ -204,7 +204,7 @@ export class ImageMetadataForm {
         });
 
 
-      } else if (files.length === 0) {
+      } else if (!files.length) {
         console.log("File length is empty");
 
       } else if(type !== "file" && this.imagePreview.src) {

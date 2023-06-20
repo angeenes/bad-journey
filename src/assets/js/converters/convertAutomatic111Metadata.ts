@@ -2,7 +2,7 @@ import { ImageObject } from "../../interfaces/ImageObject";
 
 export default function convertAutomatic111Metadata(input: string): ImageObject {
 
-  console.log('DEBUG : convertAutomatic111Metadata REÇOIS :      ', input);
+  // console.log('DEBUG : convertAutomatic111Metadata REÇOIS :      ', input);
 
   // Définition des expressions régulières pour chaque information à extraire
   const sizeRegExp = /Size: (\d+)x(\d+)/;
@@ -46,7 +46,7 @@ export default function convertAutomatic111Metadata(input: string): ImageObject 
     sampler: samplerValue || ""
   };
 
-  console.log('DEBUG output', output);
+  // console.log('DEBUG output', output);
 
   return output;
 }
