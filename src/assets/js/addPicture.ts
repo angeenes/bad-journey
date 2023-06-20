@@ -175,7 +175,7 @@ export class ImageMetadataForm {
         Array.from(files).forEach((file) => {
 
           if (!file && this.imagePreview.src) {
-            console.error("No file but image preview in:", file);
+            console.error("No file but image preview in:", file, this.imagePreview.src);
             return;
 
           }
