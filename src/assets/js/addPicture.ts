@@ -196,15 +196,17 @@ export class ImageMetadataForm {
         } else {
           data[name] = value;
         }
-      } else if (type === "file") {
-        console.log("files", files);
+      } 
+      // else if (type === "file") {
+      //   console.log("files", files);
         
-        Array.from(files).forEach((file) => {
-          formData.append(`files.${name}`, file as Blob, file.name as string);
-        });
+      //   Array.from(files).forEach((file) => {
+      //     formData.append(`files.${name}`, file as Blob, file.name as string);
+      //   });
 
 
-      } else if (!files) {
+      // } 
+      else if (!files) {
         console.log("File length is empty");
 
       // } else if(type !== "file" && this.imagePreview.src) {
