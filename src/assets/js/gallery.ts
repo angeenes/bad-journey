@@ -53,6 +53,7 @@ export class Gallery {
   }
 
   private addImagesToSection(images: DatasImages['data']): void {
+
     const imageElements = this.createImageElements(images);
     this.imagesSection.append(...imageElements);
 
@@ -103,36 +104,9 @@ export class Gallery {
   }
 
 
-  private loadImages(page?: number): Promise<any[]> {
+  private loadImagesGallery(page?: number): Promise<any[]> {
     this.isLoading = true;
-
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${BEARER_TOKEN}`,
-    };
-
-    let endpointTags = '';
-
-    if (this.tag) {
-      endpointTags += `&filters[tag][name][$eq]=${this.tag}`;
-    }
-
-    if (this.userId) {
-      endpointTags += `&filters[users_permissions_user][id][$eq]=${this.userId}`;
-    }
-
-    if (this.searchString) {
-      endpointTags += `&filters[prompt][$containsi]=${this.searchString}`;
-    }
-
-    return fetch(`${this.url}/images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
-      // return fetch(`${this.url}/images?populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][populate][0]=avatar&populate[image][fields][0]=formats&populate[tag][fields][0]=name&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${this.pageSize}${endpointTags}`,
-      // &populate[users_permissions_user][fields][0]=username&populate[users_permissions_user][fields][1]=id
-      { headers }
-    )
-      .then(response => response.json())
-      // .then(data => console.log(data, 'data'))
-      .then(data => data.data);
+    return api.loadImages(this.tag, this.userId, this.searchString, this.pageSize, page);
   }
 
 
@@ -147,7 +121,7 @@ export class Gallery {
             src="${image}"
             alt="Image gallery"
             loading="lazy" class="w-full card-img h-full"
-            style="transition-delay : ${index * 250}ms"
+            style="transition-delay : ${index * 100}ms"
           >
           ${!this.userId ? '' : '<div class="btn-delete icon-delete px-3 py-2 bg-white font-black flex justify-center items-center rounded-md absolute z-20 top-3 left-3 text-black hover:text-red-500 text-base"> X </div>'}
           ${!this.userId ? '' : '<div class="btn-like icon-like px-3 py-2 bg-white font-black flex justify-center items-center rounded-md absolute z-20 top-3 right-3 text-black hover:text-pink-500 text-base"> ♡ </div>'}
@@ -211,7 +185,7 @@ export class Gallery {
 
   private deleteImage(image) {
     const id = image.id;
-    api.deleteImageApi(id)
+    api.deleteImage(id)
       .then(() => {
         alert('Image deleted');
         this.resetGallery();
@@ -229,14 +203,14 @@ export class Gallery {
     }, 1000);
 
     return `
-    <div class="flex gap-16 min-h-[340px]">
+    <div class="bloc lg:flex gap-16 min-h-[340px]">
       <img width="320px" height="100%"
         src="${image}"
         alt="Image gallery details"
         loading="lazy" class="min-h-[160px] h-fit max-h-[80vh] hover:w-max rounded-md"
       >
-      <article>
-      <button class="flex items-center">  <img src="${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8" />  ${creatorUserName} </button>
+      <article class="mt-4 lg:mt-0">
+      <button class="flex items-center mb-4">  <img src="${creatorUserAvatar}" alt="${creatorUserName}" width="32" height="32" class="rounded-full mr-2 h-8 w-8" />  ${creatorUserName} </button>
       <div class="rounded-2xl shadow-lg p-6 flex justify-between flex-col">
       <section>
         <p class="font-bold">Prompt</p>
@@ -302,7 +276,7 @@ export class Gallery {
     console.log('Chargement de la page suivante');
     this.page++;
     try {
-      const images = await this.loadImages(this.page);
+      const images = await this.loadImagesGallery(this.page);
       if (images && images.length > 0) {
         await this.addImagesToSection(images);
       } else {
@@ -333,7 +307,7 @@ export class Gallery {
     // this.resetGallery();
 
     try {
-      const images = await this.loadImages(this.page);
+      const images = await this.loadImagesGallery(this.page);
       if (images && images.length > 0) {
         await this.addImagesToSection(images);
       } else {

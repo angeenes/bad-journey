@@ -1,4 +1,4 @@
-import { API_URL } from "../../consts";
+import { API_URL, BEARER_TOKEN } from "../../consts";
 import { User } from "@classes/user";
 
 export class Api {
@@ -23,7 +23,7 @@ export class Api {
     }
 
 
-    public deleteImageApi(id: number): Promise<any[]> {
+    public deleteImage(id: number): Promise<any[]> {
         const token = User.prototype.getJwt();
 
         const headers = {
@@ -35,6 +35,36 @@ export class Api {
             method: 'DELETE',
             headers,
         })
+            .then(response => response.json())
+            .then(data => data.data)
+            .catch(err => console.error(err));
+    }
+
+    public loadImages(tag: string | undefined | null, userId: number | null | undefined, searchString: string | undefined | null, pageSize: number | null | undefined, page = 1): Promise<any[]> {
+        const filters: string[] = [];
+
+        if (tag) {
+            filters.push(`filters[tag][name][$eq]=${tag}`);
+        }
+
+        if (userId) {
+            filters.push(`filters[users_permissions_user][id][$eq]=${userId}`);
+        }
+
+        if (searchString) {
+            filters.push(`filters[prompt][$containsi]=${searchString}`);
+        }
+
+        const queryString = filters.length > 0 ? `?${filters.join('&')}` : '';
+
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${BEARER_TOKEN}`,
+        };
+
+        const url = `${this.url}/images?populate=*&sort[0]=id%3Adesc&pagination[page]=${page}&pagination[pageSize]=${pageSize}${queryString}`;
+
+        return fetch(url, { headers })
             .then(response => response.json())
             .then(data => data.data)
             .catch(err => console.error(err));

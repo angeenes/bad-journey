@@ -11,7 +11,7 @@ import Dialog from "@components/Dialog.astro";
     id="profile-picture"
     src=""
     alt="profile picture"
-    class="hidden rounded-full h-9"
+    class="hidden rounded-full h-9 w-9"
   />
   <button id="btnConnected" class="uppercase mr-5 font-bold px-3 hidden">
   </button>
@@ -175,7 +175,7 @@ import Dialog from "@components/Dialog.astro";
         const userJSON: User = JSON.parse(user);
         // const userInitials = userJSON.username.split(' ').map((n) => n[0]).join('');
         openModalButton.style.display = "none";
-        btnConnected.classList.toggle("hidden");
+        // btnConnected.classList.toggle("hidden");
         imgProfileAvatar.classList.toggle("hidden");
         btnConnected.innerHTML = userJSON.username;
         if (imgProfileAvatar) {
