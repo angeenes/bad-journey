@@ -119,24 +119,39 @@ const tags = data.data;
         What model did you use to generate this image?
         <input type="text" name="model" id="model" />
       </label>
-      <label for="seed">
-        Seed (optional)
-        <input type="number" name="seed" id="seed" />
-      </label>
-      <label for="cfg_scale">
-        Cfg scale (optional)
-        <input
-          type="number"
-          name="cfg_scale"
-          id="cfg_scale"
-          step="0.1"
-          min="0"
-        />
-      </label>
-      <label for="steps">
-        Steps (optional)
-        <input type="number" name="steps" id="steps" />
-      </label>
+
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-x-2">
+        <label for="seed">
+          Seed (optional)
+          <input type="number" name="seed" id="seed" />
+        </label>
+        <label for="cfg_scale">
+          Cfg scale (optional)
+          <input
+            type="number"
+            name="cfg_scale"
+            id="cfg_scale"
+            step="0.1"
+            min="0"
+          />
+        </label>
+        <label for="steps">
+          Steps (optional)
+          <input type="number" name="steps" id="steps" />
+        </label>
+      </section>
+
+      <section class="flex items-end gap-x-2">
+        <label for="control_net" class="block my-2">
+          Control net (optional)
+          <input type="checkbox" name="control_net" id="controlnet">
+        </label>
+        <label for="control_net-model" class="flex-grow-[3]">
+          controlnet model (optional)
+          <input type="text" name="control_net-model" id="control_net-model">
+        </label>
+      </section>
+
       <label for="tag">
         category tags
         <select name="tag" id="tag">

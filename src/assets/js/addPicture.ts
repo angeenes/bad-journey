@@ -1,9 +1,9 @@
 import { API_URL } from "../../consts";
-import convertAutomatic111Metadata from "@classes/converters/convertAutomatic111Metadata";
-import convertInvokeMetadata from "@classes/converters/convertInvokeMetadata";
-import convertMochiMetadata from "@classes/converters/convertMochiMetadata";
+import convertAutomatic111Metadata from "@classes/MetaDataExtrators/convertAutomatic111Metadata";
+import convertInvokeMetadata from "@classes/MetaDataExtrators/convertInvokeMetadata";
+import convertMochiMetadata from "@classes/MetaDataExtrators/convertMochiMetadata";
 import { ImageObject } from "../interfaces/ImageObject.js";
-import { date } from "astro/zod";
+import { log } from "astro/dist/core/logger/core";
 
 export class ImageMetadataForm {
   constructor(
@@ -105,7 +105,6 @@ export class ImageMetadataForm {
   }
 
   private fillForm(data: ImageObject) {
-
     for (const key in data) {
       const element = this.formEl.querySelector(`[name="${key}"]`) as
         | HTMLInputElement
@@ -113,10 +112,16 @@ export class ImageMetadataForm {
         | HTMLSelectElement
         | null;
       if (element) {
-        element.value = data[key];
+        if (element.type === "checkbox") {
+          (element as HTMLInputElement).checked = data[key] as boolean;
+        } if (key === 'control_net') {
+          const controlNetModel = this.formEl.querySelector(`[name="control_net-model"]`) as HTMLInputElement;
+          controlNetModel.value = data.control_net?.model || '';
+        } else {
+          element.value = data[key];
+        }
       }
     }
-    console.log(this.isConnected, this.token);
     if (this.isConnected) {
       this.allowBtnPublish();
     } else {
@@ -187,7 +192,7 @@ export class ImageMetadataForm {
     }
 
     Array.from(form.elements).forEach(({ name, type, value, files }) => {
-     
+
       if (!["submit", "file"].includes(type)) {
         if (name === 'tag') {
           data[name] = value;
@@ -200,10 +205,10 @@ export class ImageMetadataForm {
       //     formData.append(`files.${name}`, file as Blob, file.name as string);
       //   });
 
-        const nameTimeStamp = Date.now().toString();
-        const imageBlob = this.dataURItoBlob(this.imagePreview.src);
-        formData.append(`files.image`, imageBlob as Blob, `${nameTimeStamp}.png` as string);
-      }
+      const nameTimeStamp = Date.now().toString();
+      const imageBlob = this.dataURItoBlob(this.imagePreview.src);
+      formData.append(`files.image`, imageBlob as Blob, `${nameTimeStamp}.png` as string);
+    }
     );
 
     formData.append("data", JSON.stringify(data));

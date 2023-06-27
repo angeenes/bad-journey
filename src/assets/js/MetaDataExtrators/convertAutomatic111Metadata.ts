@@ -1,4 +1,7 @@
-import { ImageObject } from "../../interfaces/ImageObject";
+import { ImageObject, ControlNetObject } from "../../interfaces/ImageObject";
+import { ControlNetMetadataExtractor } from "./controlNetExtractor";
+
+const controlNetMetadataExtractor = new ControlNetMetadataExtractor();
 
 export default function convertAutomatic111Metadata(input: string): ImageObject {
 
@@ -15,10 +18,21 @@ export default function convertAutomatic111Metadata(input: string): ImageObject 
   // Extraction des informations du texte d'entrée en utilisant les expressions régulières
   const sizeMatch = input.match(sizeRegExp);
   const stepsMatch = input.match(stepsRegExp);
-  const modelMatch = input.match(modelRegExp);
+  let modelMatch = input.match(modelRegExp);
   const seedMatch = input.match(seddRegExp);
   const gfcScaleMatch = input.match(gfcScaleRegExp);
   const samplerMatch = input.match(samplerRegExp);
+  let ControlNet: ControlNetObject = {};
+
+  if (modelMatch && modelMatch[0].includes('ControlNet')) {
+    ControlNet = controlNetMetadataExtractor.extractDataFromString(input);
+    // const regex = /:(.*?), ControlNet/;
+    // const match = input.match(regex);
+    // if (match && match.length >= 2) {
+    //   modelMatch = match[1].trim() as any;
+    //   console.log('DEBUG : convertAutomatic111Metadata : modelMatch', modelMatch);
+    // }
+  }
 
   // Attribution des valeurs correspondantes à chaque information extraite
   const [, widthValue, heightValue] = sizeMatch || [];
@@ -27,16 +41,20 @@ export default function convertAutomatic111Metadata(input: string): ImageObject 
   const [, seedValue] = seedMatch || [];
   const [, cfg_scaleValue] = gfcScaleMatch || [];
   const [, samplerValue] = samplerMatch || [];
+  const controlNetValue = ControlNet || {};
 
   // Extraction de la prompt négative, si elle existe
   const negativePromptMatch = input.match(/Negative prompt: (.+)/);
   const negativePrompt = negativePromptMatch ? negativePromptMatch[1] : "";
+
+  // effacement des valeurs de control net si elles existent dans modelValue
 
   // Création de l'objet "ImageObject" en utilisant les valeurs extraites et la prompt d'entrée
   const output: ImageObject = {
     prompt: input.split("\n")[0],
     negative_prompt: negativePrompt,
     model: modelValue || "",
+    control_net: controlNetValue || "",
     seed: seedValue || "",
     width: widthValue,
     height: heightValue,
