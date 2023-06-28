@@ -1,0 +1,34 @@
+{
+  "name": "Snack ai Chrome Extension",
+  "description": "Send image file to snack ai upload.",
+  "homepage_url": "https://github.com/llagerlof/fresh-chrome-extension",
+  "version": "2.0.0",
+  "manifest_version": 3,
+  "action": {
+    "default_title": "click to add buttons to snack ai"
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_start",
+      "js": ["before.js"],
+      "matches": ["https://*/*", "http://*/*"]
+    },
+    {
+      "run_at": "document_idle",
+      "js": ["after.js"],
+      "matches": ["https://*/*", "http://*/*"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting",
+    "storage",
+    "commands",
+    "scripting"
+  ],
+  "host_permissions": ["<all_urls>"]
+}
